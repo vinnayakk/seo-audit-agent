@@ -1,0 +1,16 @@
+{
+  "servers": {
+    "seo-audit": {
+      "type": "stdio",
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "${workspaceFolder}",
+        "python",
+        "-m",
+        "seo_audit_agent.mcp_server"
+      ]
+    }
+  }
+}
