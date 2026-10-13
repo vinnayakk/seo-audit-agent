@@ -6,6 +6,8 @@ from bs4 import BeautifulSoup
 
 from seo_audit_agent.fetcher import USER_AGENT, get_page
 
+BOT_BLOCK_STATUSES = {401, 403, 429, 999}  # often bot-blocking, not a dead link
+
 
 def extract_links(page) -> list[dict]:
     soup = BeautifulSoup(page.html, "html.parser")
@@ -41,7 +43,10 @@ def check_links(url: str, max_links: int = 50) -> dict:
     """Find broken and redirected links on a page. Extracts every <a href>, then checks up to
     `max_links` of them. Returns link counts (internal, external, nofollow) and lists of
     broken links (4xx/5xx/unreachable) and redirected links. Takes 5-15 seconds.
-    Use this when asked about broken links, 404s or link health."""
+    Use this when asked about broken links, 404s or link health.
+    `unverified` lists links that refused automated checks (401/403/429/999, common on
+    LinkedIn and sites behind Cloudflare). These are probably fine but should be checked
+    in a browser."""
     page = get_page(url)
     if page.error or not page.html:
         return {"url": url, "error": page.error or f"No HTML returned (status {page.status})"}
@@ -53,8 +58,13 @@ def check_links(url: str, max_links: int = 50) -> dict:
          ThreadPoolExecutor(max_workers=8) as pool:
         results = list(pool.map(lambda link: {**link, **_status(client, link["url"])}, to_check))
 
+    def is_blocked(r):
+        return r.get("status") in BOT_BLOCK_STATUSES
+
     broken = [{"url": r["url"], "anchor": r["anchor"], "status": r.get("status"), "error": r.get("error")}
-              for r in results if r.get("status") is None or r["status"] >= 400]
+              for r in results
+              if (r.get("status") is None or r["status"] >= 400) and not is_blocked(r)]
+    unverified = [{"url": r["url"], "status": r["status"]} for r in results if is_blocked(r)]
     redirected = [{"url": r["url"], "final_url": r["final_url"]}
                   for r in results if r.get("redirected")]
 
@@ -67,5 +77,6 @@ def check_links(url: str, max_links: int = 50) -> dict:
         "external": sum(not link["internal"] for link in links),
         "nofollow": sum(link["nofollow"] for link in links),
         "broken": broken,
+        "unverified": unverified,
         "redirected": redirected,
     }

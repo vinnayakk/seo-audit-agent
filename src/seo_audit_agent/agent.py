@@ -1,4 +1,6 @@
+import argparse
 import json
+import logging
 import sys
 
 import anyio
@@ -9,6 +11,7 @@ from seo_audit_agent.mcp_server import mcp
 from seo_audit_agent.tools import ALL_TOOLS
 
 load_dotenv()
+logging.getLogger("httpx").setLevel(logging.WARNING)  # stop logging every request URL
 client = Anthropic()
 MODEL = "claude-sonnet-5-5"
 SYSTEM = ("You are an SEO auditor. Use the tools to inspect pages before answering. "
@@ -40,5 +43,26 @@ def run_agent(question: str, max_turns: int = 10) -> str:
     return "Stopped: hit max_turns."
 
 
+FULL_AUDIT = ("Do a full SEO audit of {url}: reachability, meta tags, broken links "
+              "and mobile speed. Give me a prioritised fix list.")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(prog="seo-audit", description="AI SEO audit agent")
+    parser.add_argument("url", nargs="?", help="Page to audit, e.g. https://example.com")
+    parser.add_argument("-q", "--question", help="Ask something specific instead of a full audit")
+    args = parser.parse_args()
+
+    if args.question:
+        question = f"{args.question}\nURL: {args.url}" if args.url else args.question
+    else:
+        url = args.url or input("URL to audit: ").strip()
+        if not url:
+            sys.exit("No URL given.")
+        question = FULL_AUDIT.format(url=url)
+
+    print(run_agent(question))
+
+
 if __name__ == "__main__":
-    print(run_agent(" ".join(sys.argv[1:]) or "Audit the meta tags of https://www.vinnayakk.com"))
+    main()

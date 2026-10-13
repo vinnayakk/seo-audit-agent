@@ -27,3 +27,15 @@ def test_check_links_finds_broken():
     assert out["internal"] == 2
     assert out["external"] == 1
     assert [b["url"] for b in out["broken"]] == ["https://shop.test/gone"]
+
+@respx.mock
+def test_bot_blocked_links_are_unverified_not_broken():
+    respx.get("https://shop.test/").mock(return_value=httpx.Response(
+        200, html='<a href="https://www.linkedin.com/in/someone/">LinkedIn</a>'))
+    respx.head("https://www.linkedin.com/in/someone/").mock(return_value=httpx.Response(405))
+    respx.get("https://www.linkedin.com/in/someone/").mock(return_value=httpx.Response(999))
+
+    out = check_links("https://shop.test/")
+
+    assert out["broken"] == []
+    assert out["unverified"] == [{"url": "https://www.linkedin.com/in/someone/", "status": 999}]

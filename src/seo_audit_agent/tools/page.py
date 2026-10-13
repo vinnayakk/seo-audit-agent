@@ -28,7 +28,9 @@ def fetch_title(url: str) -> dict:
 def fetch_page(url: str) -> dict:
     """Check whether a page is reachable. Returns HTTP status, redirect chain, final URL,
     response time, HTML size, visible word count, HTTPS use and any X-Robots-Tag header.
-    Use this first in any audit, and whenever the user asks if a page works or loads."""
+    Use this first in any audit, and whenever the user asks if a page works or loads.
+    response_time_ms is measured from the machine running this agent and includes DNS and
+    TLS setup. It is not the server's processing time; use check_speed for real performance."""
     page = get_page(url)
     if page.error:
         return {"url": url, "error": page.error}

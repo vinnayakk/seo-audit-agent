@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-seo-audit-agent = "seo_audit_agent:main"
+seo-audit = "seo_audit_agent.agent:main"
 
 [build-system]
 requires = ["uv_build>=0.13.0,<0.14.0"]
