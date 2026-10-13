@@ -18,7 +18,7 @@ for noisy in ("httpx", "httpx2"):  # stop logging every request URL
 client = Anthropic()
 langfuse = get_client()  # reads LANGFUSE_* from .env; without keys it is a silent no-op
 MODEL = "claude-sonnet-5-5"
-MAX_TOKENS = 2048
+MAX_TOKENS = 4096
 SYSTEM = ("You are an SEO auditor. Use the tools to inspect pages before answering. "
           "Report concrete findings, then prioritised fixes.")
 
@@ -53,6 +53,8 @@ def run_agent(question: str, max_turns: int = 10) -> str:
             gen.update(output=content, usage_details={"input": resp.usage.input_tokens,
                                                       "output": resp.usage.output_tokens})
         messages.append({"role": "assistant", "content": content})
+        if resp.stop_reason == "max_tokens":
+            print(f"⚠ Reply was cut off at {MAX_TOKENS} tokens; raise MAX_TOKENS.", file=sys.stderr)
 
         if resp.stop_reason != "tool_use":
             return "".join(b.text for b in resp.content if b.type == "text")
