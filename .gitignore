@@ -12,3 +12,6 @@ wheels/
 
 #MacOS Cache
 .DS_Store
+
+#Output files
+psi.json
