@@ -3,6 +3,8 @@ from typing import Literal
 
 import httpx
 
+from seo_audit_agent.net import get_with_retry
+
 PSI_ENDPOINT = "https://www.googleapis.com/pagespeedonline/v5/runPagespeed"
 LAB_METRICS = {
     "first-contentful-paint": "FCP",
@@ -35,7 +37,8 @@ def check_speed(url: str, strategy: Literal["mobile", "desktop"] = "mobile") -> 
         headers["X-goog-api-key"] = key  # header, not URL, so the key never appears in logs
 
     try:
-        r = httpx.get(PSI_ENDPOINT, params=params, headers=headers, timeout=90)
+        # 2 attempts, not 3: each PageSpeed run can take up to 90 s
+        r = get_with_retry(PSI_ENDPOINT, params=params, headers=headers, timeout=90, attempts=2)
         r.raise_for_status()
     except httpx.HTTPStatusError as e:
         return {"url": url, "error": f"PageSpeed API {e.response.status_code}: {e.response.text[:200]}"}

@@ -4,6 +4,8 @@ from functools import lru_cache
 
 import httpx
 
+from seo_audit_agent.net import get_with_retry
+
 USER_AGENT = "seo-audit-agent/0.1"
 TIMEOUT = 15
 
@@ -25,7 +27,7 @@ def get_page(url: str) -> Page:
     """Download a page once; repeat calls for the same URL come from the cache."""
     start = time.perf_counter()
     try:
-        r = httpx.get(url, follow_redirects=True, timeout=TIMEOUT,
+        r = get_with_retry(url, follow_redirects=True, timeout=TIMEOUT,
                       headers={"User-Agent": USER_AGENT})
     except httpx.HTTPError as e:
         return Page(requested_url=url, error=f"{type(e).__name__}: {e}")

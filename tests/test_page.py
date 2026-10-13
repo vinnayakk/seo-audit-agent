@@ -55,3 +55,9 @@ def test_meta_tags_bad_page_flags_problems():
     assert "noindex" in issues
     assert "Missing meta description" in issues
     assert "2 <h1>" in issues
+
+@respx.mock
+def test_fetch_page_retries_a_flaky_server():
+    respx.get("https://shop.test/").mock(
+        side_effect=[httpx.Response(502), httpx.Response(200, html=GOOD_HTML)])
+    assert fetch_page("https://shop.test/")["status"] == 200

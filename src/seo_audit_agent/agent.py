@@ -15,10 +15,13 @@ load_dotenv()
 for noisy in ("httpx", "httpx2"):  # stop logging every request URL
     logging.getLogger(noisy).setLevel(logging.WARNING)
 
-client = Anthropic()
+client = Anthropic(timeout=120, max_retries=3)  # SDK retries 429/5xx/overloaded itself
 langfuse = get_client()  # reads LANGFUSE_* from .env; without keys it is a silent no-op
 MODEL = "claude-sonnet-5-5"
 MAX_TOKENS = 4096
+MAX_TURNS = 10
+STEP_LIMIT_NOTE = ("Step limit reached. Do not call more tools. Write the final report now using "
+                   "only the data you already have, and list any checks you could not complete.")
 SYSTEM = ("You are an SEO auditor. Use the tools to inspect pages before answering. "
           "Report concrete findings, then prioritised fixes.")
 
@@ -40,15 +43,21 @@ def call_tool(name: str, args: dict) -> dict:
 
 
 @observe(name="seo-audit", as_type="agent")
-def run_agent(question: str, max_turns: int = 10) -> str:
+def run_agent(question: str, max_turns: int = MAX_TURNS) -> str:
     messages = [{"role": "user", "content": question}]
     for turn in range(1, max_turns + 1):
+        last_turn = turn == max_turns
+        if last_turn and turn > 1:  # out of steps: tell Claude to wrap up instead of losing the work
+            messages[-1]["content"].append({"type": "text", "text": STEP_LIMIT_NOTE})
         with langfuse.start_as_current_observation(
             name=f"claude-turn-{turn}", as_type="generation", model=MODEL,
             input=messages, model_parameters={"max_tokens": MAX_TOKENS},
         ) as gen:
-            resp = client.messages.create(model=MODEL, max_tokens=MAX_TOKENS, system=SYSTEM,
-                                          tools=TOOLS, messages=messages)
+            resp = client.messages.create(
+                model=MODEL, max_tokens=MAX_TOKENS, system=SYSTEM, tools=TOOLS, messages=messages,
+                # On the last turn, forbid tool calls so Claude must answer with what it has.
+                tool_choice={"type": "none"} if last_turn else {"type": "auto"},
+            )
             content = [block.model_dump(exclude_none=True) for block in resp.content]
             gen.update(output=content, usage_details={"input": resp.usage.input_tokens,
                                                       "output": resp.usage.output_tokens})
@@ -67,7 +76,7 @@ def run_agent(question: str, max_turns: int = 10) -> str:
                 results.append({"type": "tool_result", "tool_use_id": block.id,
                                 "content": json.dumps(output)})
         messages.append({"role": "user", "content": results})
-    return "Stopped: hit max_turns."
+    return "Stopped: the step limit was reached before a report was written."
 
 
 FULL_AUDIT = ("Do a full SEO audit of {url}: reachability, meta tags, broken links "
@@ -78,6 +87,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(prog="seo-audit", description="AI SEO audit agent")
     parser.add_argument("url", nargs="?", help="Page to audit, e.g. https://example.com")
     parser.add_argument("-q", "--question", help="Ask something specific instead of a full audit")
+    parser.add_argument("--max-turns", type=int, default=MAX_TURNS,
+                        help=f"Maximum Claude turns before forcing a report (default {MAX_TURNS})")
     args = parser.parse_args()
 
     if args.question:
@@ -92,7 +103,7 @@ def main() -> None:
     # Everything inside this block lands in one trace, tagged and searchable in Langfuse.
     with propagate_attributes(trace_name="seo-audit", tags=["cli"],
                               metadata={"url": args.url or "", "mode": "question" if args.question else "full-audit"}):
-        print(run_agent(question))
+        print(run_agent(question, max_turns=args.max_turns))
     langfuse.flush()  # short-lived script: send buffered traces before exiting
 
 

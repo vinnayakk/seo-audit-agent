@@ -6,6 +6,7 @@ os.environ["LANGFUSE_TRACING_ENABLED"] = "false"
 
 import pytest
 
+from seo_audit_agent import net
 from seo_audit_agent.fetcher import get_page
 
 
@@ -14,3 +15,10 @@ def clear_page_cache():
     get_page.cache_clear()
     yield
     get_page.cache_clear()
+
+@pytest.fixture(autouse=True)
+def no_retry_sleep(monkeypatch):
+    """Retries back off with real waits; record the delays instead of sleeping."""
+    delays = []
+    monkeypatch.setattr(net, "_sleep", delays.append)
+    return delays
