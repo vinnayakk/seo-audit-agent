@@ -16,3 +16,4 @@ wheels/
 #Output files
 psi.json
 langfuse_data/
+evals/
