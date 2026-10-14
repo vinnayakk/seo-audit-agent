@@ -1,0 +1,368 @@
+{
+  "question": "Do a full SEO audit of https://www.abacusdesk.com/: reachability, meta tags, broken links and mobile speed. Then submit a prioritised report.",
+  "trace_id": "cbd6169d3ef417e01b53a614034f20bc",
+  "report": {
+    "url": "https://www.abacusdesk.com/",
+    "summary": "The homepage is reachable over HTTPS (200, no redirects) and its core tags are in place: title, description, canonical, a single H1, viewport and indexable robots. The biggest problem is mobile speed. The performance score is 29, LCP is 21.8 s and the page weighs about 5 MB. Smaller issues are a missing og:image, a broken email link and a broken external link.",
+    "findings": [
+      {
+        "category": "speed",
+        "issue": "Mobile LCP is 21.8 s and the performance score is only 29. The LCP element is the hero text block, and Lighthouse flags LCP request discovery and LCP breakdown problems.",
+        "evidence": [
+          {
+            "tool": "check_speed",
+            "field": "lab_metrics.LCP",
+            "value": "21.8 s"
+          },
+          {
+            "tool": "check_speed",
+            "field": "performance_score",
+            "value": "29"
+          },
+          {
+            "tool": "check_speed",
+            "field": "lcp_element",
+            "value": "Business Software\nAutomation for every business need\n\nMake your business more p…"
+          }
+        ],
+        "fix": "Find the hero image or background that the LCP element depends on. Preload it with <link rel=\"preload\" as=\"image\"> and serve it as a compressed, correctly sized WebP or AVIF. Remove any lazy-loading and render-blocking CSS or JS on it.",
+        "impact": "high",
+        "effort": "medium"
+      },
+      {
+        "category": "speed",
+        "issue": "The page is very heavy at about 5 MB. Lighthouse estimates 1,670 KiB of savings from better image delivery and 3,406 KiB from better cache lifetimes.",
+        "evidence": [
+          {
+            "tool": "check_speed",
+            "field": "page_weight_kb",
+            "value": "5123"
+          },
+          {
+            "tool": "check_speed",
+            "field": "top_issues[4]",
+            "value": "Improve image delivery: Est savings of 1,670 KiB"
+          },
+          {
+            "tool": "check_speed",
+            "field": "top_issues[0]",
+            "value": "Use efficient cache lifetimes: Est savings of 3,406 KiB"
+          }
+        ],
+        "fix": "Convert the large images to WebP or AVIF at their displayed dimensions. Set a Cache-Control max-age of at least 1 year on static assets (images, CSS, JS, fonts).",
+        "impact": "high",
+        "effort": "medium"
+      },
+      {
+        "category": "speed",
+        "issue": "Total blocking time is high at 810 ms. The reCAPTCHA script (347 KB) is one of the heaviest resources and is requested more than once.",
+        "evidence": [
+          {
+            "tool": "check_speed",
+            "field": "lab_metrics.TBT",
+            "value": "810 ms"
+          },
+          {
+            "tool": "check_speed",
+            "field": "heaviest_resources[0].url",
+            "value": "https://www.gstatic.com/recaptcha/releases/nY0xPItgwtlvjEjk2TqdwOQz/recaptcha__en.js"
+          }
+        ],
+        "fix": "Load reCAPTCHA only when a visitor interacts with a form, or after the load event. Make sure it is initialised once rather than per form.",
+        "impact": "medium",
+        "effort": "medium"
+      },
+      {
+        "category": "speed",
+        "issue": "The page has layout shift (CLS 0.218, above the 0.1 'good' threshold), and font loading adds delay (about 1,290 ms of estimated savings from font-display).",
+        "evidence": [
+          {
+            "tool": "check_speed",
+            "field": "lab_metrics.CLS",
+            "value": "0.218"
+          },
+          {
+            "tool": "check_speed",
+            "field": "top_issues[2]",
+            "value": "Font display: Est savings of 1,290 ms"
+          }
+        ],
+        "fix": "Add font-display: swap to the @font-face rules. Add explicit width and height attributes to images and banner or slider containers so their space is reserved.",
+        "impact": "medium",
+        "effort": "low"
+      },
+      {
+        "category": "meta_tags",
+        "issue": "There is no og:image, so links shared on social platforms show no preview image.",
+        "evidence": [
+          {
+            "tool": "check_meta_tags",
+            "field": "open_graph.image",
+            "value": "null"
+          },
+          {
+            "tool": "check_meta_tags",
+            "field": "issues[0]",
+            "value": "Missing og:title or og:image (poor social sharing previews)"
+          }
+        ],
+        "fix": "Add <meta property=\"og:image\" content=\"https://www.abacusdesk.com/...\"> pointing to a 1200x630 branded image.",
+        "impact": "medium",
+        "effort": "low"
+      },
+      {
+        "category": "links",
+        "issue": "The Cloudflare email-protection link returns 404, so the obfuscated email link in the page is broken for crawlers and for users without JavaScript.",
+        "evidence": [
+          {
+            "tool": "check_links",
+            "field": "broken[0].url",
+            "value": "https://www.abacusdesk.com/cdn-cgi/l/email-protection"
+          },
+          {
+            "tool": "check_links",
+            "field": "broken[0].status",
+            "value": "404"
+          }
+        ],
+        "fix": "Replace the Cloudflare-obfuscated email link with a plain mailto: link, or turn off Email Address Obfuscation in Cloudflare. Check that the link works in a browser first.",
+        "impact": "low",
+        "effort": "low"
+      },
+      {
+        "category": "links",
+        "issue": "The external link to manavrachna.edu.in fails with TooManyRedirects.",
+        "evidence": [
+          {
+            "tool": "check_links",
+            "field": "broken[1].url",
+            "value": "https://manavrachna.edu.in/"
+          },
+          {
+            "tool": "check_links",
+            "field": "broken[1].error",
+            "value": "TooManyRedirects"
+          }
+        ],
+        "fix": "Open the link in a browser. Update the href to the final working URL, or remove the link if the site is no longer valid.",
+        "impact": "low",
+        "effort": "low"
+      },
+      {
+        "category": "links",
+        "issue": "Several links point to URLs that redirect, including one internal link (/enterprise/google-workspace-2/).",
+        "evidence": [
+          {
+            "tool": "check_links",
+            "field": "redirected[1].url",
+            "value": "https://www.abacusdesk.com/enterprise/google-workspace-2/"
+          },
+          {
+            "tool": "check_links",
+            "field": "redirected[1].final_url",
+            "value": "https://www.abacusdesk.com/enterprise/google-workspace/"
+          }
+        ],
+        "fix": "Change the internal href from /enterprise/google-workspace-2/ to /enterprise/google-workspace/. Update the netkarma.ca and deltaelectronicsindia.com links to their final URLs.",
+        "impact": "low",
+        "effort": "low"
+      },
+      {
+        "category": "meta_tags",
+        "issue": "The title is exactly 60 characters, at the edge of truncation in search results. The og:title and og:description differ from the standard title and description, and the og:description claims 'leading digital marketing company in India', which the standard tags do not.",
+        "evidence": [
+          {
+            "tool": "check_meta_tags",
+            "field": "title_length",
+            "value": "60"
+          },
+          {
+            "tool": "check_meta_tags",
+            "field": "title",
+            "value": "World-Class Software Development, CX & Performance Marketing"
+          },
+          {
+            "tool": "check_meta_tags",
+            "field": "open_graph.title",
+            "value": "Business Software & Digital Marketing Agency - Abacus Desk"
+          }
+        ],
+        "fix": "Shorten the title to something like 'Abacus Desk: Software Development & Digital Marketing' (53 characters). Align the og:title and og:description with it.",
+        "impact": "low",
+        "effort": "low"
+      }
+    ],
+    "not_checked": [
+      "Desktop speed (only mobile was requested)",
+      "Pages other than the homepage",
+      "14 of 64 links were skipped by the link checker (it checks a maximum of 50)",
+      "robots.txt and XML sitemap",
+      "Structured data / schema markup",
+      "Real-user Core Web Vitals (Google returned no field data)"
+    ]
+  },
+  "text": "",
+  "tool_outputs": [
+    {
+      "tool": "fetch_page",
+      "input": {
+        "url": "https://www.abacusdesk.com/"
+      },
+      "output": {
+        "requested_url": "https://www.abacusdesk.com/",
+        "final_url": "https://www.abacusdesk.com/",
+        "status": 200,
+        "redirects": [],
+        "response_time_ms": 1511,
+        "content_type": "text/html; charset=UTF-8",
+        "html_size_kb": 129.1,
+        "word_count": 1598,
+        "is_https": true,
+        "x_robots_tag": null
+      }
+    },
+    {
+      "tool": "check_meta_tags",
+      "input": {
+        "url": "https://www.abacusdesk.com/"
+      },
+      "output": {
+        "url": "https://www.abacusdesk.com/",
+        "title": "World-Class Software Development, CX & Performance Marketing",
+        "title_length": 60,
+        "description": "Abacus desk is the World-Class Software Development, CX & Performance Marketing. We also deal in website designing, business software & social media marketing.",
+        "description_length": 159,
+        "canonical": "https://www.abacusdesk.com/",
+        "robots": "index, follow",
+        "x_robots_tag": null,
+        "h1": [
+          "Encouraging enterprises to do much more"
+        ],
+        "lang": "en-US",
+        "viewport": "width=device-width, initial-scale=1.0",
+        "open_graph": {
+          "title": "Business Software & Digital Marketing Agency - Abacus Desk",
+          "description": "Abacus desk is the leading digital marketing company in India. We also deal in website designing, business software & social media marketing. Visit now",
+          "image": null
+        },
+        "issues": [
+          "Missing og:title or og:image (poor social sharing previews)"
+        ]
+      }
+    },
+    {
+      "tool": "check_links",
+      "input": {
+        "url": "https://www.abacusdesk.com/"
+      },
+      "output": {
+        "url": "https://www.abacusdesk.com/",
+        "total_links": 64,
+        "checked": 50,
+        "skipped": 14,
+        "internal": 47,
+        "external": 17,
+        "nofollow": 0,
+        "broken": [
+          {
+            "url": "https://www.abacusdesk.com/cdn-cgi/l/email-protection",
+            "anchor": "[email protected]",
+            "status": 404,
+            "error": null
+          },
+          {
+            "url": "https://manavrachna.edu.in/",
+            "anchor": "Manav Rachna Explore",
+            "status": null,
+            "error": "TooManyRedirects"
+          }
+        ],
+        "unverified": [],
+        "redirected": [
+          {
+            "url": "https://netkarma.ca/",
+            "final_url": "https://www.netkarma.ca/"
+          },
+          {
+            "url": "https://www.abacusdesk.com/enterprise/google-workspace-2/",
+            "final_url": "https://www.abacusdesk.com/enterprise/google-workspace/"
+          },
+          {
+            "url": "https://www.deltaelectronicsindia.com/",
+            "final_url": "https://www.deltaelectronicsindia.com/en-IN/index"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "check_speed",
+      "input": {
+        "url": "https://www.abacusdesk.com/",
+        "strategy": "mobile"
+      },
+      "output": {
+        "url": "https://www.abacusdesk.com/",
+        "strategy": "mobile",
+        "performance_score": 29,
+        "lab_metrics": {
+          "FCP": "3.5 s",
+          "LCP": "21.8 s",
+          "TBT": "810 ms",
+          "CLS": "0.218",
+          "Speed Index": "13.7 s"
+        },
+        "lcp_element": "Business Software\nAutomation for every business need\n\nMake your business more p…",
+        "page_weight_kb": 5123,
+        "heaviest_resources": [
+          {
+            "url": "https://www.gstatic.com/recaptcha/releases/nY0xPItgwtlvjEjk2TqdwOQz/recaptcha__en.js",
+            "kb": 347
+          },
+          {
+            "url": "https://www.gstatic.com/recaptcha/releases/nY0xPItgwtlvjEjk2TqdwOQz/recaptcha__en.js",
+            "kb": 347
+          },
+          {
+            "url": "https://www.gstatic.com/recaptcha/releases/nY0xPItgwtlvjEjk2TqdwOQz/recaptcha__en.js",
+            "kb": 347
+          }
+        ],
+        "field_data": null,
+        "top_issues": [
+          {
+            "title": "Use efficient cache lifetimes",
+            "detail": "Est savings of 3,406 KiB"
+          },
+          {
+            "title": "Layout shift culprits",
+            "detail": null
+          },
+          {
+            "title": "Font display",
+            "detail": "Est savings of 1,290 ms"
+          },
+          {
+            "title": "Forced reflow",
+            "detail": null
+          },
+          {
+            "title": "Improve image delivery",
+            "detail": "Est savings of 1,670 KiB"
+          },
+          {
+            "title": "LCP breakdown",
+            "detail": null
+          },
+          {
+            "title": "LCP request discovery",
+            "detail": null
+          },
+          {
+            "title": "Legacy JavaScript",
+            "detail": "Est savings of 11 KiB"
+          }
+        ]
+      }
+    }
+  ]
+}

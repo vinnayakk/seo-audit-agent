@@ -75,7 +75,7 @@ def validate_report(args: dict) -> AuditReport:
 def run_agent(question: str, max_turns: int = MAX_TURNS, structured: bool = False) -> AuditRun:
     """Tool-calling loop. structured=True ends with a validated AuditReport via submit_report;
     structured=False ends with a free-text answer."""
-    run = AuditRun(question=question)
+    run = AuditRun(question=question, trace_id=langfuse.get_current_trace_id())
     tools = TOOLS + [SUBMIT_TOOL] if structured else TOOLS
     messages = [{"role": "user", "content": question}]
     nudged = False

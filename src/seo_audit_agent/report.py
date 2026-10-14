@@ -35,6 +35,7 @@ class AuditRun(BaseModel):
     """Everything one run produced: the report plus the raw tool outputs it was based on.
     Saved runs become eval cases: the judge compares report claims against tool_outputs."""
     question: str
+    trace_id: str | None = None         # Langfuse trace, so judge scores can be attached to it later
     report: AuditReport | None = None   # structured audits
     text: str = ""                      # free-text answers (-q mode)
     tool_outputs: list[dict] = Field(default_factory=list)

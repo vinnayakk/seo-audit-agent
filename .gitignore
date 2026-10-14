@@ -16,4 +16,5 @@ wheels/
 #Output files
 psi.json
 langfuse_data/
-evals/
+# Throwaway runs. evals/cases/ IS committed: it's the eval dataset.
+evals/scratch/
