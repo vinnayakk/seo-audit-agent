@@ -1,37 +1,32 @@
 {
   "question": "Do a full SEO audit of https://www.unocal.in/: reachability, meta tags, broken links and mobile speed. Then submit a prioritised report.",
-  "trace_id": "cc39fbc6ed8354b4f028a8eab81c3c6a",
+  "trace_id": "f254a8f9f150ed6b031909d2df208eeb",
   "report": {
     "url": "https://www.unocal.in/",
-    "summary": "The homepage is reachable over HTTPS (200, no redirects) and is indexable, but mobile speed is weak (score 66, LCP 8.2 s, 6.7 MB page). The biggest problem is the slow, heavy hero slider and unoptimised images. The page also has no H1, over-long title and description, no og:image, and several internal links that 404 or redirect.",
+    "summary": "The homepage is reachable over HTTPS (200, no redirects) but has a very slow mobile LCP of 14.0 s (performance score 66) and a 6.7 MB page weight. Other problems are missing H1, missing og:image, overlong title and description, and internal links pointing at the non-www host. Two of those links lead to 404 pages.",
     "findings": [
       {
         "category": "speed",
-        "issue": "Mobile LCP is very slow (8.2 s) and the LCP element is the home slider.",
+        "issue": "Mobile Largest Contentful Paint is 14.0 s, with the LCP element being the home slider.",
         "evidence": [
           {
             "tool": "check_speed",
             "field": "lab_metrics.LCP",
-            "value": "8.2 s"
+            "value": "14.0 s"
           },
           {
             "tool": "check_speed",
             "field": "lcp_element",
             "value": "Home-Slider"
-          },
-          {
-            "tool": "check_speed",
-            "field": "performance_score",
-            "value": "66"
           }
         ],
-        "fix": "Preload the first slider image with fetchpriority=high and remove lazy-loading and JS-dependent rendering from that first slide.",
+        "fix": "Preload the first home slider image and serve it without lazy-loading so the browser discovers it early.",
         "impact": "high",
         "effort": "medium"
       },
       {
         "category": "speed",
-        "issue": "The page is very heavy (about 6.7 MB), with large unoptimised images; Lighthouse estimates 3,874 KiB of savings from better image delivery.",
+        "issue": "Images are heavy and poorly optimised, making the page 6.7 MB, with an estimated 3,359 KiB of image savings.",
         "evidence": [
           {
             "tool": "check_speed",
@@ -41,36 +36,93 @@
           {
             "tool": "check_speed",
             "field": "top_issues[2].detail",
-            "value": "Est savings of 3,874 KiB"
-          },
-          {
-            "tool": "check_speed",
-            "field": "heaviest_resources[0].kb",
-            "value": "736"
+            "value": "Est savings of 3,359 KiB"
           }
         ],
-        "fix": "Convert secure-progress.jpg and the product PNGs to WebP/AVIF at display size, and serve them with srcset.",
+        "fix": "Convert the listed PNG/JPG images to compressed WebP and serve them at their displayed dimensions.",
         "impact": "high",
         "effort": "medium"
       },
       {
         "category": "speed",
-        "issue": "Render-blocking requests delay first paint (estimated 2,090 ms savings) and font display adds a 300 ms delay.",
+        "issue": "Render-blocking CSS requests delay first paint (FCP 2.3 s).",
         "evidence": [
           {
             "tool": "check_speed",
-            "field": "top_issues[6].detail",
-            "value": "Est savings of 2,090 ms"
+            "field": "top_issues[4].detail",
+            "value": "Est savings of 2,220 ms"
           },
           {
             "tool": "check_speed",
-            "field": "top_issues[0].detail",
-            "value": "Est savings of 300 ms"
+            "field": "lab_metrics.FCP",
+            "value": "2.3 s"
           }
         ],
-        "fix": "Defer non-critical CSS/JS and add font-display: swap to the @font-face rules.",
+        "fix": "Inline critical CSS and load slick.css, the contact-form-7 stylesheet and jquery.mCustomScrollbar.min.css asynchronously or only on the pages that need them.",
         "impact": "medium",
         "effort": "medium"
+      },
+      {
+        "category": "links",
+        "issue": "Internal links use the non-www host and lead to 404 pages (heavy-commercial-vehicle and industrial).",
+        "evidence": [
+          {
+            "tool": "check_links",
+            "field": "broken[0].url",
+            "value": "https://unocal.in/Industries/heavy-commercial-vehicle/"
+          },
+          {
+            "tool": "check_links",
+            "field": "broken[0].status",
+            "value": "404"
+          },
+          {
+            "tool": "check_links",
+            "field": "broken[1].status",
+            "value": "404"
+          }
+        ],
+        "fix": "Update these links to existing pages on https://www.unocal.in/, or restore the missing Industries pages.",
+        "impact": "high",
+        "effort": "low"
+      },
+      {
+        "category": "links",
+        "issue": "An external link to unocalglobal.com/industries/ is unreachable (connection error).",
+        "evidence": [
+          {
+            "tool": "check_links",
+            "field": "broken[2].url",
+            "value": "https://unocalglobal.com/industries/"
+          },
+          {
+            "tool": "check_links",
+            "field": "broken[2].error",
+            "value": "ConnectError"
+          }
+        ],
+        "fix": "Remove this link or replace it with a working URL.",
+        "impact": "medium",
+        "effort": "low"
+      },
+      {
+        "category": "links",
+        "issue": "Many internal links point to the non-www host and rely on redirects (12 redirected links).",
+        "evidence": [
+          {
+            "tool": "check_links",
+            "field": "redirected[5].url",
+            "value": "https://unocal.in/company/"
+          },
+          {
+            "tool": "check_links",
+            "field": "redirected[5].final_url",
+            "value": "https://www.unocal.in/company/"
+          }
+        ],
+        "fix": "Rewrite internal links to use the canonical https://www.unocal.in/ URLs directly.",
+        "impact": "medium",
+        "effort": "low"
       },
       {
         "category": "meta_tags",
@@ -82,13 +134,13 @@
             "value": "[]"
           }
         ],
-        "fix": "Add one H1 to the homepage, e.g. 'Automotive & Industrial Lubricants by Raaj Unocal', in the hero section.",
+        "fix": "Add one H1 to the homepage that states the main topic, e.g. 'Automotive & Industrial Lubricants'.",
         "impact": "medium",
         "effort": "low"
       },
       {
         "category": "meta_tags",
-        "issue": "The title is too long (77 chars) and will be truncated in search results.",
+        "issue": "The title is 77 characters and will be truncated in search results.",
         "evidence": [
           {
             "tool": "check_meta_tags",
@@ -96,13 +148,13 @@
             "value": "77"
           }
         ],
-        "fix": "Change the title to 'Automotive & Industrial Lubricants | Raaj Unocal India' (55 chars).",
+        "fix": "Change the title to 'Automotive & Industrial Lubricants | Raaj Unocal India'.",
         "impact": "medium",
         "effort": "low"
       },
       {
         "category": "meta_tags",
-        "issue": "The meta description is 247 chars, so it will be truncated.",
+        "issue": "The meta description is 247 characters, well over the recommended length.",
         "evidence": [
           {
             "tool": "check_meta_tags",
@@ -110,13 +162,13 @@
             "value": "247"
           }
         ],
-        "fix": "Rewrite the description to: 'Raaj Unocal blends automotive, industrial, marine and aviation oils and greases, with in-house testing for strict quality control.' (about 135 chars).",
+        "fix": "Change the description to 'Raaj Unocal Lubricants makes automotive, industrial, marine and aviation oils and greases, backed by in-house quality testing.'",
         "impact": "medium",
         "effort": "low"
       },
       {
         "category": "meta_tags",
-        "issue": "There is no og:image, so social shares have no preview image.",
+        "issue": "There is no og:image, so shared links have no preview image.",
         "evidence": [
           {
             "tool": "check_meta_tags",
@@ -124,60 +176,17 @@
             "value": "null"
           }
         ],
-        "fix": "Add an og:image meta tag pointing to a 1200x630 brand or product image.",
+        "fix": "Add an og:image meta tag pointing to a 1200x630 branded image.",
         "impact": "low",
-        "effort": "low"
-      },
-      {
-        "category": "links",
-        "issue": "Two internal links on the homepage return 404 (the Industrial and Heavy Commercial Vehicle pages, via the non-www host), and an external link to unocalglobal.com fails to connect.",
-        "evidence": [
-          {
-            "tool": "check_links",
-            "field": "broken[0].url",
-            "value": "https://unocal.in/Industries/heavy-commercial-vehicle/"
-          },
-          {
-            "tool": "check_links",
-            "field": "broken[1].url",
-            "value": "https://unocal.in/Industries/industrial/"
-          },
-          {
-            "tool": "check_links",
-            "field": "broken[2].error",
-            "value": "ConnectError"
-          }
-        ],
-        "fix": "Update these hrefs to the working www URLs (https://www.unocal.in/Industries/industrial/ and https://www.unocal.in/Industries/heavy-commercial-vehicle/) and remove or replace the unocalglobal.com link.",
-        "impact": "medium",
-        "effort": "low"
-      },
-      {
-        "category": "links",
-        "issue": "Many internal links point to the non-www host and rely on redirects; some redirect to image files instead of pages.",
-        "evidence": [
-          {
-            "tool": "check_links",
-            "field": "redirected[0]",
-            "value": "https://unocal.in/Industries/small-engine/ -> https://www.unocal.in/wp-content/uploads/2020/09/small-engine.jpg"
-          },
-          {
-            "tool": "check_links",
-            "field": "redirected[5].url",
-            "value": "https://unocal.in/company/"
-          }
-        ],
-        "fix": "Change the internal hrefs to https://www.unocal.in/... URLs, and point the small-engine, passenger-car and agriculture links to real industry pages rather than image files.",
-        "impact": "medium",
         "effort": "low"
       }
     ],
     "not_checked": [
-      "Desktop speed",
-      "Real-user Core Web Vitals (field_data was null)",
+      "Desktop speed (only mobile was tested)",
       "Pages other than the homepage",
-      "robots.txt and sitemap.xml",
-      "Structured data"
+      "Real-user Core Web Vitals (field_data was null, so Google has no data for this URL)",
+      "Only 50 links were checked on the homepage",
+      "robots.txt and sitemap.xml"
     ]
   },
   "text": "",
@@ -192,7 +201,7 @@
         "final_url": "https://www.unocal.in/",
         "status": 200,
         "redirects": [],
-        "response_time_ms": 942,
+        "response_time_ms": 1276,
         "content_type": "text/html; charset=UTF-8",
         "html_size_kb": 63.6,
         "word_count": 565,
@@ -246,18 +255,21 @@
         "broken": [
           {
             "url": "https://unocal.in/Industries/heavy-commercial-vehicle/",
+            "final_url": "https://www.unocal.in/Industries/heavy-commercial-vehicle/",
             "anchor": "KNOW MORE",
             "status": 404,
             "error": null
           },
           {
             "url": "https://unocal.in/Industries/industrial/",
+            "final_url": "https://www.unocal.in/Industries/industrial/",
             "anchor": "INDUSTRIAL",
             "status": 404,
             "error": null
           },
           {
             "url": "https://unocalglobal.com/industries/",
+            "final_url": null,
             "anchor": "",
             "status": null,
             "error": "ConnectError"
@@ -327,11 +339,11 @@
         "strategy": "mobile",
         "performance_score": 66,
         "lab_metrics": {
-          "FCP": "1.9 s",
-          "LCP": "8.2 s",
-          "TBT": "90 ms",
-          "CLS": "0.001",
-          "Speed Index": "8.0 s"
+          "FCP": "2.3 s",
+          "LCP": "14.0 s",
+          "TBT": "50 ms",
+          "CLS": "0",
+          "Speed Index": "6.5 s"
         },
         "lcp_element": "Home-Slider",
         "page_weight_kb": 6677,
@@ -353,35 +365,61 @@
         "top_issues": [
           {
             "title": "Font display",
-            "detail": "Est savings of 300 ms"
+            "detail": "Est savings of 190 ms",
+            "urls": [
+              "https://www.unocal.in/wp-content/themes/unocal/assets/css/fonts/slick.ttf",
+              "https://www.unocal.in/wp-content/themes/unocal/assets/css/fonts/slick.woff",
+              "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/fonts/fontawesome-webfont.woff2?v=4.7.0"
+            ]
           },
           {
             "title": "Forced reflow",
-            "detail": null
+            "detail": null,
+            "urls": []
           },
           {
             "title": "Improve image delivery",
-            "detail": "Est savings of 3,874 KiB"
-          },
-          {
-            "title": "LCP breakdown",
-            "detail": null
+            "detail": "Est savings of 3,359 KiB",
+            "urls": [
+              "https://www.unocal.in/wp-content/uploads/2020/09/UNO-AGRO-KISAN-SANJEEVANI-20W40-API-CF4.png",
+              "https://www.unocal.in/wp-content/uploads/2020/09/UNO-UTTO-WET-BRAKE-FLUID-SAE-30-2-1.png",
+              "https://www.unocal.in/wp-content/uploads/2020/09/UNO-SMOOTHO-SYNTHETIC-GEL-MARFA.png"
+            ]
           },
           {
             "title": "LCP request discovery",
-            "detail": null
+            "detail": null,
+            "urls": []
           },
           {
             "title": "Network dependency tree",
-            "detail": null
+            "detail": null,
+            "urls": []
           },
           {
             "title": "Render-blocking requests",
-            "detail": "Est savings of 2,090 ms"
+            "detail": "Est savings of 2,220 ms",
+            "urls": [
+              "https://www.unocal.in/wp-content/themes/unocal/assets/css/slick.css",
+              "https://www.unocal.in/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=6.1.7",
+              "https://www.unocal.in/wp-content/themes/unocal/assets/css/jquery.mCustomScrollbar.min.css"
+            ]
           },
           {
-            "title": "Reduce unused CSS",
-            "detail": "Est savings of 34 KiB"
+            "title": "Minify CSS",
+            "detail": "Est savings of 4 KiB",
+            "urls": [
+              "https://www.unocal.in/wp-content/themes/unocal/assets/css/style.css",
+              "https://www.unocal.in/wp-content/themes/unocal/assets/css/all.css"
+            ]
+          },
+          {
+            "title": "Minify JavaScript",
+            "detail": "Est savings of 14 KiB",
+            "urls": [
+              "https://www.unocal.in/wp-content/themes/unocal/assets/js/owl.carousel.js",
+              "https://www.unocal.in/wp-content/themes/unocal/assets/js/slick.js"
+            ]
           }
         ]
       }

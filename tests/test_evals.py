@@ -76,3 +76,37 @@ def test_missing_critical_issues_fail():
     failures = results(run)["critical_issues_reported"].failures
     assert any("noindex" in f for f in failures)
     assert any("broken link" in f for f in failures)
+
+
+def test_booleans_compare_like_json():
+    outputs = [{"tool": "fetch_page", "input": {}, "output": {"status": 200, "is_https": True}}]
+    run = make_run([finding([("fetch_page", "is_https", "true")], category="reachability")],
+                   tool_outputs=outputs)
+    assert results(run)["evidence_grounded"].passed
+
+
+def test_citing_a_whole_object_is_imprecise_not_ungrounded():
+    outputs = [{"tool": "check_speed", "input": {}, "output": {
+        "top_issues": [{"title": "Render-blocking requests", "detail": "Est savings of 2,730 ms"}]}}]
+    run = make_run([finding([("check_speed", "top_issues[0]", "Render-blocking requests: Est savings of 2,730 ms")],
+                            category="speed")], tool_outputs=outputs)
+    r = results(run)
+    assert r["evidence_grounded"].passed
+    assert "whole object" in r["evidence_precise"].failures[0]
+
+
+def test_object_citation_with_a_wrong_value_is_still_ungrounded():
+    outputs = [{"tool": "check_speed", "input": {}, "output": {
+        "top_issues": [{"title": "Render-blocking requests", "detail": "Est savings of 2,730 ms"}]}}]
+    run = make_run([finding([("check_speed", "top_issues[0]", "Render-blocking requests: Est savings of 9,999 ms")],
+                            category="speed")], tool_outputs=outputs)
+    assert not results(run)["evidence_grounded"].passed
+
+
+def test_critical_issue_mentioned_in_summary_counts():
+    outputs = [{"tool": "fetch_page", "input": {}, "output": {"status": 404}},
+               {"tool": "check_meta_tags", "input": {}, "output": {"title": "x", "robots": "noindex"}}]
+    run = AuditRun(question="q", tool_outputs=outputs, report={
+        "url": "u", "findings": [finding([("check_meta_tags", "title", "x")])],
+        "summary": "This page correctly returns a 404 and is noindex, as an error page should."})
+    assert results(run)["critical_issues_reported"].passed

@@ -40,12 +40,23 @@ def resolve(obj, path: str):
 
 
 def normalise(value) -> str:
-    """Compare values the way a human would: None == 'null', non-breaking spaces ignored."""
+    """Compare values the way a human would: None == 'null', True == 'true', non-breaking spaces ignored."""
     if value is None:
         return "null"
+    if isinstance(value, bool):  # Python prints True; JSON (and Claude) say true
+        return "true" if value else "false"
     if isinstance(value, (list, dict)):
-        return json.dumps(value, ensure_ascii=False)
+        value = json.dumps(value, ensure_ascii=False)
     return str(value).replace("\xa0", " ").strip()
+
+
+def scalars(obj) -> list[str]:
+    """All non-null leaf values inside a dict/list, normalised."""
+    if isinstance(obj, dict):
+        return [v for x in obj.values() for v in scalars(x)]
+    if isinstance(obj, list):
+        return [v for x in obj for v in scalars(x)]
+    return [] if obj is None else [normalise(obj)]
 
 
 def quoted_suggestions(text: str) -> list[str]:
@@ -58,24 +69,35 @@ def cites(finding: Finding, *fields: str) -> bool:
 
 # ---------- checks ----------
 
-def check_evidence_grounded(run: AuditRun) -> CheckResult:
-    """Every cited value must exist at that field in that tool's output."""
-    result = CheckResult("evidence_grounded")
+def check_evidence(run: AuditRun) -> list[CheckResult]:
+    """Every cited value must exist at that field in that tool's output.
+
+    Two separate results, because they mean different things:
+    - evidence_grounded: the value is wrong, the field is missing, or the tool never ran (a real error)
+    - evidence_precise: the citation points at a whole object (e.g. top_issues[2]) instead of one
+      value (top_issues[2].detail). Every value in it matches, so it isn't wrong, just imprecise.
+    """
+    grounded, precise = CheckResult("evidence_grounded"), CheckResult("evidence_precise")
     outputs = {t["tool"]: t["output"] for t in run.tool_outputs}
     for i, f in enumerate(run.report.findings, 1):
         for e in f.evidence:
             where = f"finding {i}: {e.tool}.{e.field}"
             if e.tool not in outputs:
-                result.failures.append(f"{where} cites a tool that was never run")
+                grounded.failures.append(f"{where} cites a tool that was never run")
                 continue
             try:
-                actual = normalise(resolve(outputs[e.tool], e.field))
+                actual = resolve(outputs[e.tool], e.field)
             except (KeyError, IndexError, TypeError, ValueError):
-                result.failures.append(f"{where} does not exist in the tool output")
+                grounded.failures.append(f"{where} does not exist in the tool output")
                 continue
-            if actual != normalise(e.value):
-                result.failures.append(f"{where} cited {e.value!r} but the tool returned {actual!r}")
-    return result
+            cited = normalise(e.value)
+            if normalise(actual) == cited:
+                continue
+            if isinstance(actual, dict) and all(v in cited for v in scalars(actual)):
+                precise.failures.append(f"{where} cites a whole object; cite one field inside it instead")
+            else:
+                grounded.failures.append(f"{where} cited {e.value!r} but the tool returned {normalise(actual)!r}")
+    return [grounded, precise]
 
 
 def check_suggestion_lengths(run: AuditRun) -> CheckResult:
@@ -102,35 +124,40 @@ def check_failed_tools_disclosed(run: AuditRun) -> CheckResult:
 
 
 def check_critical_issues_reported(run: AuditRun) -> CheckResult:
-    """Problems so serious that any audit missing them is wrong, whatever else it says."""
+    """Problems so serious that any audit missing them is wrong, whatever else it says.
+    Mentioning them anywhere counts (summary, findings or not_checked): on a deliberate 404 page,
+    "this 404 is correct" in the summary is the right answer, not a missing finding."""
     result = CheckResult("critical_issues_reported")
     outputs = {t["tool"]: t["output"] for t in run.tool_outputs}
-    categories = {f.category for f in run.report.findings}
+    report = run.report
+    text = " ".join([report.summary, *report.not_checked,
+                     *(f"{f.issue} {f.fix}" for f in report.findings)]).lower()
+    categories = {f.category for f in report.findings}
     page = outputs.get("fetch_page", {})
     meta = outputs.get("check_meta_tags", {})
     links = outputs.get("check_links", {})
 
-    if (page.get("status") or 0) >= 400 and "reachability" not in categories:
-        result.failures.append(f"page returned HTTP {page['status']} but there is no reachability finding")
+    status = page.get("status") or 0
+    if status >= 400 and "reachability" not in categories and str(status) not in text:
+        result.failures.append(f"page returned HTTP {status} but the report never mentions it")
     robots = f"{meta.get('robots') or ''} {meta.get('x_robots_tag') or ''}".lower()
-    if "noindex" in robots and not any("noindex" in (f.issue + f.fix).lower() for f in run.report.findings):
-        result.failures.append("page is noindex but no finding mentions it")
+    if "noindex" in robots and "noindex" not in text:
+        result.failures.append("page is noindex but the report never mentions it")
     if "title" in meta and not meta.get("title") and not any(cites(f, "title", "title_length")
-                                                             for f in run.report.findings):
+                                                             for f in report.findings):
         result.failures.append("page has no <title> but no finding cites it")
     if links.get("broken") and "links" not in categories:
         result.failures.append(f"{len(links['broken'])} broken link(s) but no links finding")
     return result
 
 
-CHECKS = [check_evidence_grounded, check_suggestion_lengths,
-          check_failed_tools_disclosed, check_critical_issues_reported]
+CHECKS = [check_suggestion_lengths, check_failed_tools_disclosed, check_critical_issues_reported]
 
 
 def evaluate(run: AuditRun) -> list[CheckResult]:
     if run.report is None:
         return [CheckResult("has_report", ["run has no structured report"])]
-    return [check(run) for check in CHECKS]
+    return check_evidence(run) + [check(run) for check in CHECKS]
 
 
 # ---------- CLI ----------

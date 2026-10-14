@@ -9,8 +9,9 @@ Level = Literal["high", "medium", "low"]
 
 class Evidence(BaseModel):
     tool: ToolName = Field(description="The tool whose output proves this finding")
-    field: str = Field(description="Path to the field in that tool's output, e.g. "
-                                   "'heaviest_resources[0].kb' or 'open_graph.image'")
+    field: str = Field(description="Path to ONE value in that tool's output, e.g. "
+                                   "'heaviest_resources[0].kb', 'top_issues[2].detail' or 'open_graph.image'. "
+                                   "Never a whole object like 'top_issues[2]'")
     value: str = Field(description="The value copied exactly as the tool returned it, e.g. '5442' or 'null'")
 
 

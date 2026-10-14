@@ -1,13 +1,19 @@
 {
   "question": "Do a full SEO audit of https://www.vinnayakk.com: reachability, meta tags, broken links and mobile speed. Then submit a prioritised report.",
+  "trace_id": "e433553be831bce12004fe366a584de4",
   "report": {
     "url": "https://www.vinnayakk.com",
-    "summary": "The site is reachable over HTTPS (200, no redirects), has no broken links, and scores 81 on mobile. The biggest problem is page weight: two animated GIF covers make up about 6.9 MB of a 7.4 MB page, which slows LCP (4.2 s). Social sharing tags, canonical and meta description also need work.",
+    "summary": "The site is reachable over HTTPS with no broken links and a mobile performance score of 94. The biggest problem is page weight: at 7,379 KB, two animated GIF covers account for most of it. Meta tags are also incomplete, with no Open Graph tags, no canonical and a short description.",
     "findings": [
       {
         "category": "speed",
-        "issue": "Two animated GIF project covers weigh 5.4 MB and 1.4 MB, making the page 7.4 MB in total and delaying load.",
+        "issue": "Page weight is very large (about 7.4 MB), mostly from two animated GIF project covers, which hurts mobile load time and data use.",
         "evidence": [
+          {
+            "tool": "check_speed",
+            "field": "page_weight_kb",
+            "value": "7379"
+          },
           {
             "tool": "check_speed",
             "field": "heaviest_resources[0].kb",
@@ -20,41 +26,17 @@
           },
           {
             "tool": "check_speed",
-            "field": "page_weight_kb",
-            "value": "7365"
+            "field": "top_issues[4].detail",
+            "value": "Est savings of 6,652 KiB"
           }
         ],
-        "fix": "Replace the two cover.gif files with short muted autoplay looping MP4/WebM videos (or static WebP posters) and serve those instead.",
+        "fix": "Replace the animated GIF project covers with compressed MP4/WebM video or animated WebP, and lazy-load them below the fold.",
         "impact": "high",
         "effort": "medium"
       },
       {
-        "category": "speed",
-        "issue": "Mobile LCP is 4.2 s and FCP 2.8 s; the LCP element is a text block, so rendering is being delayed by render-blocking requests.",
-        "evidence": [
-          {
-            "tool": "check_speed",
-            "field": "lab_metrics.LCP",
-            "value": "4.2 s"
-          },
-          {
-            "tool": "check_speed",
-            "field": "lab_metrics.FCP",
-            "value": "2.8 s"
-          },
-          {
-            "tool": "check_speed",
-            "field": "top_issues[2].detail",
-            "value": "Est savings of 300 ms"
-          }
-        ],
-        "fix": "Defer or async-load the render-blocking CSS/JS requests flagged by Lighthouse, and load the Google Tag Manager script with the Next.js 'lazyOnload' or 'afterInteractive' strategy.",
-        "impact": "medium",
-        "effort": "medium"
-      },
-      {
         "category": "meta_tags",
-        "issue": "No og:title, og:description or og:image, so shared links have poor previews.",
+        "issue": "No Open Graph tags (og:title, og:description, og:image), so shared links get poor previews.",
         "evidence": [
           {
             "tool": "check_meta_tags",
@@ -67,13 +49,32 @@
             "value": "null"
           }
         ],
-        "fix": "Add og:title, og:description and a 1200x630 og:image via the Next.js metadata openGraph field in the root layout.",
+        "fix": "Add og:title, og:description and a 1200x630 og:image to the page head.",
         "impact": "medium",
         "effort": "low"
       },
       {
         "category": "meta_tags",
-        "issue": "No canonical link is set, so URL variants could be treated as duplicates.",
+        "issue": "The meta description is only 53 characters, which is too short to use the available search snippet space.",
+        "evidence": [
+          {
+            "tool": "check_meta_tags",
+            "field": "description_length",
+            "value": "53"
+          },
+          {
+            "tool": "check_meta_tags",
+            "field": "description",
+            "value": "Applied AI engineer for marketing and creative teams."
+          }
+        ],
+        "fix": "Rewrite the meta description as: \"Applied AI engineer building generative pipelines and RAG tools that help marketing and creative teams ship work faster.\"",
+        "impact": "medium",
+        "effort": "low"
+      },
+      {
+        "category": "meta_tags",
+        "issue": "No canonical link is set, so duplicate URL variants could compete in search.",
         "evidence": [
           {
             "tool": "check_meta_tags",
@@ -81,63 +82,49 @@
             "value": "null"
           }
         ],
-        "fix": "Add <link rel=\"canonical\" href=\"https://www.vinnayakk.com/\"> using the Next.js metadata alternates.canonical field.",
+        "fix": "Add <link rel=\"canonical\" href=\"https://www.vinnayakk.com\"> to the page head.",
         "impact": "medium",
         "effort": "low"
       },
       {
-        "category": "meta_tags",
-        "issue": "Meta description is only 53 characters, which is short and gives little to attract clicks.",
+        "category": "speed",
+        "issue": "Render-blocking CSS delays first paint, and unused JavaScript is shipped (including Google Tag Manager).",
         "evidence": [
           {
-            "tool": "check_meta_tags",
-            "field": "description_length",
-            "value": "53"
+            "tool": "check_speed",
+            "field": "top_issues[2].detail",
+            "value": "Est savings of 340 ms"
+          },
+          {
+            "tool": "check_speed",
+            "field": "top_issues[3].detail",
+            "value": "Est savings of 99 KiB"
           }
         ],
-        "fix": "Rewrite the description to about 120 characters, e.g. 'Applied AI engineer building generative pipelines and AI tools that make marketing and creative teams faster.'",
+        "fix": "Load the Google Tag Manager/gtag script with the afterInteractive or lazyOnload strategy so it doesn't compete with initial render.",
         "impact": "low",
         "effort": "low"
       },
       {
         "category": "content",
-        "issue": "The only H1 is a greeting ('hello there :)') that contains no descriptive keywords.",
+        "issue": "The only H1 is a generic greeting rather than a descriptive heading, so the main heading carries no topic keywords.",
         "evidence": [
           {
             "tool": "check_meta_tags",
-            "field": "h1",
-            "value": "[\"hello there :)\"]"
+            "field": "h1[0]",
+            "value": "hello there :)"
           }
         ],
-        "fix": "Change the H1 to a descriptive phrase such as 'Vinnayakk – Applied AI engineer for marketing and creative teams' and keep the greeting as a subheading.",
+        "fix": "Change the H1 to a descriptive heading such as \"Applied AI engineer for marketing and creative teams\".",
         "impact": "low",
         "effort": "low"
-      },
-      {
-        "category": "speed",
-        "issue": "Unused and legacy JavaScript adds avoidable payload (about 99 KiB unused, 14 KiB legacy).",
-        "evidence": [
-          {
-            "tool": "check_speed",
-            "field": "top_issues[3].detail",
-            "value": "Est savings of 99 KiB"
-          },
-          {
-            "tool": "check_speed",
-            "field": "top_issues[0].detail",
-            "value": "Est savings of 14 KiB"
-          }
-        ],
-        "fix": "Dynamically import below-the-fold components with next/dynamic and drop legacy polyfills by setting a modern browserslist target.",
-        "impact": "low",
-        "effort": "medium"
       }
     ],
     "not_checked": [
-      "LinkedIn link returned status 999 (automated checks refused); verify it manually in a browser",
-      "Desktop speed was not tested",
-      "Only the homepage was audited; other pages, sitemap.xml and robots.txt were not checked",
-      "Real-user Core Web Vitals field data was not available (field_data is null)"
+      "Desktop speed (only mobile was requested)",
+      "Real-user Core Web Vitals (field_data was null, so Google has no traffic data for this URL)",
+      "LinkedIn link returned status 999 and is unverified; check it in a browser",
+      "Only the homepage was audited, not other pages, robots.txt or sitemap"
     ]
   },
   "text": "",
@@ -152,7 +139,7 @@
         "final_url": "https://www.vinnayakk.com",
         "status": 200,
         "redirects": [],
-        "response_time_ms": 357,
+        "response_time_ms": 466,
         "content_type": "text/html; charset=utf-8",
         "html_size_kb": 24.3,
         "word_count": 231,
@@ -223,16 +210,16 @@
       "output": {
         "url": "https://www.vinnayakk.com",
         "strategy": "mobile",
-        "performance_score": 81,
+        "performance_score": 94,
         "lab_metrics": {
-          "FCP": "2.8 s",
-          "LCP": "4.2 s",
-          "TBT": "40 ms",
+          "FCP": "1.2 s",
+          "LCP": "2.3 s",
+          "TBT": "50 ms",
           "CLS": "0.023",
-          "Speed Index": "3.0 s"
+          "Speed Index": "5.3 s"
         },
         "lcp_element": "I build the systems that make creative work faster: generative pipelines for fi…",
-        "page_weight_kb": 7365,
+        "page_weight_kb": 7379,
         "heaviest_resources": [
           {
             "url": "https://www.vinnayakk.com/_next/image?url=%2Fprojects%2Fai-ad-creative-generator%2Fcover.gif&w=750&q=75",
@@ -251,27 +238,48 @@
         "top_issues": [
           {
             "title": "Legacy JavaScript",
-            "detail": "Est savings of 14 KiB"
+            "detail": "Est savings of 14 KiB",
+            "urls": [
+              "https://www.vinnayakk.com/_next/static/immutable/chunks/0slj9b5-5i81h.js"
+            ]
           },
           {
             "title": "Network dependency tree",
-            "detail": null
+            "detail": null,
+            "urls": []
           },
           {
             "title": "Render-blocking requests",
-            "detail": "Est savings of 300 ms"
+            "detail": "Est savings of 340 ms",
+            "urls": [
+              "https://www.vinnayakk.com/_next/static/immutable/chunks/25zyir56nhhsk.css"
+            ]
           },
           {
             "title": "Reduce unused JavaScript",
-            "detail": "Est savings of 99 KiB"
+            "detail": "Est savings of 99 KiB",
+            "urls": [
+              "https://www.googletagmanager.com/gtag/js?id=G-VBPK275QH9",
+              "https://www.vinnayakk.com/_next/static/immutable/chunks/0slj9b5-5i81h.js"
+            ]
           },
           {
             "title": "Improve image delivery",
-            "detail": "Est savings of 6,652 KiB"
+            "detail": "Est savings of 6,652 KiB",
+            "urls": [
+              "https://www.vinnayakk.com/_next/image?url=%2Fprojects%2Fai-ad-creative-generator%2Fcover.gif&w=750&q=75",
+              "https://www.vinnayakk.com/_next/image?url=%2Fprojects%2Frag-docs-assistant%2Fcover.gif&w=750&q=75",
+              "https://www.vinnayakk.com/_next/image?url=%2Fprojects%2Fowl-in-a-ruined-city%2Fcover.jpg&w=750&q=75"
+            ]
           },
           {
             "title": "Avoid enormous network payloads",
-            "detail": "Total size was 7,365 KiB"
+            "detail": "Total size was 7,379 KiB",
+            "urls": [
+              "https://www.vinnayakk.com/_next/image?url=%2Fprojects%2Fai-ad-creative-generator%2Fcover.gif&w=750&q=75",
+              "https://www.vinnayakk.com/_next/image?url=%2Fprojects%2Frag-docs-assistant%2Fcover.gif&w=750&q=75",
+              "https://www.googletagmanager.com/gtag/js?id=G-VBPK275QH9"
+            ]
           }
         ]
       }

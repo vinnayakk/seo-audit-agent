@@ -61,7 +61,9 @@ def check_links(url: str, max_links: int = 50) -> dict:
     def is_blocked(r):
         return r.get("status") in BOT_BLOCK_STATUSES
 
-    broken = [{"url": r["url"], "anchor": r["anchor"], "status": r.get("status"), "error": r.get("error")}
+    # final_url shows where a redirecting link actually died, e.g. non-www -> www page that 404s
+    broken = [{"url": r["url"], "final_url": r.get("final_url"), "anchor": r["anchor"],
+               "status": r.get("status"), "error": r.get("error")}
               for r in results
               if (r.get("status") is None or r["status"] >= 400) and not is_blocked(r)]
     unverified = [{"url": r["url"], "status": r["status"]} for r in results if is_blocked(r)]

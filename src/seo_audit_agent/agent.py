@@ -28,11 +28,15 @@ MAX_TURNS = 10
 
 SYSTEM = """You are an SEO auditor. Use the tools to inspect pages before answering.
 Rules for audits:
-- Only state facts that appear in a tool output. Cite them as evidence (tool, field, exact value).
+- Only state facts that appear in a tool output. Cite them as evidence (tool, field, exact value),
+  pointing at one value (e.g. top_issues[2].detail), never a whole object.
+- Name a specific file, script or image as the cause of a problem only if a tool output lists it
+  for that problem (e.g. in top_issues[n].urls). Otherwise describe the fix without naming a culprit.
 - Each fix must be one concrete change, not a target like "get LCP under 2.5 s".
 - Don't recommend something the tool data shows the site already does.
 - If a check failed or wasn't run, put it in not_checked instead of guessing.
-- Keep suggested titles under 60 characters and meta descriptions between 70 and 160."""
+- Keep suggested titles under 60 characters and meta descriptions between 70 and 160.
+  Give exactly one suggestion per fix; don't revise it mid-sentence."""
 
 STEP_LIMIT_NOTE = ("Step limit reached. Do not call more tools. Finish now using only the data "
                    "you already have, and list any checks you could not complete.")

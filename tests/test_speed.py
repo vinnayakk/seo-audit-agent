@@ -15,7 +15,10 @@ FAKE_PSI = {
         ]}},
         "audits": {
             "largest-contentful-paint": {"title": "Largest Contentful Paint", "displayValue": "3.1 s", "score": 0.5},
-            "render-blocking-insight": {"title": "Render-blocking requests", "displayValue": "Est savings of 170 ms", "score": 0},
+            "render-blocking-insight": {"title": "Render-blocking requests", "displayValue": "Est savings of 170 ms", "score": 0,
+                                        "details": {"items": [{"url": "https://shop.test/app.css"},
+                                                              {"url": "https://shop.test/app.css"},  # duplicate
+                                                              {"wastedMs": 10}]}},  # no url
             "image-delivery-insight": {"title": "Improve image delivery", "displayValue": "Est savings of 6,652 KiB", "score": 0.5},
             "interactive": {"title": "Time to Interactive", "displayValue": "7.5 s", "score": 0.48},
             "unused-javascript": {"title": "Reduce unused JavaScript", "score": 0.95},
@@ -48,6 +51,8 @@ def test_check_speed_summarises_response(monkeypatch):
     assert out["heaviest_resources"][0]["kb"] == 5442
     titles = [i["title"] for i in out["top_issues"]]
     assert titles == ["Render-blocking requests", "Improve image delivery"]  # hidden + passing excluded
+    assert out["top_issues"][0]["urls"] == ["https://shop.test/app.css"]       # culprit named, deduplicated
+    assert out["top_issues"][1]["urls"] == []
     assert out["field_data"]["LARGEST_CONTENTFUL_PAINT_MS"]["rating"] == "AVERAGE"
 
 

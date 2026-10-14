@@ -24,11 +24,21 @@ def _lcp_element(audits: dict) -> str | None:
     return None
 
 
+def _issue_urls(audit: dict, limit: int = 3) -> list[str]:
+    """The resources Lighthouse blames for an issue (e.g. which file blocks rendering)."""
+    urls = []
+    for item in audit.get("details", {}).get("items", []):
+        url = item.get("url") if isinstance(item, dict) else None
+        if isinstance(url, str) and url not in urls:
+            urls.append(url)
+    return urls[:limit]
+
+
 def check_speed(url: str, strategy: Literal["mobile", "desktop"] = "mobile") -> dict:
     """Measure page speed with Google PageSpeed Insights (Lighthouse). Returns a 0-100
     performance score, lab metrics (FCP, LCP, TBT, CLS, Speed Index), the LCP element,
     total page weight, the heaviest resources, real-user Core Web Vitals when Google has
-    enough traffic data, and the top failing audits.
+    enough traffic data, and the top failing audits with the resource URLs Lighthouse blames.
     Lab results vary between runs (the score can swing 20+ points), so treat one run as
     an estimate. Slow: takes 20-60 seconds. Use for speed, performance or Core Web Vitals."""
     params = {"url": url, "strategy": strategy, "category": "performance"}
@@ -73,5 +83,7 @@ def check_speed(url: str, strategy: Literal["mobile", "desktop"] = "mobile") -> 
         "heaviest_resources": heaviest,
         "field_data": {k: {"p75": v.get("percentile"), "rating": v.get("category")}
                        for k, v in field.items()} or None,
-        "top_issues": [{"title": a.get("title"), "detail": a.get("displayValue")} for a in failing[:8]],
+        # `urls` = the files Lighthouse blames. Without them the model guesses culprits.
+        "top_issues": [{"title": a.get("title"), "detail": a.get("displayValue"), "urls": _issue_urls(a)}
+                       for a in failing[:8]],
     }

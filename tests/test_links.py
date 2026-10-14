@@ -27,6 +27,7 @@ def test_check_links_finds_broken():
     assert out["internal"] == 2
     assert out["external"] == 1
     assert [b["url"] for b in out["broken"]] == ["https://shop.test/gone"]
+    assert out["broken"][0]["final_url"] == "https://shop.test/gone"
 
 @respx.mock
 def test_bot_blocked_links_are_unverified_not_broken():
