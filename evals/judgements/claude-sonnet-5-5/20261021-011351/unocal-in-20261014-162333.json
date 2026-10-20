@@ -1,0 +1,79 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "LCP 14.0 s with Home-Slider as the LCP element is real. The top_issues list includes 'LCP request discovery', which supports the preload suggestion. 'Without lazy-loading' is an assumption, but it is a standard conditional fix and not an invented culprit. The fix is plausible, though it may not fully resolve a 14 s LCP, since heavy images and render-blocking CSS also contribute.",
+      "reasoning_sound": true,
+      "priority_critique": "A 14 s mobile LCP is severe. There is no field data, so it is lab-only, but the number is so far past the threshold that high/P1 is justified.",
+      "priority": "ok"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "Page weight of 6,677 KB and the 3,359 KiB image savings are both in the output. The listed PNGs are in the 'Improve image delivery' urls, so naming them is supported. Converting to WebP and resizing is a reasonable fix that would reduce weight and help LCP.",
+      "reasoning_sound": true,
+      "priority_critique": "A 6.7 MB page with 3.3 MB of savings available is a major contributor to the slow load, so high is appropriate.",
+      "priority": "ok"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "Render-blocking requests with a 2,220 ms estimated saving are in the output, and the three named CSS files appear in the urls list. The evidence cites top_issues[4], but the render-blocking entry is actually at index 5 (index 4 is 'Network dependency tree'). That is a minor citation slip, and the substance is correct. The fix is plausible.",
+      "reasoning_sound": true,
+      "priority_critique": "A 2.2 s potential saving with FCP at 2.3 s is meaningful, and medium/P2 fits relative to LCP and images.",
+      "priority": "ok"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "The two non-www URLs return 404, but final_url shows they redirect to https://www.unocal.in/Industries/... and that destination is the one returning 404. So the target pages do not exist on either host. The fix 'update these links to existing pages on www' is vague but offers 'or restore the missing pages' as an alternative, which is sound. It does not point to the broken URL as working. The issue is real: broken internal links on the homepage.",
+      "reasoning_sound": true,
+      "priority_critique": "Broken internal links on the homepage hurt users and crawl paths, and the fix is cheap. High/P1 is justified.",
+      "priority": "ok"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "The ConnectError for unocalglobal.com/industries/ is in the output. A connection error could be transient or a bot block, but the domain being unreachable is a plausible dead link. Removing or replacing it is a sound fix.",
+      "reasoning_sound": true,
+      "priority_critique": "A single external dead link has minimal ranking impact and mostly affects user experience. Medium is somewhat high, and low would fit better.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "12 redirected links are in the output, and the non-www to www pattern is real. Some entries redirect to image files, which suggests odd link targets, but the claim still holds. The fix of rewriting to canonical www URLs is sound. Note the two 404 pages are also in this list, which is consistent.",
+      "reasoning_sound": true,
+      "priority_critique": "Redirects of this kind are single-hop 301s, so the effect on search visibility is small. Medium is a bit high, but it is a cheap cleanup, so low would fit better.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "h1 is an empty list, confirming no H1. The suggested heading is consistent with the page's content. Adding an H1 is a straightforward fix.",
+      "reasoning_sound": true,
+      "priority_critique": "Missing H1 on the homepage is a real on-page issue but with modest ranking impact. Medium is appropriate.",
+      "priority": "ok"
+    },
+    {
+      "finding": 8,
+      "reasoning_critique": "The 77-character title is confirmed. The proposed title is shorter and keeps the key terms. It is within range and resolves truncation.",
+      "reasoning_sound": true,
+      "priority_critique": "Title truncation affects SERP appearance, not rankings directly. Medium is slightly generous, but it is acceptable for a homepage title.",
+      "priority": "ok"
+    },
+    {
+      "finding": 9,
+      "reasoning_critique": "The 247-character description is confirmed. The proposed replacement is about 125 characters and accurately summarises the original. It fixes truncation.",
+      "reasoning_sound": true,
+      "priority_critique": "The description is not a ranking factor, and truncation is cosmetic. Medium is too high compared with the broken links and speed problems, so low fits better.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 10,
+      "reasoning_critique": "open_graph.image is null, which confirms there is no og:image. Adding a 1200x630 image is the standard fix.",
+      "reasoning_sound": true,
+      "priority_critique": "This only affects social previews and not ranking, so low/P3 is correct.",
+      "priority": "ok"
+    }
+  ],
+  "model": "claude-sonnet-5-5",
+  "case": "unocal-in-20261014-162333",
+  "input_tokens": 5435,
+  "output_tokens": 1715,
+  "seconds": 13.9
+}

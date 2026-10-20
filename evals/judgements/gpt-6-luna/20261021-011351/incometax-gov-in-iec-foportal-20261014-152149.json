@@ -1,0 +1,58 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "The canonical is explicitly HTTP while the fetched page is HTTPS, so it sends an inconsistent preferred-URL signal. Changing the canonical to the HTTPS URL shown in the fix would resolve that mismatch. The issue is real, although the outputs do not show whether the HTTP URL is indexed or whether it redirects.",
+      "reasoning_sound": true,
+      "priority_critique": "A canonical mismatch on the homepage can matter for indexing, but its impact is less certain and less severe than a major indexability failure; the outputs show no evidence of lost visibility. P1/high overstates the demonstrated impact; P2 is more proportionate.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "The meta description is null, so the page has no description tag. Adding a relevant description would resolve that omission, though search engines may still choose their own snippet. The example is relevant to the portal and within the suggested length range.",
+      "reasoning_sound": true,
+      "priority_critique": "A missing description can affect how the result is presented and clicked, but it is not usually a direct ranking issue. P1/high is too strong for this omission; it is lower priority than indexing or major usability problems.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "The output lists seven H1 values, including an empty one. Changing section headings to H2 and removing the empty H1 would address the reported structure. The claim that multiple H1s blur the topic signal is somewhat overstated, but the structural issue and proposed correction are supported.",
+      "reasoning_sound": true,
+      "priority_critique": "Heading cleanup is useful for document structure, but multiple H1s alone are generally a modest SEO concern. Medium/P2 overstates its impact relative to more consequential issues; low/P3 would be more appropriate.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "The title is 28 characters and reads as a generic homepage title; the output also shows no OG image or description. The proposed title is under 60 characters, and adding the missing OG tags would improve the sharing metadata. The title change and social-preview fix address the respective evidence.",
+      "reasoning_sound": true,
+      "priority_critique": "The title can affect search-result relevance and clicks, while the OG omissions chiefly affect social sharing. Taken together, medium/P2 is a reasonable rating; the report does not establish a severe search visibility problem.",
+      "priority": "ok"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "The mobile lab results show LCP 4.9 s, FCP 3.5 s, score 72, and render-blocking requests with an estimated 4,060 ms saving. The suggested critical-CSS and non-critical resource work could plausibly improve lab rendering, though the tool does not identify particular files to defer. Field data is substantially better, with p75 LCP 1,928 ms and FCP 1,390 ms both rated FAST, so the lab issue should not be presented as representative of current real-user experience.",
+      "reasoning_sound": true,
+      "priority_critique": "The poor lab results are tempered by fast field data across the reported user metrics. A medium/P2 priority gives too much weight to a lab-only concern compared with issues that affect indexing or page metadata; lower priority is warranted unless field performance worsens.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "The page is reported as 2,944 KB, image delivery has an estimated 1,081 KiB saving, and the listed resources include images of 291–379 KB. Compressing/resizing those listed images and serving responsive sizes is a plausible fix. The outputs do not establish that they are banners, so that descriptor is unsupported; however, it does not undermine the core recommendation. The JPEG-to-WebP suggestion is consistent with the listed .jpeg resource.",
+      "reasoning_sound": true,
+      "priority_critique": "The estimated image savings are substantial and could help users on constrained mobile connections, even though field LCP and other reported field metrics are FAST. Medium/P2 is a reasonable balance for a sizeable page-weight opportunity.",
+      "priority": "ok"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "The redirected-link output includes several internal URLs using HTTP, double slashes, or an outdated path, and the suggested canonical HTTPS destinations are consistent with the reported final URLs. Updating those hrefs would avoid the redirects. However, the evidence supports several links, not necessarily 'many,' and one-hop redirects are not shown to cause a meaningful crawl-budget problem on this site.",
+      "reasoning_sound": true,
+      "priority_critique": "This is a real but limited cleanup: the report lists no broken links, and only a handful of internal redirects among 48 internal links. Low/P3 appropriately keeps it below the metadata and performance opportunities.",
+      "priority": "ok"
+    }
+  ],
+  "model": "gpt-6-luna",
+  "case": "incometax-gov-in-iec-foportal-20261014-152149",
+  "input_tokens": 3090,
+  "output_tokens": 1960,
+  "seconds": 20.5
+}

@@ -1,0 +1,65 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "Render-blocking savings of 2,730 ms and lab LCP of 5.0 s are in the data. But the fix names the jQuery UI script as needing defer, and the tool output never lists it under render-blocking requests (no detail on which requests block). The stylesheet is plausible as a blocker but is also not explicitly listed. Naming specific culprits is an invented detail. Also, jquery-ui.min.js is likely loaded at the end of the body, so 'add defer' may do nothing.",
+      "reasoning_sound": false,
+      "priority_critique": "Field data shows real users are all FAST (LCP p75 1265 ms, FCP 1195 ms). The 5.0 s LCP is a lab mobile throttled figure only. Medium/P2 overstates this; it should be low.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "The stylesheet is the heaviest resource at 123 KB, and the audit reports unused CSS (128 KiB savings) and minify CSS (24 KiB). The data matches the issue. Minify and purge are plausible fixes. Slight oddity: the unused CSS estimate exceeds the file size (probably includes other CSS), but the main stylesheet is the obvious target.",
+      "reasoning_sound": true,
+      "priority_critique": "Page weight is only 497 KB and field data is all FAST, so CSS trimming yields little real-user gain. Medium is too high; low fits.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "jQuery UI is listed as the second heaviest resource and served from googleapis.com. Unused JS (59 KiB) and cache lifetimes (33 KiB) are in top_issues. Fix is plausible. It is a bit speculative that the unused JS is jQuery UI, but it is hedged ('or self-host a custom build'). The cache lifetimes fix is general, which is fine.",
+      "reasoning_sound": true,
+      "priority_critique": "Low/P3 is appropriate given FAST field data and small savings.",
+      "priority": "ok"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "Title is 21 chars, flagged by the tool as short. 'Welcome to Python.org' is generic. Proposed title is about 55 characters and keeps the brand. The fix is sound. python.org brand search dominates anyway.",
+      "reasoning_sound": true,
+      "priority_critique": "A short title on a homepage that ranks #1 for its brand is a minor issue. Medium is a bit high; low would fit better, and the finding is similar to cosmetic tag length.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "The description is 52 chars, below the tool's 70-160 guidance. The rewrite is reasonable. The description is short but not wrong, and the proposed copy is plausible. Fine.",
+      "reasoning_sound": true,
+      "priority_critique": "Descriptions do not directly affect ranking, and this is cosmetic length. Medium is too high; low fits.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "The canonical is null per the tool. Adding a self-referencing canonical on the homepage is standard and the proposed URL matches the audited final URL. The fix resolves the issue. The claimed duplicate risk is plausible (www vs. non-www, params).",
+      "reasoning_sound": true,
+      "priority_critique": "A homepage with no duplicates observed (no redirects, status 200) has low risk from a missing canonical. Medium is slightly high, but a canonical is cheap and useful. Roughly acceptable, though low might be more accurate.",
+      "priority": "ok"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "Five H1s are in the tool output, all feature-slide titles. Fix to a single H1 and H2s for the rest is standard and sound. Multiple H1s are valid in HTML5 and Google handles them fine, so impact is small.",
+      "reasoning_sound": true,
+      "priority_critique": "Low/P3 is right for this minor structural issue.",
+      "priority": "ok"
+    },
+    {
+      "finding": 8,
+      "reasoning_critique": "Eight redirects are listed. The issue says 'internal and external', but the redirected list includes one external redirect (docs.python.org is a different subdomain; linkedin is external). The recommended final URLs match final_url values in the data. Each suggested fix is consistent with the data. The code-of-conduct, /psf-landing/, /psf/donations/ and trailing-slash fixes all match. Sound.",
+      "reasoning_sound": true,
+      "priority_critique": "Redirects all resolve, none broken. Low/P3 is appropriate.",
+      "priority": "ok"
+    }
+  ],
+  "model": "claude-sonnet-5-5",
+  "case": "python-org-20261014-151521",
+  "input_tokens": 4474,
+  "output_tokens": 1566,
+  "seconds": 12.5
+}

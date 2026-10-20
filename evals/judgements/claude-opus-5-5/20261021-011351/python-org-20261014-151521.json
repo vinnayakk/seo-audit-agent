@@ -1,0 +1,65 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "Render-blocking requests (2,730 ms) and the lab LCP/FCP values are real. The fix names style.6cb9f297dd80.css and the jQuery UI script as the blocking resources, but top_issues does not say which requests are render-blocking. Those files appear only in heaviest_resources. The culprits are therefore inferred, not shown. Adding defer to jQuery UI could also break inline code that depends on it, which the data cannot rule out.",
+      "reasoning_sound": false,
+      "priority_critique": "Field data shows real users are FAST on every metric (LCP p75 1,265 ms, FCP 1,195 ms). The 5.0 s LCP is lab-only, so medium overstates the impact. Low fits better.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "style.css is the heaviest resource at 123 KB, and Lighthouse reports 128 KiB of unused CSS and 24 KiB of unminified CSS. No other stylesheet appears in the data, so attributing these savings mainly to the main stylesheet is a reasonable inference. Minifying and purging unused rules would address both reported issues.",
+      "reasoning_sound": true,
+      "priority_critique": "This is a lab-only byte saving, and field metrics are all FAST, so medium is too high. Low is more appropriate.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "The issue is worded carefully and only notes the jQuery UI load alongside the unused-JS and cache warnings. The fix offers either removing jQuery UI or self-hosting a trimmed build, plus long cache lifetimes for static assets. Both are plausible, generic remedies that do not overclaim.",
+      "reasoning_sound": true,
+      "priority_critique": "Low suits small lab savings when field data is FAST.",
+      "priority": "ok"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "The title is 21 characters and generic ('Welcome to Python.org'). The suggested replacement adds descriptive keywords and is a reasonable rewrite.",
+      "reasoning_sound": true,
+      "priority_critique": "This is the official homepage of a dominant brand, and it ranks on brand and authority. A short title is cosmetic here, so low is more fitting than medium.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "The description is 52 characters, and the suggested rewrite is longer and more informative. Sound.",
+      "reasoning_sound": true,
+      "priority_critique": "Description length does not affect ranking and only marginally affects CTR for this brand homepage. Low fits better.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "The canonical tag is null, and adding a self-referencing canonical is the standard, correct fix.",
+      "reasoning_sound": true,
+      "priority_critique": "No duplicate-URL problems are shown, the homepage resolves without redirects, and Google typically picks the root URL anyway. This is a best-practice item, and low fits better than medium.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "The five H1s are the slide titles listed in the data, and restructuring them into one H1 with H2s is reasonable.",
+      "reasoning_sound": true,
+      "priority_critique": "Low is appropriate.",
+      "priority": "ok"
+    },
+    {
+      "finding": 8,
+      "reasoning_critique": "check_links lists eight redirected links. The fix points the hrefs at the final URLs taken from that same data, which are not broken. It reasonably leaves out intentional redirects such as docs.python.org and LinkedIn. Sound.",
+      "reasoning_sound": true,
+      "priority_critique": "There are no broken links, and these are minor redirect hops, so low is correct.",
+      "priority": "ok"
+    }
+  ],
+  "model": "claude-opus-5-5",
+  "case": "python-org-20261014-151521",
+  "input_tokens": 4474,
+  "output_tokens": 2089,
+  "seconds": 21.4
+}

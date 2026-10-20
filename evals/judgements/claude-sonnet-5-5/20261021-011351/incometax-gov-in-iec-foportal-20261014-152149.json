@@ -1,0 +1,58 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "The canonical is http://www.incometax.gov.in/iec/foportal/ while the page is served over HTTPS with no redirects. The tool flags it, and the fix (change it to https) is concrete and would resolve it. The https page is the one that returns 200, so the canonical points at a URL that redirects (presumably) to the page itself. This is a real conflicting signal.",
+      "reasoning_sound": true,
+      "priority_critique": "A canonical pointing at the http version of the homepage is a real indexing signal issue, but Google generally handles it well, and the site is already indexed. High/P1 is a bit strong but defensible relative to the other findings, since it is the most ranking-relevant issue and is low effort.",
+      "priority": "ok"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "The description is null (length 0), so the finding is supported. Adding a meta description is a sound fix, and the example text is reasonable. It does not guarantee Google will use it, but it does address the issue.",
+      "reasoning_sound": true,
+      "priority_critique": "A missing meta description affects snippet control and CTR, but not ranking directly. Google often rewrites snippets anyway. High/P1 is overstated and should be medium, comparable to the title/OG finding.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "The h1 array has 7 entries, including an empty one, so the issue is real. The fix (one descriptive H1, demote the section headings to H2, remove the empty H1) is sound and implementable. Which H1 to keep is left to the owner, which is reasonable.",
+      "reasoning_sound": true,
+      "priority_critique": "Multiple H1s are not a significant ranking problem for Google, which tolerates them. Medium is slightly generous, but it is acceptable given the empty H1 and the cheap fix.",
+      "priority": "ok"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "The title 'Home | Income Tax Department' is generic, which is correct. og:description and og:image are null, as cited. The fix is concrete. However, the finding does not mention that og:title exists ('Home'), which is a minor omission. The suggested title is reasonable. The tool's note about the title being short (28 chars, aim for ~30-60) is consistent.",
+      "reasoning_sound": true,
+      "priority_critique": "This bundles a generic title (a modest ranking and CTR factor) with missing OG tags (little ranking effect). Medium is fair overall.",
+      "priority": "ok"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "Lab data is supported: score 72, LCP 4.9 s, FCP 3.5 s, and render-blocking has an estimated saving of 4,060 ms. But field_data shows every Core Web Vital as FAST for real users (LCP p75 1.9 s, INP 133 ms, CLS 0). The lab figures are simulated mobile throttling. The fix is generic (defer JS/CSS, inline critical CSS) and does not name invented files. It would plausibly help the lab score, but the real-world benefit is small.",
+      "reasoning_sound": true,
+      "priority_critique": "Real users already experience FAST on all metrics, so this lab-only issue should be low priority. Medium/P2 overstates it.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "Page weight of 2,944 KB and image savings of 1,081 KiB are supported by the tool. The three named images are in heaviest_resources (379, 336, 291 KB), so naming them is justified. But the fix says 'Convert the JPEG to WebP' while the other two are already .webp. This is consistent, since only one JPEG is listed. The fix is plausible, though recompression and responsive sizing are the main gains.",
+      "reasoning_sound": true,
+      "priority_critique": "Field data is all FAST, and the images are modest in size (under 400 KB each). The benefit is limited to bandwidth on slow connections, so medium is a bit high. Low would be more appropriate.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "The redirected list does contain http:// links, double-slash paths and the account-misuse link redirecting to a URL with a space. The cited evidence is accurate. Updating the hrefs to the final URLs is a sound fix. However, the finding says 'many internal links', and the data shows about 6 internal redirects out of 48. The remaining entries are external (YouTube, t.co) and not part of this fix. The crawl budget claim is overstated for a small site section, but the fix is still valid and not circular.",
+      "reasoning_sound": true,
+      "priority_critique": "These are minor redirects that all resolve with a single hop and no broken links. Low/P3 is appropriate and matches their small impact.",
+      "priority": "ok"
+    }
+  ],
+  "model": "claude-sonnet-5-5",
+  "case": "incometax-gov-in-iec-foportal-20261014-152149",
+  "input_tokens": 4968,
+  "output_tokens": 1591,
+  "seconds": 13.3
+}

@@ -1,0 +1,72 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "LCP of 8.2 s with the LCP element 'Home-Slider' is in the data. Top issues list 'LCP request discovery' and 'LCP breakdown', which supports preloading and fetchpriority. The fix assumes lazy-loading and JS-dependent rendering on the first slide, which the tool doesn't show, but it's hedged as a general remedy for a slider LCP and is plausible. Overall sound.",
+      "reasoning_sound": true,
+      "priority_critique": "8.2 s mobile LCP is severe and the most important user-facing problem. No field data, but the lab value is far past the threshold. P1/high is appropriate.",
+      "priority": "ok"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "Page weight of 6677 KB and the 3,874 KiB image savings are real. The named files (secure-progress.jpg and the product PNGs) appear in heaviest_resources. The fix to convert to WebP/AVIF with srcset is plausible. Slight stretch: the heaviest resources are only 736/319/297 KB, so the 3.8 MB savings is spread across many images, but the fix still addresses it.",
+      "reasoning_sound": true,
+      "priority_critique": "Image weight is a main contributor to the slow LCP and Speed Index and the 6.7 MB page. High is reasonable, though it overlaps with finding 1.",
+      "priority": "ok"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "Render-blocking (2,090 ms) and font display (300 ms) both appear in top_issues. The fix of deferring non-critical CSS/JS and adding font-display: swap is generic and matches those audits. It doesn't name specific files. Sound.",
+      "reasoning_sound": true,
+      "priority_critique": "2 s of estimated render-blocking savings is significant with FCP at 1.9 s and LCP at 8.2 s, but the main LCP culprit is images. Medium is fine.",
+      "priority": "ok"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "h1 is an empty list and the tool flagged 0 H1 tags. Adding an H1 is the correct fix, and the suggested text fits the content. Sound.",
+      "reasoning_sound": true,
+      "priority_critique": "A missing H1 on the homepage is a modest on-page issue; medium is reasonable.",
+      "priority": "ok"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "Title is 77 chars, as measured. The replacement of 55 chars is valid and keeps the key terms. Truncation is a reasonable consequence. Sound.",
+      "reasoning_sound": true,
+      "priority_critique": "Title length is largely cosmetic; the title is still keyword-relevant and will be indexed. Medium overstates it relative to broken links and LCP; low would fit better.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "Description is 247 chars, so it will be truncated. The rewrite is about 135 chars and accurate to the original content. Sound.",
+      "reasoning_sound": true,
+      "priority_critique": "Meta description length doesn't affect rankings and Google often rewrites it. Medium is too high; low is appropriate.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "og:image is null, as the tool shows. Adding a 1200x630 og:image is the standard fix. Sound.",
+      "reasoning_sound": true,
+      "priority_critique": "Affects social sharing only, with little ranking effect. Low is right.",
+      "priority": "ok"
+    },
+    {
+      "finding": 8,
+      "reasoning_critique": "The two non-www URLs are listed as 404 in broken, but the redirected list shows they redirect to the www URLs https://www.unocal.in/Industries/heavy-commercial-vehicle/ and /industrial/. The checker probably reported 404 on the final response, so the www pages may themselves be broken (the redirect final_url is where the 404 occurred). The fix points to those www URLs as 'working', which the data doesn't show; they are the destinations that returned the 404. This sends the owner to the broken location. The unocalglobal.com ConnectError part is fine, but the main fix is unsound.",
+      "reasoning_sound": false,
+      "priority_critique": "Broken internal links on the homepage, including nav-level industry pages, matter more than the cosmetic meta tags. Medium is a bit low; these links lead to 404 pages for users and crawlers.",
+      "priority": "too_low"
+    },
+    {
+      "finding": 9,
+      "reasoning_critique": "The redirected list does show many non-www internal links redirecting to www, and three Industries links resolve to .jpg image files. Updating the hrefs to www and pointing the image-bound links to real pages is plausible. Sound.",
+      "reasoning_sound": true,
+      "priority_critique": "Single-hop redirects are a minor inefficiency. Links landing on image files are a real UX/crawl problem, but the overall issue is less severe than the 404s. Medium is slightly high but acceptable.",
+      "priority": "ok"
+    }
+  ],
+  "model": "claude-sonnet-5-5",
+  "case": "unocal-in-20261014-152519",
+  "input_tokens": 4846,
+  "output_tokens": 1667,
+  "seconds": 14.1
+}

@@ -1,0 +1,79 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "The LCP of 14.0 s and the Home-Slider LCP element are both in check_speed. top_issues also lists 'LCP request discovery', which supports a discoverability problem, so preloading the first slider image and not lazy-loading it is a plausible fix. Lazy-loading itself is not shown in the data, but the fix is framed generally enough to remain sound.",
+      "reasoning_sound": true,
+      "priority_critique": "There is no field data, and a 14 s lab LCP is severe. This is the worst metric on the page, so high is appropriate.",
+      "priority": "ok"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "page_weight_kb is 6677, and 'Improve image delivery' estimates 3,359 KiB of savings for the PNGs listed in the tool output. Converting those to compressed WebP at their displayed dimensions directly addresses this.",
+      "reasoning_sound": true,
+      "priority_critique": "Images make up half the page weight and likely contribute to the LCP and Speed Index, so high is justified.",
+      "priority": "ok"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "The render-blocking audit estimates 2,220 ms of savings. The fix names exactly the three CSS files the tool lists, and inlining critical CSS with async loading is the standard remedy.",
+      "reasoning_sound": true,
+      "priority_critique": "The estimated saving is large, but FCP is only 2.3 s. Medium is reasonable next to the high-rated LCP and image findings.",
+      "priority": "ok"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "Two internal links return 404, and their www final URLs also return 404. The fix sensibly says to link to existing pages or restore the missing pages, rather than just switching to www.",
+      "reasoning_sound": true,
+      "priority_critique": "Broken internal links to key category pages on the homepage matter for both crawling and users, so high is appropriate.",
+      "priority": "ok"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "check_links shows a ConnectError for unocalglobal.com/industries/. Removing or replacing the link is a valid fix.",
+      "reasoning_sound": true,
+      "priority_critique": "This is a single external link, possibly a temporary outage of a sister site, and has little SEO impact. Low would fit better than medium.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "The count of '12 redirected links' includes the external abacusdesk.com redirect, so it is not 12 internal links. The list also includes heavy-commercial-vehicle and industrial, whose www targets return 404. Small-engine, passenger-car and agriculture redirect to .jpg images rather than pages. Blindly rewriting all of these to their www URLs would point users to 404s or image files, and the finding misses the image-redirect problem entirely.",
+      "reasoning_sound": false,
+      "priority_critique": "Same-site non-www to www redirects have minor SEO impact, so low would fit better than medium.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "h1 is an empty list in check_meta_tags. Adding a single descriptive H1 resolves it.",
+      "reasoning_sound": true,
+      "priority_critique": "A missing H1 is a moderate on-page signal, so medium is acceptable.",
+      "priority": "ok"
+    },
+    {
+      "finding": 8,
+      "reasoning_critique": "The title is 77 characters, and the proposed title is about 54 characters and keeps the key terms. The fix resolves the issue.",
+      "reasoning_sound": true,
+      "priority_critique": "Title truncation is mostly cosmetic and the current title is still relevant. It belongs at low, below the broken links and speed problems.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 9,
+      "reasoning_critique": "The description is 247 characters, and the proposed replacement is about 125 characters and covers the same products. The fix resolves the issue.",
+      "reasoning_sound": true,
+      "priority_critique": "Description length does not affect ranking and only affects snippet display. Low would fit better.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 10,
+      "reasoning_critique": "open_graph.image is null. Adding a 1200x630 og:image fixes social preview images.",
+      "reasoning_sound": true,
+      "priority_critique": "This matters for sharing but little for ranking, so low is correct.",
+      "priority": "ok"
+    }
+  ],
+  "model": "claude-opus-5-5",
+  "case": "unocal-in-20261014-162333",
+  "input_tokens": 5435,
+  "output_tokens": 2415,
+  "seconds": 24.3
+}

@@ -1,0 +1,58 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "The canonical is http://www.incometax.gov.in/iec/foportal/ while the page is served on https (fetch_page.is_https true, final_url https). The issue follows from the evidence. Changing the canonical to the https URL fixes it. The http URL presumably redirects to https, so Google usually resolves this, but it is still a conflicting signal.",
+      "reasoning_sound": true,
+      "priority_critique": "A canonical pointing at http on the homepage is a real signal conflict, but Google usually handles it via the redirect and the https preference. P1/high is somewhat overstated, though it is a cheap fix and arguably the most important item in the report. Acceptable.",
+      "priority": "ok"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "The meta description is null, which is confirmed. The fix of adding a description is plausible and the example text is sensible. The issue is real, though the effect of a missing description is only on snippet control, not ranking.",
+      "reasoning_sound": true,
+      "priority_critique": "A missing meta description does not affect rankings directly; Google will generate a snippet from the 1,706 words on the page. Rating it high/P1 equal to the canonical problem overstates it. Medium or low is more appropriate.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "The h1 array shows 7 entries, with an empty first one, and the other six are section headings. The issue follows. The fix of keeping one H1 and demoting the others to H2 is reasonable. Multiple H1s are not a ranking problem in Google's guidance, but fixing it improves structure and accessibility.",
+      "reasoning_sound": true,
+      "priority_critique": "Multiple H1s are tolerated by Google, so medium is slightly high, but the empty H1 and the lack of a real page-level H1 is a legitimate structural issue. Roughly fair, though low-medium might be better. Acceptable.",
+      "priority": "ok"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "The title 'Home | Income Tax Department' is generic. The tool flagged it at 28 chars, just under the 30 guideline. og:description and og:image are null, as evidence shows. However, og:title is present ('Home'), and the finding is accurate about the missing parts. The fix suggests a better title and adding the OG tags. The suggested title is reasonable and doesn't depend on invented facts.",
+      "reasoning_sound": true,
+      "priority_critique": "A generic 'Home' title is a meaningful relevance issue for the homepage, but the missing OG tags only affect social previews. Combining them at medium is acceptable.",
+      "priority": "ok"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "Lab metrics are cited accurately (score 72, LCP 4.9 s, FCP 3.5 s) and render-blocking requests are listed as an issue with 4,060 ms savings. The fix of deferring non-critical JS/CSS and inlining critical CSS is generic but does not name invented files. However, the finding ignores that field data shows every Core Web Vital as FAST (LCP p75 1.9 s, INP 133 ms, CLS 0), so real users are not suffering. The framing as a moderate performance problem is lab-only.",
+      "reasoning_sound": true,
+      "priority_critique": "Real-user field data is FAST on all metrics, so the lab-only problem has little effect on search visibility or user experience. Medium/P2 overstates it; this should be low.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "Page weight of 2,944 KB and 1,081 KiB image savings come from the tool output, and the three named images are in heaviest_resources. The fix names those images, which are listed. But the claim 'convert the JPEG to WebP' is fine, since the other two are already .webp and the JPEG is listed. The recommendations are plausible. Slight issue: the issue says images are 291-379 KB each, which is accurate, and these are not very heavy.",
+      "reasoning_sound": true,
+      "priority_critique": "Field data shows LCP of 1.9 s and FCP 1.4 s for real users, so image weight is not hurting them. Images of 300-400 KB are moderate. Medium overstates the impact; low is more fitting.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "check_links.redirected lists http:// versions (contact-us), double-slash paths (//latest-news, //e-Campaigns) and account-misuse redirecting to a different path. The issue follows. The fix to update hrefs to final https URLs with no double slashes is plausible and the example is correct. The 'many internal links' is fair given 6 internal redirects out of 48. 'Waste crawl budget' is overstated for a small page, but the cleanup is still valid.",
+      "reasoning_sound": true,
+      "priority_critique": "Internal redirects are minor, and all resolve to working pages with no broken links. Low/P3 is right.",
+      "priority": "ok"
+    }
+  ],
+  "model": "claude-sonnet-5-5",
+  "case": "incometax-gov-in-iec-foportal-20261014-152149",
+  "input_tokens": 4968,
+  "output_tokens": 1657,
+  "seconds": 13.5
+}

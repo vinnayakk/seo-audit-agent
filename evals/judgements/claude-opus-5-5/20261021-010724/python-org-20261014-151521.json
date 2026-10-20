@@ -1,0 +1,65 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "The render-blocking savings of 2,730 ms and the lab LCP of 5.0 s and FCP of 3.2 s are real. But top_issues does not say which requests are render-blocking. The fix names style.6cb9f297dd80.css and the jQuery UI script as the culprits, yet no tool output lists them for this problem; they appear only under heaviest_resources. The jQuery UI script may already be async or deferred. The cause is invented.",
+      "reasoning_sound": false,
+      "priority_critique": "Field data shows real users are FAST on every metric (LCP p75 1265 ms, FCP p75 1195 ms). This is a lab-only problem, so medium overstates it; low fits.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "The stylesheet is the heaviest resource at 123 KB, and the audit reports 128 KiB of unused CSS and 24 KiB of minify savings. The 128 KiB figure may cover several files rather than this one stylesheet. Still, it is the only CSS listed, so minifying and purging is a reasonable, plausible fix.",
+      "reasoning_sound": true,
+      "priority_critique": "All field metrics are FAST, so the real-user gain is small. Low is more appropriate than medium.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "The issue only states facts the tools show: jQuery UI comes from a third-party host, and the audit reports unused JavaScript and cache-lifetime savings. Offering a self-hosted custom build with only the used components hedges against attributing the unused JS to jQuery UI. The fix's 'remove jQuery UI from the homepage' option still assumes it is unneeded, which the data does not show. The cache advice is generic but valid.",
+      "reasoning_sound": true,
+      "priority_critique": "Low is appropriate given FAST field data and the small savings.",
+      "priority": "ok"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "The title is short, but the claim that it 'gives search engines no keywords' is wrong. 'Welcome to Python.org' contains the core brand keyword 'Python'. The evidence is misread, even though the proposed title is reasonable.",
+      "reasoning_sound": false,
+      "priority_critique": "This is the official site for its brand term, and title length is cosmetic here. Ranking impact is minimal, so low fits better than medium.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "The description is 52 characters, and the rewrite is plausible and accurate.",
+      "reasoning_sound": true,
+      "priority_critique": "A description affects snippets, not rankings, and the current one is already accurate. Low rather than medium.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "Canonical is null, so the issue follows from the evidence. The fix gives a correct self-referencing canonical for the final URL.",
+      "reasoning_sound": true,
+      "priority_critique": "A homepage without a canonical can pick up parameter or duplicate variants. A low-effort fix with moderate value, so medium is defensible.",
+      "priority": "ok"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "The five H1s are slide titles, as the tool output shows. Using one descriptive H1 and demoting the slide headings to H2 is a sound fix.",
+      "reasoning_sound": true,
+      "priority_critique": "Low is appropriate.",
+      "priority": "ok"
+    },
+    {
+      "finding": 8,
+      "reasoning_critique": "check_links lists eight redirected links, and the final URLs proposed in the fix match the redirect targets. The fix sensibly leaves out the LinkedIn link, which returned an unverified 999 status.",
+      "reasoning_sound": true,
+      "priority_critique": "No links are broken, and the redirects cost little, so low is appropriate.",
+      "priority": "ok"
+    }
+  ],
+  "model": "claude-opus-5-5",
+  "case": "python-org-20261014-151521",
+  "input_tokens": 4474,
+  "output_tokens": 2318,
+  "seconds": 24.8
+}

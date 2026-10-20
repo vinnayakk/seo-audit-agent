@@ -1,0 +1,72 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "Render-blocking CSS with an estimated 2,730 ms savings is in the data, and the three stylesheets are listed. Lab LCP 5.1 s and FCP 3.2 s are real. The fix (inline critical CSS, async-load the rest) is plausible and names only CSS files the tool lists. However, field data shows LCP p75 1265 ms and FCP 1195 ms, both FAST, so real users are not affected. The lab numbers come from throttled mobile emulation.",
+      "reasoning_sound": true,
+      "priority_critique": "High impact / P1 is overstated. Real-user field data is FAST on every metric, and the lab score is 72. The page is only 497 KB. This is a lab-only concern with little effect on rankings or real UX, so it should be medium or low.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "Unused CSS (128 KiB) and Minify CSS (24 KiB) both appear in top_issues for style.css and mq.css. Minifying and removing unused rules would address them. The suggestion to split CSS per template is a general approach and is not tied to an invented file. The style.css is the heaviest resource at 123 KB, so this is grounded.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium is somewhat high given field data is all FAST and the total page weight is only about 497 KB. Lab-only savings matter little for this site. Low would be more apt.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "jquery-ui.min.js is listed under Reduce unused JavaScript with a 59 KiB saving, and it is the second-heaviest resource. The fix of dropping or conditionally loading it is plausible. It does not claim which pages use it, but says to drop it from pages that do not.",
+      "reasoning_sound": true,
+      "priority_critique": "Low impact / P3 is appropriate: TBT is 20 ms and INP is 88 ms (FAST), so the unused JS barely affects users.",
+      "priority": "ok"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "Cache lifetimes (33 KiB) and Font display (110 ms) both appear in top_issues, with the CSS and font files listed. The files are fingerprinted (hashes in the filenames), so a long max-age is safe. font-display: swap is the standard fix. Sound and grounded.",
+      "reasoning_sound": true,
+      "priority_critique": "Low impact is right: small savings, field data FAST. Low effort fits as it is a header and CSS tweak.",
+      "priority": "ok"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "canonical is null, which is verified. Adding a self-referencing canonical to the homepage is a valid, low-effort fix. The claim about duplicate URL variants is a plausible risk rather than demonstrated. Nothing in the tool data shows duplicates.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium is slightly high. The homepage is the well-known canonical URL, and Google generally resolves this without a tag. It's a best practice but unlikely to change visibility much. Low is more appropriate.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "Five H1s are present: 'Functions Defined', 'All the Flow You'd Expect', etc. These are feature-section headings, so none is the real page topic. The fix to use a single H1 and demote the others is plausible, but the suggested single H1 is not named. HTML5 permits multiple H1s, and Google has said it handles them fine, so the claim that this 'weakens the primary heading signal' is overstated.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium is too high. Multiple H1s are not a ranking problem for Google, and this is a cosmetic structure matter. Low is more fitting.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "The title 'Welcome to Python.org' at 21 chars is verified and generic. The proposed title 'Python.org – Official Python Programming Language Site' is claimed to be 56 characters. Counting: 'Python.org' (10) + ' – ' (3) + 'Official Python Programming Language Site' (41) = 54, so the count is slightly off, but within range. The fix is reasonable and does not depend on unseen facts. The brand query 'python' is dominated by this site anyway.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium is arguably high, since the 30-60 char range is a rule of thumb, not a penalty, and the site already ranks top for its brand. Still, the title is a real ranking element and the 'Welcome to' phrasing is weak. Mildly overstated; low would be more accurate.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 8,
+      "reasoning_critique": "The description is 52 chars, below the ~70 guideline. The proposed replacement is plausible. But the claim 'about 140 characters' is close: the text is roughly 140 chars. It mentions docs, community news, events and learning resources, which the page word count and nav presumably support, though the tool doesn't show page contents explicitly. Short descriptions are not an error, and Google rewrites snippets anyway.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium overstates it. Meta description length has no ranking effect and only slight CTR effect. This is a cosmetic tag length issue, so low is right.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 9,
+      "reasoning_critique": "The redirected list is real, and the examples match: /psf/ -> /psf-landing/ and /download/alternatives -> /download/alternatives/. Updating hrefs to the final URLs is sound. But the finding says 'internal and external' and 'wastes crawl budget', which is an overstatement for a 126-link page. Most are trailing-slash redirects. No broken links were found. Fix does not point to broken targets.",
+      "reasoning_sound": true,
+      "priority_critique": "Low / P3 is appropriate: trivial redirects, no broken links, and crawl budget is irrelevant here.",
+      "priority": "ok"
+    }
+  ],
+  "model": "claude-sonnet-5-5",
+  "case": "python-org-20261014-162621",
+  "input_tokens": 4788,
+  "output_tokens": 2039,
+  "seconds": 15.8
+}

@@ -40,7 +40,7 @@ Rules for audits:
 
 STEP_LIMIT_NOTE = ("Step limit reached. Do not call more tools. Finish now using only the data "
                    "you already have, and list any checks you could not complete.")
-SUBMIT_NUDGE = "Submit the audit by calling the submit_report tool."
+SUBMIT_NUDGE = "Now write the final audit report."
 
 # Single source of truth: names, descriptions and schemas come from the MCP server.
 TOOLS = [{"name": t.name, "description": t.description, "input_schema": t.input_schema}
@@ -75,27 +75,48 @@ def validate_report(args: dict) -> AuditReport:
         return report
 
 
+def final_report(messages: list, tools: list, turn: int) -> AuditReport:
+    """Make Claude answer NOW, in the AuditReport shape, using structured outputs.
+
+    Opus 5.5, Sonnet 5.5 and Fable 5.1 reject forced tool calls (tool_choice "tool"/"any" -> 400),
+    so instead of forcing submit_report we forbid tools (tool_choice "none", which every model
+    supports) and constrain the reply itself to the report's JSON schema.
+    """
+    with langfuse.start_as_current_observation(
+        name=f"claude-turn-{turn}", as_type="generation", model=MODEL, input=messages,
+        model_parameters={"max_tokens": MAX_TOKENS, "tool_choice": "none", "output_format": "AuditReport"},
+    ) as gen:
+        resp = client.messages.parse(model=MODEL, max_tokens=MAX_TOKENS, system=SYSTEM, tools=tools,
+                                     tool_choice={"type": "none"}, messages=messages, output_format=AuditReport)
+        gen.update(output=resp.parsed_output.model_dump() if resp.parsed_output else None,
+                   usage_details={"input": resp.usage.input_tokens, "output": resp.usage.output_tokens})
+    if resp.parsed_output is None:
+        raise ReportError("Claude returned no report in the structured-output turn.")
+    return validate_report(resp.parsed_output.model_dump())  # also checks min_length etc. and logs it
+
+
 @observe(name="seo-audit", as_type="agent")
 def run_agent(question: str, max_turns: int = MAX_TURNS, structured: bool = False) -> AuditRun:
-    """Tool-calling loop. structured=True ends with a validated AuditReport via submit_report;
-    structured=False ends with a free-text answer."""
+    """Tool-calling loop. structured=True ends with a validated AuditReport (via submit_report, or a
+    structured-output turn when Claude must answer now); structured=False ends with free text."""
     run = AuditRun(question=question, trace_id=langfuse.get_current_trace_id())
     tools = TOOLS + [SUBMIT_TOOL] if structured else TOOLS
     messages = [{"role": "user", "content": question}]
-    nudged = False
+    must_report = False  # set when Claude wrote prose or submitted an invalid report
 
     for turn in range(1, max_turns + 1):
         last_turn = turn == max_turns
         if last_turn and turn > 1 and isinstance(messages[-1]["content"], list):
             messages[-1]["content"].append({"type": "text", "text": STEP_LIMIT_NOTE})
 
-        # How much freedom Claude gets this turn. Rules live in code, not just in the prompt.
-        if structured and (last_turn or nudged):
-            tool_choice = {"type": "tool", "name": "submit_report"}  # must submit now
-        elif last_turn:
-            tool_choice = {"type": "none"}                           # must answer in text now
-        else:
-            tool_choice = {"type": "auto"}
+        # Rules live in code, not just in the prompt.
+        if structured and (last_turn or must_report):
+            try:
+                run.report = final_report(messages, tools, turn)   # report now, schema-guaranteed
+                return run
+            except ValidationError as e:
+                raise ReportError(f"Final report failed validation: {e}") from e
+        tool_choice = {"type": "none"} if last_turn else {"type": "auto"}
 
         with langfuse.start_as_current_observation(
             name=f"claude-turn-{turn}", as_type="generation", model=MODEL, input=messages,
@@ -115,9 +136,9 @@ def run_agent(question: str, max_turns: int = MAX_TURNS, structured: bool = Fals
             if not structured:
                 run.text = text
                 return run
-            # Claude wrote prose instead of submitting: ask once more, and force it next turn.
+            # Claude wrote prose instead of submitting: next turn asks for the report directly.
             messages.append({"role": "user", "content": SUBMIT_NUDGE})
-            nudged = True
+            must_report = True
             continue
 
         results = []
@@ -132,7 +153,7 @@ def run_agent(question: str, max_turns: int = MAX_TURNS, structured: bool = Fals
                     # Send the exact errors back so Claude can correct itself on the next turn.
                     results.append({"type": "tool_result", "tool_use_id": block.id, "is_error": True,
                                     "content": f"Report rejected, fix these errors and resubmit:\n{e}"})
-                    nudged = True  # force a resubmission on the next turn
+                    must_report = True
                     continue
             print(f"→ {block.name}({block.input})")
             output = call_tool(block.name, block.input)

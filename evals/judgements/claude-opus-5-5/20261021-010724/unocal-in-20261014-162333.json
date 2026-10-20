@@ -1,0 +1,79 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "The 14.0 s lab LCP and the Home-Slider LCP element are cited correctly. top_issues also flags 'LCP request discovery', which supports preloading the first slider image and not lazy-loading it so the browser finds it early. The data does not confirm lazy-loading is in use, but the fix is a reasonable remedy for the flagged discovery problem.",
+      "reasoning_sound": true,
+      "priority_critique": "An LCP of 14 s is severe, and with no field data the lab result is the best signal available. High is right.",
+      "priority": "ok"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "Page weight is 6,677 KB and top_issues estimates 3,359 KiB of image savings. The PNGs listed there and the heavy JPG are the right targets, and converting them to WebP and serving them at displayed size directly addresses the issue.",
+      "reasoning_sound": true,
+      "priority_critique": "Halving a 6.7 MB mobile page is a large real-world gain. High is right.",
+      "priority": "ok"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "The three stylesheets named in the fix are exactly the ones top_issues lists under render-blocking requests, with an estimated 2,220 ms saving. Inlining critical CSS and deferring these files is the standard fix.",
+      "reasoning_sound": true,
+      "priority_critique": "A 2.2 s estimated saving is meaningful, but LCP and image weight are the bigger problems. Medium is right.",
+      "priority": "ok"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "check_links shows both non-www Industries links redirect to www URLs that return 404. The fix sends the owner to existing pages or to restoring the missing ones, not to the broken URLs, so it would resolve the issue.",
+      "reasoning_sound": true,
+      "priority_critique": "Broken internal links from the homepage, including a main-category link, hurt both crawling and users. High is right.",
+      "priority": "ok"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "The external link fails with a ConnectError, so removing or replacing it is a valid fix.",
+      "reasoning_sound": true,
+      "priority_critique": "One unreachable external link with an empty anchor has little effect on search or users compared with the internal 404s. It should be low.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "The '12 redirected links' figure is misread. It includes the external abacusdesk.com link and the two internal links that end in 404s. The finding also misses that three Industries links (small-engine, passenger-car, agriculture) redirect to JPG images rather than pages. Rewriting those links to their 'canonical' www destination would not fix them, because the real problem is wrong redirect targets.",
+      "reasoning_sound": false,
+      "priority_critique": "Single redirect hops from non-www to www cost very little. As framed, this is low impact.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "h1 is an empty array, so the homepage has no H1. Adding a descriptive H1 is the correct fix.",
+      "reasoning_sound": true,
+      "priority_critique": "A missing H1 on the homepage is a moderate on-page signal. Medium is acceptable.",
+      "priority": "ok"
+    },
+    {
+      "finding": 8,
+      "reasoning_critique": "The title is 77 characters and the proposed replacement is about 53 characters and keeps the main keywords. The fix is sound.",
+      "reasoning_sound": true,
+      "priority_critique": "A truncated title is mostly cosmetic and the keywords already appear early. It ranks below the broken links and speed issues, so it should be low.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 9,
+      "reasoning_critique": "The description is 247 characters and the proposed rewrite is roughly 125 characters, which is within range.",
+      "reasoning_sound": true,
+      "priority_critique": "Description length does not affect ranking and Google often rewrites snippets anyway. It should be low.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 10,
+      "reasoning_critique": "og:image is null, and adding a 1200x630 image fixes social previews.",
+      "reasoning_sound": true,
+      "priority_critique": "This only affects social sharing, so low is correct.",
+      "priority": "ok"
+    }
+  ],
+  "model": "claude-opus-5-5",
+  "case": "unocal-in-20261014-162333",
+  "input_tokens": 5435,
+  "output_tokens": 2328,
+  "seconds": 24.0
+}

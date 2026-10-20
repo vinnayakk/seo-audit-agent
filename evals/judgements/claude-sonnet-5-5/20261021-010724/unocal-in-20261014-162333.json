@@ -1,0 +1,79 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "LCP of 14.0 s with the LCP element 'Home-Slider' is in the data. top_issues also lists 'LCP request discovery', which supports the preload fix. Saying 'without lazy-loading' is a plausible check, though lazy-loading isn't confirmed. It is mostly sound and doesn't name an invented file.",
+      "reasoning_sound": true,
+      "priority_critique": "A 14 s mobile LCP is severe and is the biggest speed problem. field_data is null, so there's no real-user data to contradict it. P1/high is appropriate.",
+      "priority": "ok"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "Page weight is 6677 KB and the 'Improve image delivery' audit estimates 3,359 KiB of savings. It lists PNG files, and heaviest_resources shows a JPG and PNGs. Converting to WebP and resizing is a reasonable fix. The evidence cites top_issues[2], which is the right index.",
+      "reasoning_sound": true,
+      "priority_critique": "The image weight likely drives the slow LCP and the huge page size. High impact is justified.",
+      "priority": "ok"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "The render-blocking audit estimates 2,220 ms of savings, and the named CSS files (slick.css, contact-form-7 styles, mCustomScrollbar) appear in its URL list. The evidence cites top_issues[4], but that index is 'Minify CSS'. Render-blocking is at index 5, and index 4 is 'Network dependency tree'. Counting from 0: 0 Font display, 1 Forced reflow, 2 Improve image delivery, 3 LCP request discovery, 4 Network dependency tree, 5 Render-blocking. So the cited index is wrong, although the detail text matches the real audit. The issue and fix are otherwise grounded in the data.",
+      "reasoning_sound": true,
+      "priority_critique": "2.2 s of savings is meaningful but secondary to the 14 s LCP and the heavy images. Medium/P2 fits.",
+      "priority": "ok"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "The check_links output shows https://unocal.in/Industries/heavy-commercial-vehicle/ and /industrial/ redirect to the www URLs, which return 404. The issue is real: the target pages are broken, not just the host. The fix says 'update these links to existing pages on www.unocal.in, or restore the missing Industries pages'. Pointing links at the www versions of those same URLs would not help, since those 404. The fix does offer a valid alternative, restoring the pages or linking to existing ones, so it doesn't send the owner to a broken target.",
+      "reasoning_sound": true,
+      "priority_critique": "Internal 404s on the homepage hurt users and crawl paths. High priority is appropriate, and the fix is low effort.",
+      "priority": "ok"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "The unocalglobal.com link has a ConnectError and is the only one with no status. A connection error may be transient or caused by the audit tool, but removing or replacing the link is a reasonable fix. The claim that it is unreachable follows from the evidence.",
+      "reasoning_sound": true,
+      "priority_critique": "A single external dead link has a small effect on search visibility. It is likely a sister-company link. Medium is too high, and low would be better.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "There are 12 redirected links, but several of them are image or media redirects, and the www links resolve properly. The non-www to www redirect is a normal 301. The fix to link directly to www URLs is valid. The count of 12 includes one external redirect (abacusdesk.com), so 'internal' is slightly overstated. Still, the claim is mostly correct.",
+      "reasoning_sound": true,
+      "priority_critique": "Redirected internal links are a minor inefficiency. Redirects resolve fine and pass equity. Medium and P2 are too high, so low priority would be right. It also overlaps with finding 4.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "check_meta_tags shows h1 as an empty list, so the missing H1 is confirmed. Adding a descriptive H1 is a valid fix. The suggested text matches the site's content.",
+      "reasoning_sound": true,
+      "priority_critique": "A missing H1 on the homepage is a modest on-page SEO issue, and medium is a reasonable rating.",
+      "priority": "ok"
+    },
+    {
+      "finding": 8,
+      "reasoning_critique": "The title is 77 characters, which is confirmed. Truncation is likely. The proposed replacement is a sensible shortened version and keeps the brand.",
+      "reasoning_sound": true,
+      "priority_critique": "Title length is a cosmetic issue; truncation doesn't hurt rankings much. Medium is a bit high, and low would suit it better, though the title is a key element.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 9,
+      "reasoning_critique": "The description is 247 characters, confirmed. It will be truncated. The proposed rewrite is accurate to the original content and fits within the length limit.",
+      "reasoning_sound": true,
+      "priority_critique": "Description length has no direct ranking effect; Google often rewrites it. This is cosmetic, so medium is too high. Low is better.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 10,
+      "reasoning_critique": "open_graph.image is null, confirmed. Adding an og:image is the standard fix. Specifying a 1200x630 image is a common recommendation and doesn't depend on unseen facts.",
+      "reasoning_sound": true,
+      "priority_critique": "This only affects social sharing and not ranking. Low/P3 is right.",
+      "priority": "ok"
+    }
+  ],
+  "model": "claude-sonnet-5-5",
+  "case": "unocal-in-20261014-162333",
+  "input_tokens": 5435,
+  "output_tokens": 1921,
+  "seconds": 15.6
+}

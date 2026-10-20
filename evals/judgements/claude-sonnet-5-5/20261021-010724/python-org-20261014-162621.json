@@ -1,0 +1,72 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "Render-blocking requests show 2,730 ms estimated savings and the listed URLs are CSS files (style, mq, font-awesome), so naming stylesheets is supported. Lab LCP 5.1 s and FCP 3.2 s are real. Inlining critical CSS and async-loading the rest would plausibly help the lab metrics. However, the issue ignores that field data shows real users FAST on LCP (1265 ms) and FCP (1195 ms). The fix is plausible and not contradicted.",
+      "reasoning_sound": true,
+      "priority_critique": "Rated high/P1, but field data shows all Core Web Vitals FAST for real users. The problem is lab-only (simulated mobile throttling), so there's little ranking or UX gain. Effort is medium with risk of CSS breakage. Should be lower (low/medium).",
+      "priority": "too_high"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "Unused CSS 128 KiB and Minify CSS 24 KiB are in top_issues for the listed stylesheets. Fix of minifying and pruning/splitting CSS is reasonable and tied to listed files. Evidence indices: top_issues[5] is Minify CSS and [6] is unused CSS, matching. Sound.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium is a bit generous given field data is all FAST and total page weight is only 497 KB; the CSS savings are modest in practice. Low-ish would fit better, though medium is borderline defensible as it feeds into the render-blocking cost.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "top_issues lists jquery-ui.min.js with 59 KiB unused JS, so the issue is supported by data. Fix of removing it where not needed is plausible, though we don't know which pages use it; the advice is conditional so it's acceptable.",
+      "reasoning_sound": true,
+      "priority_critique": "Low/P3 is right: TBT is 20 ms, INP is FAST, and 59 KiB is small.",
+      "priority": "ok"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "Cache lifetimes (33 KiB, CSS and woff files) and Font display (110 ms, woff files) both appear in top_issues. Fingerprinted filenames (hash in names) make long max-age safe. font-display: swap is the standard fix. Sound.",
+      "reasoning_sound": true,
+      "priority_critique": "Low/P3 is appropriate: small savings, field data fast, and low effort.",
+      "priority": "ok"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "canonical is null per the tool and the issues list flags it. Adding a self-referencing canonical to the homepage is a standard, valid fix, and the proposed href https://www.python.org/ matches the final URL. Claim of duplicate variants is a risk statement, not shown as occurring.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium is reasonable-ish, but homepage is canonical-by-default, with no evidence of duplicate variants being indexed; a self-canonical is hygiene. Low would fit better, but it's cheap and on par with other meta items.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "Tool shows five H1s: 'Functions Defined', 'All the Flow You’d Expect', etc. These are feature-section headings, not the main topic; the fix of choosing a single H1 and demoting the others is valid. But the H1 list shows none is the main topic (the tagline), so the fix requires adding/choosing an appropriate one — still plausible. Multiple H1s are allowed by HTML5 and Google says it handles them fine.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium overstates it: Google explicitly says multiple H1s are not a problem. Should be low.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "Title 'Welcome to Python.org' is 21 chars, generic. The proposed replacement is about 56 chars; 'Python.org – Official Python Programming Language Site' counts ~54-55, near enough. Better title helps keyword context. Sound, though the length is not a ranking problem itself.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium is acceptable for a homepage title: it is the main on-page signal and the brand is already strong, so a modest gain. Okay compared to others.",
+      "priority": "ok"
+    },
+    {
+      "finding": 8,
+      "reasoning_critique": "Description is 52 chars, below ~70-160 guideline. Proposed text is real and relevant, ~140 chars. Issue is accurate, but short descriptions aren't a ranking problem; Google rewrites snippets anyway.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium is too high: description length is cosmetic and doesn't affect ranking. Should be low.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 9,
+      "reasoning_critique": "Redirects are real in check_links.redirected, e.g. /psf/ -> /psf-landing/ and /download/alternatives -> trailing slash. But the claim that it wastes crawl budget is overstated for 8 redirects on a site this size. The fix examples are correct final URLs. Also the redirected list includes external links (docs.python.org, linkedin) and a subdomain move (donate), so 'internal and external' is accurate. Updating hrefs is sound.",
+      "reasoning_sound": true,
+      "priority_critique": "Low/P3 is right; redirects are single-hop, no broken links.",
+      "priority": "ok"
+    }
+  ],
+  "model": "claude-sonnet-5-5",
+  "case": "python-org-20261014-162621",
+  "input_tokens": 4788,
+  "output_tokens": 1869,
+  "seconds": 15.2
+}

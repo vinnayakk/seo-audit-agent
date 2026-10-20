@@ -1,0 +1,72 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "top_issues[4] lists three stylesheets (style, mq, font-awesome) as render-blocking with an estimated 2,730 ms saving, and lab FCP/LCP are 3.2 s / 5.1 s. The LCP element is a text block, so it depends on the CSS. Inlining critical CSS and loading the rest asynchronously targets exactly the listed files.",
+      "reasoning_sound": true,
+      "priority_critique": "The problem shows up only in lab data. Field data rates every Core Web Vital FAST: LCP p75 is 1265 ms, FCP p75 is 1195 ms and INP is 88 ms. Real users are not affected, so high/P1 overstates it. It should be medium at most.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "top_issues[6] (128 KiB unused CSS) and top_issues[5] (24 KiB minify) both list style.css and mq.css. The fix of minifying and splitting the CSS matches these files.",
+      "reasoning_sound": true,
+      "priority_critique": "This is a lab-only byte saving on a 497 KB page whose real users all score FAST. It warrants low, not medium.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "top_issues[7] names jquery-ui.min.js with a 59 KiB unused-JS saving. Removing it or loading it conditionally addresses that. TBT is only 20 ms, which the low rating already reflects.",
+      "reasoning_sound": true,
+      "priority_critique": "Low is appropriate given TBT of 20 ms and FAST INP in field data.",
+      "priority": "ok"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "The cache-lifetime issue lists style.css and the Flux woff files. The font-display issue lists the Flux and SourceSansPro woff files. A long max-age on fingerprinted assets plus font-display: swap is the correct fix for both.",
+      "reasoning_sound": true,
+      "priority_critique": "Low is appropriate for small savings when field data is FAST.",
+      "priority": "ok"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "canonical is null. A self-referencing canonical to https://www.python.org/ is a reasonable fix and matches the final URL.",
+      "reasoning_sound": true,
+      "priority_critique": "There is no redirect chain or evidence of duplicates, and Google normalises the homepage root well. A missing self-canonical here is minor, but medium/low-effort is defensible as a best-practice fix and is consistent with the other meta findings.",
+      "priority": "ok"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "Five H1s is confirmed by the tool output. However, the existing H1s are code-feature slides such as 'Functions Defined' and 'Compound Data Types'. Keeping one of them as the page's single H1 would be wrong. The fix is acceptable only if it is read as adding a proper topic H1, and it is somewhat vague about which heading that should be.",
+      "reasoning_sound": true,
+      "priority_critique": "Multiple H1s have negligible ranking impact for Google, especially on a dominant brand homepage. Low is more fitting.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "The title is 21 characters and generic, which is confirmed. The proposed 56-character title adds descriptive keywords and is plausible.",
+      "reasoning_sound": true,
+      "priority_critique": "python.org is the definitive navigational result for 'python', so a title rewrite will barely change its visibility. Low priority fits better.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 8,
+      "reasoning_critique": "The description is 52 characters, which is confirmed. A longer, descriptive replacement could improve the snippet.",
+      "reasoning_sound": true,
+      "priority_critique": "Meta description is not a ranking factor and the current one is accurate. Any effect is marginal CTR on brand queries. It should be low.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 9,
+      "reasoning_critique": "The redirected list confirms /psf/ → /psf-landing/ and /download/alternatives → /download/alternatives/. The suggested targets are the final URLs. 'Wastes crawl budget' is overstated for these single-hop redirects, but updating the hrefs is a valid cleanup.",
+      "reasoning_sound": true,
+      "priority_critique": "Low is appropriate for a handful of single-hop redirects with no broken links.",
+      "priority": "ok"
+    }
+  ],
+  "model": "claude-opus-5-5",
+  "case": "python-org-20261014-162621",
+  "input_tokens": 4788,
+  "output_tokens": 2112,
+  "seconds": 21.3
+}

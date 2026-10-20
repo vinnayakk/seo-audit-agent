@@ -1,5 +1,6 @@
 import copy
 import importlib
+from types import SimpleNamespace
 
 import pytest
 from anthropic.types import Message, TextBlock, ToolUseBlock, Usage
@@ -35,12 +36,29 @@ def agent(monkeypatch):
     return module
 
 
-def fake_claude(monkeypatch, agent, replies):
-    """Replace the API call with scripted replies; record a copy of every request."""
+def fake_claude(monkeypatch, agent, replies, parsed=None):
+    """Replace the API calls with scripted replies; record a copy of every request.
+    `create` = normal tool-calling turns; `parse` = the structured-output 'report now' turn."""
     replies, calls = iter(replies), []
-    monkeypatch.setattr(agent.client.messages, "create",
-                        lambda **kw: calls.append(copy.deepcopy(kw)) or next(replies))
+
+    def create(**kw):
+        calls.append({"api": "create", **copy.deepcopy(kw)})
+        return next(replies)
+
+    def parse(**kw):
+        calls.append({"api": "parse", **copy.deepcopy({k: v for k, v in kw.items() if k != "output_format"}),
+                      "output_format": kw["output_format"]})
+        report = kw["output_format"].model_validate(parsed) if parsed else None
+        return SimpleNamespace(parsed_output=report, usage=Usage(input_tokens=100, output_tokens=50))
+
+    monkeypatch.setattr(agent.client.messages, "create", create)
+    monkeypatch.setattr(agent.client.messages, "parse", parse)
     return calls
+
+
+def assert_no_forced_tools(calls):
+    """Opus/Sonnet 5.5 and Fable 5.1 return 400 for tool_choice "tool"/"any": never send them."""
+    assert all(c.get("tool_choice", {}).get("type") in ("auto", "none") for c in calls)
 
 
 # ---------- free-text mode (-q questions) ----------
@@ -87,48 +105,51 @@ def test_structured_returns_validated_report(monkeypatch, agent):
     assert run.report.findings[0].evidence[0].tool == "check_meta_tags"
     assert run.tool_outputs[0]["tool"] == "check_meta_tags"       # saved alongside the report
     assert any(t["name"] == "submit_report" for t in calls[0]["tools"])
+    assert_no_forced_tools(calls)
 
 
-def test_invalid_report_is_sent_back_and_resubmitted(monkeypatch, agent):
+def test_invalid_report_is_sent_back_then_final_turn_uses_structured_output(monkeypatch, agent):
     no_evidence = copy.deepcopy(VALID_REPORT)
     no_evidence["findings"][0]["evidence"] = []                   # violates min_length=1
     calls = fake_claude(monkeypatch, agent, [
         _msg([_tool("submit_report", no_evidence)], "tool_use"),
-        _msg([_tool("submit_report", VALID_REPORT, id="tu_2")], "tool_use"),
-    ])
+    ], parsed=VALID_REPORT)
     run = agent.run_agent("Audit https://shop.test/", structured=True)
 
     rejection = calls[1]["messages"][-1]["content"][0]
     assert rejection["is_error"] is True and "evidence" in rejection["content"]
-    assert calls[1]["tool_choice"] == {"type": "tool", "name": "submit_report"}  # forced resubmit
-    assert run.report is not None
+    assert calls[1]["api"] == "parse" and calls[1]["tool_choice"] == {"type": "none"}
+    assert calls[1]["output_format"] is agent.AuditReport
+    assert run.report.findings[0].issue == "Title is only 4 characters"
+    assert_no_forced_tools(calls)
 
 
-def test_prose_instead_of_report_gets_nudged(monkeypatch, agent):
+def test_prose_instead_of_report_gets_a_structured_report_turn(monkeypatch, agent):
     calls = fake_claude(monkeypatch, agent, [
         _msg([TextBlock(type="text", text="Here is my audit in prose...")], "end_turn"),
-        _msg([_tool("submit_report", VALID_REPORT)], "tool_use"),
-    ])
+    ], parsed=VALID_REPORT)
     run = agent.run_agent("Audit https://shop.test/", structured=True)
 
     assert calls[1]["messages"][-1]["content"] == agent.SUBMIT_NUDGE
-    assert calls[1]["tool_choice"] == {"type": "tool", "name": "submit_report"}
+    assert calls[1]["api"] == "parse"
     assert run.report is not None
+    assert_no_forced_tools(calls)
 
 
-def test_last_turn_forces_submit(monkeypatch, agent):
+def test_last_turn_reports_via_structured_output(monkeypatch, agent):
     calls = fake_claude(monkeypatch, agent, [
         _msg([_tool("check_meta_tags", {"url": "https://shop.test/"})], "tool_use"),
-        _msg([_tool("submit_report", VALID_REPORT, id="tu_2")], "tool_use"),
-    ])
-    agent.run_agent("Audit https://shop.test/", max_turns=2, structured=True)
-    assert calls[1]["tool_choice"] == {"type": "tool", "name": "submit_report"}
+    ], parsed=VALID_REPORT)
+    run = agent.run_agent("Audit https://shop.test/", max_turns=2, structured=True)
+
+    assert [c["api"] for c in calls] == ["create", "parse"]
+    assert calls[1]["messages"][-1]["content"][-1]["text"] == agent.STEP_LIMIT_NOTE
+    assert run.tool_outputs[0]["tool"] == "check_meta_tags" and run.report is not None
+    assert_no_forced_tools(calls)
 
 
-def test_no_valid_report_raises(monkeypatch, agent):
-    fake_claude(monkeypatch, agent, [
-        _msg([_tool("submit_report", {"url": "x"})], "tool_use"),  # missing required fields
-    ])
+def test_empty_structured_output_raises(monkeypatch, agent):
+    fake_claude(monkeypatch, agent, [], parsed=None)              # parse returns no report
     with pytest.raises(agent.ReportError):
         agent.run_agent("Audit https://shop.test/", max_turns=1, structured=True)
 

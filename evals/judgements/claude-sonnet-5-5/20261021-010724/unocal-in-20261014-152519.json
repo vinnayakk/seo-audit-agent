@@ -1,0 +1,72 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "LCP 8.2 s with the LCP element Home-Slider is directly in the data. top_issues also lists 'LCP request discovery' and 'LCP breakdown', which supports the preload/fetchpriority fix. The claims about lazy-loading and JS-dependent rendering are plausible but not shown in the tool output; they are conditional in the fix ('remove...'), and the main preload action is reasonable. The fix would plausibly help.",
+      "reasoning_sound": true,
+      "priority_critique": "LCP of 8.2 s on mobile is very poor and the score is 66. There is no field data, but this is the most significant user-facing issue on the page. P1/high is appropriate.",
+      "priority": "ok"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "Page weight 6677 KB and 'Improve image delivery' est savings 3,874 KiB are in the data. The heaviest resources are secure-progress.jpg (736 KB) and two product PNGs, so naming them is supported by heaviest_resources. WebP/AVIF with srcset is a plausible fix. The 'unoptimised' claim is supported by the savings estimate.",
+      "reasoning_sound": true,
+      "priority_critique": "A 6.7 MB page with ~3.9 MB of potential image savings is a major cause of slow LCP and Speed Index on mobile. High is appropriate, though it overlaps with finding 1.",
+      "priority": "ok"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "Render-blocking (2,090 ms) and Font display (300 ms) are both in top_issues. The fix (defer non-critical CSS/JS, font-display: swap) is generic and does not name specific files, so it does not invent a culprit. It is plausible, though FCP is 1.9 s so the effect on paint is real but moderate.",
+      "reasoning_sound": true,
+      "priority_critique": "A 2 s render-blocking saving is notable and contributes to the slow load, but LCP and image weight are bigger. Medium is fine.",
+      "priority": "ok"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "h1 is an empty list, and the tool flagged 0 H1 tags. Adding an H1 is the right fix. The suggested text matches the site's content. One caveat: a slider-based home page might render the H1 via JS, but the tool shows none in the HTML.",
+      "reasoning_sound": true,
+      "priority_critique": "A missing H1 on the homepage is a modest on-page signal; it is not a major ranking factor. Medium is slightly generous but acceptable, being an easy fix.",
+      "priority": "ok"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "The title is 77 chars, which is verified. It is likely to truncate in SERPs (~60 chars / 600 px). The proposed replacement is 55 chars and keeps the key terms. Note that the new title drops 'Engine' and 'Oil'. It is still a sound fix.",
+      "reasoning_sound": true,
+      "priority_critique": "Title truncation is a cosmetic/CTR matter. Rated medium alongside more consequential issues, it is slightly too high; it is more a low-priority tweak, as the title still contains the key terms at the front.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "The description is 247 chars, which is verified, and will truncate. The replacement is about 135 chars and accurately summarises the content. The fix resolves the problem.",
+      "reasoning_sound": true,
+      "priority_critique": "Truncated meta descriptions have no direct ranking effect and Google often rewrites them. Medium is too high relative to the broken links and speed issues; low is more fitting.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "open_graph.image is null, and og:title and og:description are present. The issue and the fix (add a 1200x630 og:image) are straightforward and correct.",
+      "reasoning_sound": true,
+      "priority_critique": "Impact only affects social previews, not ranking. Low/P3 is appropriate.",
+      "priority": "ok"
+    },
+    {
+      "finding": 8,
+      "reasoning_critique": "The broken list shows the two non-www URLs returning 404 and unocalglobal.com failing with ConnectError. However, check_links.redirected shows that those same non-www URLs redirect to the www URLs (https://www.unocal.in/Industries/industrial/ and /heavy-commercial-vehicle/). The fix directs the owner to those www URLs as 'working', yet the tool data does not confirm they return 200: the redirect final URLs are the same paths that 404 under the non-www checks. The 404 may be from the final pages themselves (the redirect lands on the www URL, and the status reported is for the final destination). So pointing at the www URLs may point to the broken pages. This falls under criterion d: the fix directs to the very URL the data suggests is broken.",
+      "reasoning_sound": false,
+      "priority_critique": "Broken internal links on the homepage to industry pages are important, so medium is reasonable, if anything slightly low since these are key category pages (404 destination pages). But since the fix is unsound, the priority rating is still acceptable as a severity call.",
+      "priority": "ok"
+    },
+    {
+      "finding": 9,
+      "reasoning_critique": "The redirected list confirms many non-www internal links redirect to www, and three (small-engine, passenger-car, agriculture) redirect to .jpg files in wp-content/uploads, which are image files and not pages. The fix of using www hrefs is valid and the image-redirect point is evidenced. The advice to point them to 'real industry pages' is plausible, although the tool doesn't show such pages exist, but the recommendation is reasonably framed.",
+      "reasoning_sound": true,
+      "priority_critique": "Redirect hops on internal links are a minor inefficiency; the links that land on images are a real UX/crawl problem, but the overall effect is moderate. Medium is acceptable.",
+      "priority": "ok"
+    }
+  ],
+  "model": "claude-sonnet-5-5",
+  "case": "unocal-in-20261014-152519",
+  "input_tokens": 4846,
+  "output_tokens": 1974,
+  "seconds": 15.4
+}

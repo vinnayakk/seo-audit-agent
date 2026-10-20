@@ -70,9 +70,6 @@ class JudgementRecord(Judgement):
     seconds: float
 
 
-JUDGE_TOOL = {"name": "submit_verdicts", "description": "Submit one verdict per finding.",
-              "input_schema": Judgement.model_json_schema()}
-
 # Examples are invented (shop.test), never taken from the labelled cases: examples copied from
 # the test set would inflate agreement, because the judge would just recognise the answers.
 RUBRIC = """You review findings from an automated SEO audit. You get the raw tool outputs the audit was
@@ -125,14 +122,13 @@ def provider_for(model: str) -> str:
 
 
 def call_anthropic(client, model: str, prompt: str) -> tuple[dict, int, int]:
-    """Anthropic: structured output via a forced tool call."""
-    resp = client.messages.create(
-        model=model, max_tokens=8192, system=RUBRIC, tools=[JUDGE_TOOL],
-        tool_choice={"type": "tool", "name": "submit_verdicts"},
-        messages=[{"role": "user", "content": prompt}],
-    )
-    block = next(b for b in resp.content if b.type == "tool_use")
-    return block.input, resp.usage.input_tokens, resp.usage.output_tokens
+    """Anthropic: structured outputs (output_format). Opus 5.5, Sonnet 5.5 and Fable 5.1 reject
+    forced tool calls, so a forced submit_verdicts tool no longer works on current models."""
+    resp = client.messages.parse(model=model, max_tokens=8192, system=RUBRIC,
+                                 messages=[{"role": "user", "content": prompt}], output_format=Judgement)
+    if resp.parsed_output is None:
+        raise RuntimeError(f"{model} returned no parsed output (refusal or empty response)")
+    return resp.parsed_output.model_dump(), resp.usage.input_tokens, resp.usage.output_tokens
 
 
 def call_openai(client, model: str, prompt: str) -> tuple[dict, int, int]:
@@ -175,7 +171,7 @@ def model_dir(model: str) -> Path:
 def list_runs(model: str) -> list[Path]:
     """Run folders for a model, oldest first (timestamps sort as text)."""
     d = model_dir(model)
-    return sorted(p for p in d.iterdir() if p.is_dir()) if d.exists() else []
+    return sorted(p for p in d.iterdir() if p.is_dir() and any(p.glob("*.json"))) if d.exists() else []
 
 
 def judged_models() -> list[str]:
@@ -351,6 +347,7 @@ def main() -> None:
             out_dir = model_dir(model) / stamp
             out_dir.mkdir(parents=True, exist_ok=True)
             print(f"\n{model} -> {out_dir}/")
+            done = 0
             for path, run in runs:
                 try:
                     record = judge_run(run, client, model, case=path.stem)
@@ -358,12 +355,16 @@ def main() -> None:
                     print(f"  FAILED  {path.stem}: {type(e).__name__}: {e}")
                     continue
                 (out_dir / f"{path.stem}.json").write_text(record.model_dump_json(indent=2) + "\n")
+                done += 1
                 unsound = [v.finding for v in record.verdicts if not v.reasoning_sound]
                 print(f"  {path.stem}: unsound {unsound or 'none'}  ({record.seconds}s)")
                 if langfuse and run.trace_id:
                     rate = 1 - len(unsound) / len(record.verdicts)
                     langfuse.create_score(trace_id=run.trace_id, name=f"judge_reasoning_sound_rate/{model}",
                                           value=rate, data_type="NUMERIC", comment=f"run {stamp}")
+            print(f"  {done}/{len(runs)} cases judged")
+            if done == 0:
+                out_dir.rmdir()  # an empty run would only confuse `compare`
         if langfuse:
             langfuse.flush()
 

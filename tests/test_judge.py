@@ -27,14 +27,14 @@ def verdict(n, sound, priority="ok"):
 
 
 class FakeAnthropic:
-    def __init__(self, verdicts):
-        self.calls, self._verdicts = [], verdicts
-        self.messages = SimpleNamespace(create=self._create)
+    def __init__(self, verdicts, refuse=False):
+        self.calls, self._verdicts, self._refuse = [], verdicts, refuse
+        self.messages = SimpleNamespace(parse=self._parse)
 
-    def _create(self, **kw):
+    def _parse(self, **kw):
         self.calls.append(kw)
-        return SimpleNamespace(content=[SimpleNamespace(type="tool_use", input={"verdicts": self._verdicts})],
-                               usage=SimpleNamespace(input_tokens=1000, output_tokens=200))
+        parsed = None if self._refuse else kw["output_format"].model_validate({"verdicts": self._verdicts})
+        return SimpleNamespace(parsed_output=parsed, usage=SimpleNamespace(input_tokens=1000, output_tokens=200))
 
 
 class FakeOpenAI:
@@ -64,7 +64,8 @@ def test_anthropic_judge_sees_full_tool_outputs_and_records_usage():
     prompt = client.calls[0]["messages"][0]["content"]
     assert '"final_url": "https://www.shop.test/sale"' in prompt   # whole output, not just cited fields
     assert "[1] (links) impact=high effort=low priority=P1" in prompt
-    assert client.calls[0]["tool_choice"] == {"type": "tool", "name": "submit_verdicts"}
+    assert client.calls[0]["output_format"] is judge.Judgement     # structured outputs, no forced tool
+    assert "tool_choice" not in client.calls[0]
     assert [v.reasoning_sound for v in record.verdicts] == [False, True]
     assert (record.model, record.case, record.input_tokens, record.output_tokens) == \
            ("claude-sonnet-5-5", "shop", 1000, 200)
@@ -78,6 +79,11 @@ def test_openai_judge_gets_same_rubric_and_prompt():
     assert call["input"] == judge.render_case(RUN)             # identical prompt across providers
     assert call["text_format"] is judge.Judgement
     assert record.input_tokens == 900 and record.verdicts[0].reasoning_sound is False
+
+
+def test_anthropic_empty_output_is_an_error():
+    with pytest.raises(RuntimeError, match="no parsed output"):
+        judge.judge_run(RUN, FakeAnthropic([], refuse=True), "claude-opus-5-5")
 
 
 def test_openai_refusal_is_an_error():
@@ -182,6 +188,14 @@ def test_each_run_gets_its_own_folder_per_model(workspace, monkeypatch, capsys):
     assert "Judge vs judge" in out
     assert "claude-sonnet-5-5: 1.00" in out          # two identical sonnet runs agree with themselves
     assert "gpt-6.1-sol: only 1 run" in out
+
+
+def test_failed_run_leaves_no_empty_folder(workspace, monkeypatch, capsys):
+    monkeypatch.setattr(judge, "make_client", lambda provider: FakeAnthropic([], refuse=True))
+    cli(monkeypatch, "run", "--model", "claude-opus-5-5")
+    assert "0/1 cases judged" in capsys.readouterr().out
+    assert judge.list_runs("claude-opus-5-5") == []
+    assert not any((workspace / "evals/judgements/claude-opus-5-5").iterdir())
 
 
 def test_flat_judgements_from_v1_are_moved_not_lost(workspace, monkeypatch):

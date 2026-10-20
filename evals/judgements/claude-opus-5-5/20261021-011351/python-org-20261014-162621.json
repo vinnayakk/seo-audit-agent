@@ -1,0 +1,72 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "check_speed.top_issues[4] lists three render-blocking stylesheets (style, mq, font-awesome) with an estimated 2,730 ms saving. Lab FCP is 3.2 s and LCP is 5.1 s, and the LCP element is a text block, so it waits on CSS. Inlining critical CSS and loading the rest asynchronously targets exactly the listed files. The reasoning holds.",
+      "reasoning_sound": true,
+      "priority_critique": "field_data shows every real-user metric FAST: LCP p75 is 1,265 ms and FCP p75 is 1,195 ms. The 5.1 s LCP exists only in the lab mobile simulation. 'High' overstates the benefit to real users and to ranking; medium or low fits better.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "top_issues[6] (unused CSS, 128 KiB) and top_issues[5] (minify CSS, 24 KiB) both list style.css and mq.css. The fix of minifying and splitting CSS per template addresses them directly. The reasoning holds.",
+      "reasoning_sound": true,
+      "priority_critique": "This is a lab-only byte saving, and field data is all FAST. It deserves low impact rather than medium.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "top_issues[7] lists only jquery-ui.min.js, with a 59 KiB saving. The fix targets that exact script. The reasoning holds.",
+      "reasoning_sound": true,
+      "priority_critique": "Low fits: TBT is 20 ms and field INP is FAST at 88 ms.",
+      "priority": "ok"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "The cache-lifetime issue lists the fingerprinted style.css and the Flux woff files. The font-display issue lists the Flux and SourceSansPro fonts. A long max-age on the hashed assets and font-display: swap are the correct fixes.",
+      "reasoning_sound": true,
+      "priority_critique": "Low fits these small savings, given that field data is FAST.",
+      "priority": "ok"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "canonical is null, as cited. A self-referencing canonical on the homepage is a reasonable, low-risk fix.",
+      "reasoning_sound": true,
+      "priority_critique": "No duplicate variants are shown: the URL resolves with no redirects. Still, a missing canonical is a common, cheap and legitimate fix, so medium is defensible.",
+      "priority": "ok"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "The tool reports 5 H1s, and they are code-sample carousel headings, so demoting them and adding a single topical H1 is a sensible fix.",
+      "reasoning_sound": true,
+      "priority_critique": "Google states that multiple H1s are not a problem. For an authoritative brand homepage this is cosmetic, so low is more appropriate.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "The title is 21 characters and generic. The proposed 56-character title adds keyword context and is a plausible improvement.",
+      "reasoning_sound": true,
+      "priority_critique": "python.org is the dominant result for its brand and topic queries, so a longer title would barely change visibility. Medium overstates the impact.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 8,
+      "reasoning_critique": "The description is 52 characters, and the proposed text is accurate and longer. The fix is sound for snippet quality.",
+      "reasoning_sound": true,
+      "priority_critique": "Meta description is not a ranking factor, and the current text is already accurate. This is low impact, not medium.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 9,
+      "reasoning_critique": "check_links.redirected lists /psf/ redirecting to /psf-landing/ and /download/alternatives redirecting to the version with a trailing slash. The suggested final URLs come from that list, and none of them appear as broken. Calling this a waste of crawl budget is somewhat overstated for one page, but updating the hrefs is a valid fix.",
+      "reasoning_sound": true,
+      "priority_critique": "Low fits: no links are broken, and these are only redirect hops.",
+      "priority": "ok"
+    }
+  ],
+  "model": "claude-opus-5-5",
+  "case": "python-org-20261014-162621",
+  "input_tokens": 4788,
+  "output_tokens": 1982,
+  "seconds": 20.4
+}

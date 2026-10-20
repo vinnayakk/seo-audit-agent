@@ -1,0 +1,72 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "LCP is 8.2 s and the LCP element is Home-Slider, both in the tool output. 'LCP request discovery' in top_issues supports preloading the first slide image with fetchpriority=high. The output does not confirm lazy-loading or JS-dependent rendering on that slide. Still, those are exactly what the LCP request discovery audit checks for, so the fix stays plausible and targeted.",
+      "reasoning_sound": true,
+      "priority_critique": "An 8.2 s lab LCP with no field data to offset it is the biggest speed problem on the page. High is appropriate.",
+      "priority": "ok"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "Page weight is 6677 KB and image delivery savings are 3,874 KiB. secure-progress.jpg and the product PNGs are the files named in heaviest_resources. Converting them to WebP/AVIF at display size with srcset directly addresses this.",
+      "reasoning_sound": true,
+      "priority_critique": "Multi-MB savings on mobile, likely also feeding the slow LCP. High is justified.",
+      "priority": "ok"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "top_issues lists render-blocking requests (2,090 ms) and font display (300 ms). Deferring non-critical CSS/JS and adding font-display: swap are the standard, non-invented remedies.",
+      "reasoning_sound": true,
+      "priority_critique": "The savings are substantial, but FCP is already 1.9 s and LCP and image weight dominate. Medium is reasonable.",
+      "priority": "ok"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "check_meta_tags shows h1 = [], so the issue is real. Adding a single descriptive H1 resolves it.",
+      "reasoning_sound": true,
+      "priority_critique": "A missing H1 is a moderate on-page signal issue. Medium is fine.",
+      "priority": "ok"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "The title is 77 chars, and the proposed 55-char title keeps the key terms. The fix is sound.",
+      "reasoning_sound": true,
+      "priority_critique": "Truncation is cosmetic and the full title still counts for relevance. It is rated the same as broken internal links, so it should be low.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "The description is 247 chars, and the rewrite at about 135 chars keeps the core message. Sound.",
+      "reasoning_sound": true,
+      "priority_critique": "Meta description length has no ranking effect and only a minor CTR effect. Low is more appropriate than medium.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "open_graph.image is null. Adding a 1200x630 og:image fixes social previews.",
+      "reasoning_sound": true,
+      "priority_critique": "This affects sharing only, so low is correct.",
+      "priority": "ok"
+    },
+    {
+      "finding": 8,
+      "reasoning_critique": "check_links.redirected shows https://unocal.in/Industries/industrial/ and /heavy-commercial-vehicle/ redirect to the www versions, and the final status is 404. So the www URLs are the ones returning 404. The fix tells the owner to point the hrefs at exactly those broken www URLs, which would not resolve anything. The correct fix is to restore those pages or link to existing ones. The unocalglobal.com part is fine.",
+      "reasoning_sound": false,
+      "priority_critique": "Broken internal navigation links, including the INDUSTRIAL menu item, matter for crawl and UX. Medium is acceptable, arguably on the low side.",
+      "priority": "ok"
+    },
+    {
+      "finding": 9,
+      "reasoning_critique": "The redirected list shows many non-www internal links redirecting to www. It also shows the small-engine, passenger-car and agriculture links redirecting to .jpg files. Updating the hrefs to www and pointing those three at real industry pages addresses both problems.",
+      "reasoning_sound": true,
+      "priority_critique": "Links that land on image files instead of category pages hurt internal linking and UX. Medium is appropriate.",
+      "priority": "ok"
+    }
+  ],
+  "model": "claude-opus-5-5",
+  "case": "unocal-in-20261014-152519",
+  "input_tokens": 4846,
+  "output_tokens": 1968,
+  "seconds": 20.1
+}
