@@ -1,0 +1,79 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "The 14.0 s lab LCP and Home-Slider element are confirmed. The tool also flags LCP request discovery, supporting early discovery and prioritization of the initial slider image. Avoiding lazy-loading and preloading that image are plausible remedies, although the output does not establish that it is currently lazy-loaded.",
+      "reasoning_sound": true,
+      "priority_critique": "High impact is justified by the exceptionally slow lab LCP. Field data is unavailable, so there is no evidence that real-user performance contradicts this priority.",
+      "priority": "ok"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "The page weighs 6,677 KB and the image-delivery audit estimates 3,359 KiB of savings. The outputs identify specific PNGs and a heavy JPG. Compression, modern formats and appropriate dimensions directly address the documented problem.",
+      "reasoning_sound": true,
+      "priority_critique": "High impact is appropriate for an opportunity to eliminate roughly half the page's transferred weight, particularly alongside the severe mobile LCP.",
+      "priority": "ok"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "The evidence references the wrong array index: top_issues[4] is Network dependency tree. However, the full output confirms 2,220 ms of render-blocking savings and lists all three named stylesheets. Critical CSS and conditional or asynchronous loading plausibly address those requests, provided required styling is preserved.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium impact is reasonable for a substantial render-blocking opportunity, below the broader image-weight and severe LCP findings.",
+      "priority": "ok"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "Both internal links return 404 after redirecting to www. The non-www host is not itself the cause, but the proposed fix correctly allows linking to genuinely existing pages or restoring the missing pages rather than merely changing the hostname.",
+      "reasoning_sound": true,
+      "priority_critique": "High impact is reasonable for broken homepage links to important industry destinations, affecting navigation and internal discovery.",
+      "priority": "ok"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "The external destination produced a ConnectError. Removing it or replacing it with a verified working destination addresses the observed failure, although a single check does not establish permanent unavailability.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium impact overstates one external link failure with an empty recorded anchor. Its demonstrated effect is smaller than broken internal navigation or major performance problems.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "Many internal links do redirect from non-www to www, but the 12-entry list includes an external link. It also includes two final destinations that still 404 and three that resolve to image files. A blanket rewrite to www URLs does not resolve those destination problems, and directly using every recorded final URL would preserve broken links. The recommendation needs to distinguish harmless host redirects from destinations requiring repair.",
+      "reasoning_sound": false,
+      "priority_critique": "Medium impact is too high for hostname-redirect cleanup alone. The broken destinations warrant their separate higher-priority finding; ordinary redirect removal is a lower-impact improvement.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "The heading extraction reports no H1. Adding a descriptive homepage H1 directly resolves that omission, and the proposed wording matches the topic established by the existing metadata.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium impact is reasonable for improving the homepage's primary heading and semantic structure, while remaining below broken navigation and severe loading issues.",
+      "priority": "ok"
+    },
+    {
+      "finding": 8,
+      "reasoning_critique": "The 77-character title is confirmed, and the proposed replacement is shorter while retaining the core topic and brand. Truncation is a risk rather than a certainty because search displays depend on rendered width and title rewriting, but the underlying length concern and remedy are supported.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium impact is too high for shortening an already descriptive title. There is no search-performance evidence showing that its length materially harms visibility or clicks.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 9,
+      "reasoning_critique": "The description is confirmed at 247 characters. The replacement is concise and preserves claims already present in the existing description, so it plausibly addresses the length issue without introducing unsupported facts.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium impact overstates a snippet-length improvement. Description length is not a direct ranking problem, and the outputs provide no evidence of a material click-through impact.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 10,
+      "reasoning_critique": "The output confirms that og:image is missing. Adding a suitable branded image is a supported fix for controlling social preview imagery. The claim that previews have no image is somewhat absolute, since platforms may select fallback images, but the missing explicit preview image is established.",
+      "reasoning_sound": true,
+      "priority_critique": "Low impact is appropriate: this chiefly improves sharing presentation rather than search rankings or core site functionality.",
+      "priority": "ok"
+    }
+  ],
+  "model": "gpt-6.1-sol",
+  "case": "unocal-in-20261014-162333",
+  "input_tokens": 3281,
+  "output_tokens": 1523,
+  "seconds": 34.7
+}

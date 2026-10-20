@@ -1,0 +1,72 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "The 8.2 s mobile LCP and Home-Slider element support the slow-LCP issue. But the output does not identify the slider image or show that it is lazy-loaded or JS-dependent, so the specific preload and rendering changes rely on unverified assumptions and may not resolve the delay.",
+      "reasoning_sound": false,
+      "priority_critique": "An 8.2 s lab LCP is severe, and the poor mobile score reinforces the concern. Field data is unavailable, so P1 is somewhat uncertain, but the potential user impact justifies high priority compared with the metadata findings.",
+      "priority": "ok"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "The 6.7 MB page weight, 3,874 KiB estimated image-delivery savings, and listed large image resources support the issue. The named files appear in the heaviest-resources output, and converting them to modern formats and serving appropriately sized variants is a plausible fix.",
+      "reasoning_sound": true,
+      "priority_critique": "Reducing several megabytes on a mobile page can materially improve load experience. P1 is reasonable alongside the very slow LCP, though field data is unavailable.",
+      "priority": "ok"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "The tool reports both render-blocking requests with estimated savings and a font-display issue with estimated savings, so the issue is supported. Deferring non-critical resources and using font-display: swap are plausible remedies; no unlisted culprit file is asserted.",
+      "reasoning_sound": true,
+      "priority_critique": "The estimated render-blocking savings are meaningful, but these are lab estimates and the page has more severe speed issues. Medium P2 is a reasonable relative priority.",
+      "priority": "ok"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "The metadata output explicitly reports no H1. Adding a relevant homepage H1 would address that absence; the suggested hero placement is not established by the output, but it is an example location rather than a required technical dependency.",
+      "reasoning_sound": true,
+      "priority_critique": "A missing H1 is worth fixing, but its likely impact is below the broken links and major speed problems, and is closer to an on-page refinement than a medium-priority issue. P2 is somewhat high.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "The 77-character title is directly reported, and the proposed 55-character alternative is a plausible concise replacement. Truncation is not guaranteed for every search result, but shortening the title addresses the overlength issue.",
+      "reasoning_sound": true,
+      "priority_critique": "A long title can affect how the result is displayed and its click-through rate, but this is less consequential than the site's speed and broken internal links. Medium P2 overstates its relative impact.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "The 247-character description is directly reported, and the proposed shorter description preserves the main subject and quality-control point. Shortening it addresses the excessive length, although truncation in search results is not guaranteed.",
+      "reasoning_sound": true,
+      "priority_critique": "Meta descriptions mainly affect search-result presentation and click-through, not rankings directly. Relative to the other findings, this is a low-impact refinement, so P2 is too high.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "The Open Graph output has no image, and adding an og:image would plausibly provide an image for social previews. The tool does not identify a particular image, but the fix allows the owner to choose one rather than naming an unsupported asset.",
+      "reasoning_sound": true,
+      "priority_critique": "Missing og:image primarily affects social sharing and has little direct search-ranking impact. Low P3 correctly reflects its lower importance.",
+      "priority": "ok"
+    },
+    {
+      "finding": 8,
+      "reasoning_critique": "The check reports two internal URLs as 404 and an external ConnectError, so the reported link problems are evidenced. However, the proposed www URLs are also shown as the final destinations in the redirected list for those same links; the output does not establish that they work, and may indicate that they are the 404 destinations. Removing or replacing the external link is also not compelled by a single connection failure.",
+      "reasoning_sound": false,
+      "priority_critique": "Two homepage internal 404s can harm user journeys and should be addressed; the external connection failure is less conclusive. P2 is reasonable for the verified internal-link impact, despite the proposed fix being uncertain.",
+      "priority": "ok"
+    },
+    {
+      "finding": 9,
+      "reasoning_critique": "The redirected list confirms that several internal URLs land on image files, and the listed non-www URLs redirect to www. Pointing links directly at canonical destinations can avoid redirects, and correcting links that land on images can improve navigation. The output does not identify the intended replacement page URLs, so the owner would need to verify those destinations before changing them.",
+      "reasoning_sound": true,
+      "priority_critique": "Host-only redirects are a minor issue, but multiple homepage links landing on images instead of industry pages can cause a meaningful navigation problem. P2 is reasonable given that user-facing defect, while the redirect cleanup alone would merit lower priority.",
+      "priority": "ok"
+    }
+  ],
+  "model": "gpt-6-luna",
+  "case": "unocal-in-20261014-152519",
+  "input_tokens": 2949,
+  "output_tokens": 3754,
+  "seconds": 49.5
+}

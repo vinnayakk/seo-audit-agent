@@ -1,0 +1,72 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "The 8.2-second LCP and Home-Slider identification are supported. However, the outputs do not establish that the first slide is lazy-loaded or rendered through JavaScript, nor identify its image request. Those parts of the prescribed fix assume an unverified cause.",
+      "reasoning_sound": false,
+      "priority_critique": "High priority is justified by the very slow mobile LCP. There is no field data showing that real users experience faster loading.",
+      "priority": "ok"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "The page weight, estimated image-delivery savings, and named large image resources are all supported. Modern formats, appropriately sized images, and responsive delivery plausibly address the reported problem without inventing resource names.",
+      "reasoning_sound": true,
+      "priority_critique": "High priority is reasonable given approximately 6.7 MB of page weight, nearly 3.9 MiB of potential image savings, and poor mobile LCP.",
+      "priority": "ok"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "Both render-blocking requests and font-display savings appear in the tool output. The recommendations address those categories without attributing the problem to an unidentified individual file. The savings are estimates, not measured additive delays.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium priority appropriately places this below the substantial image-delivery and LCP problems.",
+      "priority": "ok"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "The empty H1 list directly supports the issue. Adding a descriptive homepage H1 would resolve the missing-heading problem, and the proposed wording fits the site's documented subject matter.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium priority is reasonable for improving the homepage's primary heading and content structure, without treating it as an indexing blocker.",
+      "priority": "ok"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "The title is 77 characters, and the proposed replacement is shorter and retains the main topic and brand. Truncation depends on rendered width and search presentation rather than a fixed character threshold, so 'will be truncated' is overly categorical, but the underlying concern and fix are reasonable.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium impact is overstated for shortening an already descriptive, relevant title. There is no evidence of poor search performance or loss of essential information; this belongs below broken links and substantial loading problems.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "The 247-character description supports a likely snippet-length issue, and the proposed shorter description preserves claims already present in the existing metadata. Actual snippet selection and truncation vary, but the fix plausibly addresses excessive length.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium impact is too high for a description-length adjustment. This is a potential snippet-presentation improvement, not a demonstrated ranking or indexing problem.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "The missing og:image is directly supported, and adding an appropriate image tag resolves that omission. Some sharing platforms may infer another image, so the absence of any preview image is not guaranteed, but a missing explicitly configured social image is a valid issue.",
+      "reasoning_sound": true,
+      "priority_critique": "Low priority correctly reflects a social-sharing improvement with little direct ranking impact.",
+      "priority": "ok"
+    },
+    {
+      "finding": 8,
+      "reasoning_critique": "The broken links are supported, but the proposed www replacements are not working alternatives. The redirected entries show that both non-www industry URLs already redirect to exactly those www URLs before returning 404. Changing the hrefs to those destinations would leave the internal links broken. Removing or replacing the failing external link is reasonable.",
+      "reasoning_sound": false,
+      "priority_critique": "Medium priority is reasonable for two broken internal destinations and one failed external connection. These deserve attention ahead of cosmetic metadata changes, but the output does not establish a sitewide navigation or indexing failure requiring the highest rating.",
+      "priority": "ok"
+    },
+    {
+      "finding": 9,
+      "reasoning_critique": "The redirect list supports both unnecessary host redirects and three industry links ending at image files. Linking directly to valid canonical destinations and replacing image destinations with appropriate industry pages plausibly addresses these issues. This is general destination-selection guidance, not evidence that any particular replacement page exists; importantly, host normalization alone would not repair the separately reported 404s.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium priority is justified primarily by industry-navigation links landing on images rather than useful pages. Eliminating host redirects alone would be a lower-impact cleanup.",
+      "priority": "ok"
+    }
+  ],
+  "model": "gpt-6.1-sol",
+  "case": "unocal-in-20261014-152519",
+  "input_tokens": 2949,
+  "output_tokens": 1456,
+  "seconds": 34.6
+}

@@ -1,0 +1,72 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "The 8.2-second lab LCP and Home-Slider identification support the issue. Prioritizing the initial slide's image is plausible, but the outputs do not establish that this slide is lazy-loaded or depends on JavaScript rendering. Those parts of the prescribed fix assume causes that were not demonstrated.",
+      "reasoning_sound": false,
+      "priority_critique": "High priority is appropriate for an 8.2-second mobile LCP. There is no field data showing that real-user performance contradicts this severe lab result.",
+      "priority": "ok"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "The page weight, substantial image-delivery savings, and explicitly listed large JPEG and PNG resources support the issue. Modern formats, appropriate dimensions, and responsive image selection plausibly reduce these resources' transfer sizes, although the outputs do not attribute the entire estimated savings to those three images.",
+      "reasoning_sound": true,
+      "priority_critique": "High priority is justified by roughly 6.7 MB of resources, nearly 3.9 MiB of estimated image savings, and poor mobile LCP. This is substantially more consequential than cosmetic metadata changes.",
+      "priority": "ok"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "Both opportunities and their estimated savings appear in the tool output. Deferring non-critical blocking resources and using font-display: swap are plausible remedies without inventing a particular offending file. The estimates are potential savings, not measured additive delays.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium priority is reasonable given the substantial render-blocking opportunity, while the larger image-delivery and LCP problems warrant greater emphasis.",
+      "priority": "ok"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "The empty H1 list directly supports the issue. Adding a descriptive homepage H1 addresses it, and the proposed wording is consistent with the page's existing title and description.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium priority is reasonable for a missing primary heading on the homepage, although its likely benefit is smaller than fixing the severe loading problems or broken navigation.",
+      "priority": "ok"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "The title is long, and the proposed replacement plausibly reduces truncation while preserving the core topic and brand. Truncation depends on rendered width and Google's title selection rather than a fixed character limit, so 'will be truncated' is overly categorical, but the underlying issue and remedy are supported.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium priority overstates a title-length refinement. The current title is already descriptive and relevant; shortening it is less consequential than the performance, heading, and broken-link issues.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "The 247-character description supports a likely snippet-truncation concern. The replacement is shorter and preserves claims present in the existing description. Actual snippets can be rewritten or vary by query, so truncation is not guaranteed in every result.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium priority is too high for shortening an existing, relevant description. This is primarily a search-snippet presentation improvement rather than a direct ranking or accessibility repair.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "The missing og:image is explicitly reported, and adding an appropriate image tag addresses it. Platforms might discover an image without that tag, so the absence of every possible preview image is not certain, but the missing explicit sharing image is supported.",
+      "reasoning_sound": true,
+      "priority_critique": "Low priority appropriately reflects a social-sharing improvement with little direct effect on search ranking.",
+      "priority": "ok"
+    },
+    {
+      "finding": 8,
+      "reasoning_critique": "The broken links and external connection failure are supported, but the proposed internal replacements are not working alternatives. The redirect output shows that the non-www industry URLs already resolve to those exact www URLs before the reported 404s. Changing the hostname therefore does not repair the destinations. Removing or replacing the failing external link is plausible.",
+      "reasoning_sound": false,
+      "priority_critique": "Medium priority is reasonable for two broken internal destinations and one failing external link. These affect navigation and discovery, but the outputs do not establish a sitewide indexing failure requiring a higher rating.",
+      "priority": "ok"
+    },
+    {
+      "finding": 9,
+      "reasoning_critique": "The redirect list supports both unnecessary hostname redirects and three industry links ending at image files. Linking directly to canonical URLs removes redirect hops, while replacing image destinations with actual industry pages addresses the navigation mismatch. This is a general remediation rather than a claim that particular unverified replacement pages already work; hostname changes alone would not repair the separately reported 404 destinations.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium priority is reasonable because the image destinations can frustrate users seeking industry information. Hostname redirects alone would be a lower-priority cleanup, but the incorrect destination types make this more than a cosmetic issue.",
+      "priority": "ok"
+    }
+  ],
+  "model": "gpt-6.1-sol",
+  "case": "unocal-in-20261014-152519",
+  "input_tokens": 2949,
+  "output_tokens": 1390,
+  "seconds": 33.4
+}

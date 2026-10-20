@@ -1,0 +1,65 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "The lab timings and render-blocking savings are supported, but the output does not identify which requests are render-blocking. Listing the stylesheet and jQuery UI among the heaviest resources does not establish that either causes this delay or that jQuery UI is not already deferred. Critical CSS is a plausible technique, but the resource-specific instructions are unsupported.",
+      "reasoning_sound": false,
+      "priority_critique": "Medium impact overstates the demonstrated user impact. Field LCP is 1.265 seconds and FCP is 1.195 seconds, with every reported field metric rated FAST. This is a lower-priority lab optimization.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "The stylesheet is the largest listed resource, and the audit reports unused and unminified CSS. However, those savings are page-level findings, not attributed to this stylesheet. In particular, the 128 KiB unused-CSS estimate cannot simply be assigned to the listed 123 KB file. Minification and careful purging could help, but the claim that much of this specific stylesheet is unused or unminified is not established.",
+      "reasoning_sound": false,
+      "priority_critique": "The page weighs only 497 KB and real-user performance is consistently FAST. CSS optimization is reasonable maintenance, but medium impact is excessive for the demonstrated benefits.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "The third-party jQuery UI request, unused-JavaScript finding, and cache-lifetime finding are all present. However, the output does not attribute the unused JavaScript or cache savings to jQuery UI, establish that it can be removed, or show which assets need longer cache lifetimes. Self-hosting a custom build is therefore not an evidence-backed remedy for the reported savings.",
+      "reasoning_sound": false,
+      "priority_critique": "Low impact is appropriate for these modest optimization opportunities, especially with FAST field performance and zero lab total blocking time.",
+      "priority": "ok"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "The title is short, but the assertion that it gives search engines no keywords is false: it explicitly includes Python.org, the site's central brand and topic. A more descriptive title is plausible, but a character-count recommendation does not establish that the current title is deficient.",
+      "reasoning_sound": false,
+      "priority_critique": "Medium impact is too high for refining an already recognizable, relevant homepage title. There is no search-performance evidence demonstrating a material targeting or click-through problem.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "The description is accurately quoted and is brief. The proposed replacement preserves its accurate summary while adding useful visitor actions consistent with the site's download, documentation, and community destinations. This is a plausible snippet improvement, although falling below a recommended character range is not itself an SEO defect.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium impact is excessive. The existing description already identifies the official Python language site clearly; expanding it is a low-impact snippet refinement, not a demonstrated ranking improvement.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "The canonical is absent, and adding the proposed HTTPS homepage canonical would address that omission. The finding appropriately describes duplicate-URL problems as a risk rather than claiming that duplicates were actually discovered.",
+      "reasoning_sound": true,
+      "priority_critique": "No duplicate pages, conflicting canonical signals, or indexing problems are shown. A self-referencing canonical is sensible preventative maintenance, but medium impact is not supported here.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "The five reported H1s describe individual language features rather than explicitly naming the homepage topic. Adding a descriptive primary H1 and demoting those headings would plausibly improve the hierarchy. Multiple H1s are not inherently an SEO error, and the tool does not explicitly establish the slide implementation, but the substantive heading recommendation follows from the listed text.",
+      "reasoning_sound": true,
+      "priority_critique": "Low impact is appropriate. This is a semantic and clarity improvement, not evidence of a major indexing or ranking obstacle.",
+      "priority": "ok"
+    },
+    {
+      "finding": 8,
+      "reasoning_critique": "The output lists eight redirects, and the specific replacement examples match their reported destinations. Updating those hrefs would avoid the corresponding redirect hops. The LinkedIn destination remains unverified with status 999, so that entry should be checked rather than assumed healthy; this does not invalidate the supported replacement examples.",
+      "reasoning_sound": true,
+      "priority_critique": "Low impact is appropriate because no checked links are confirmed broken. These changes primarily remove unnecessary navigation hops rather than restore inaccessible content.",
+      "priority": "ok"
+    }
+  ],
+  "model": "gpt-6.1-sol",
+  "case": "python-org-20261014-151521",
+  "input_tokens": 2711,
+  "output_tokens": 1302,
+  "seconds": 29.4
+}

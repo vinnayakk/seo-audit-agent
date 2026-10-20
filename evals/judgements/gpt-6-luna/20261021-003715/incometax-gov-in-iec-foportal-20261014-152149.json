@@ -1,0 +1,58 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "Sound: check_meta_tags reports an HTTP canonical while fetch_page confirms the requested page is served over HTTPS. Changing the canonical to the HTTPS URL directly addresses that mismatch. The outputs do not show whether the HTTP URL redirects, but that does not invalidate the mismatch or the proposed correction.",
+      "reasoning_sound": true,
+      "priority_critique": "A canonical pointing to HTTP on the homepage can send an important conflicting indexing signal, so elevated priority is defensible. P1/high is somewhat aggressive without evidence that the HTTP URL is indexed or treated as a separate page, but the homepage’s canonical is consequential enough that this rating is reasonable.",
+      "priority": "ok"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "Sound: the meta-tag output explicitly reports a null description. Adding a relevant description would address the omission and could improve the search snippet, although search engines may still choose their own snippet.",
+      "reasoning_sound": true,
+      "priority_critique": "A missing description mainly affects snippet presentation and potential click-through, not rankings directly. P1/high overstates its impact relative to the canonical issue and other substantive site problems.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "Sound: the output lists seven H1 elements, including an empty one. Keeping a single descriptive H1 and making section headings H2 would address the reported structure; the listed section names are plausible H2s. The exact best H1 wording is not supplied, but the fix does not depend on an unsupported cause.",
+      "reasoning_sound": true,
+      "priority_critique": "Multiple H1s and an empty H1 are worth cleaning up, but their direct search impact is generally modest. P2/medium is high compared with the stronger canonical issue and the limited evidence of user impact.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "Sound: the reported title is short and generic, and the Open Graph data has no description or image. The proposed title is a plausible, sufficiently concise improvement, and adding those OG tags addresses the stated sharing-preview gap. The output shows an OG title of “Home,” so the finding correctly focuses on the missing description and image rather than claiming the OG title is absent.",
+      "reasoning_sound": true,
+      "priority_critique": "A better homepage title can matter for search relevance and presentation, while missing OG fields mainly affect social sharing. Taken together, P2/medium is reasonable; the fix is more than cosmetic, but the OG portion should not be treated as a major ranking issue.",
+      "priority": "ok"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "The lab issue is supported: mobile lab LCP is 4.9 seconds and render-blocking requests show estimated savings of 4,060 ms. Generic optimization of noncritical resources and critical CSS could plausibly help. However, the output does not identify particular JS or CSS files, so the advice is appropriately general rather than attributing the problem to an unlisted file. Field data is strong (p75 LCP 1,928 ms, FCP 1,390 ms, and INP 133 ms all rated FAST), which substantially limits the demonstrated real-user problem.",
+      "reasoning_sound": true,
+      "priority_critique": "P2/medium overweights a lab-only slowdown when field metrics show users are receiving fast experiences. Optimization may still help some users, but this should rank below issues with clearer search or user impact.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "Sound: the page is reported at 2,944 KB, image delivery has estimated savings of 1,081 KiB, and the three named resources are listed among the heaviest images. Resizing and recompressing those assets, using responsive sizes, and converting the listed JPEG are plausible ways to reduce image weight. The outputs do not establish that these images are banners, but the fix does not depend on that label.",
+      "reasoning_sound": true,
+      "priority_critique": "The page is fairly heavy and the lab estimates meaningful image savings, but field LCP and other reported field metrics are FAST. P2/medium is too high given the limited real-user impact shown and the more consequential canonical issue.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "Sound: the redirect list contains several internal URLs using HTTP or double slashes, as well as the old account-misuse path, and gives their final destinations. Updating those internal hrefs to the final HTTPS paths plausibly removes unnecessary redirects. The report checks 50 links and finds no broken links; this is redirect cleanup, not a broken-link problem. “Many” and the crawl-budget rationale are somewhat overstated, but the underlying issue and fix are supported.",
+      "reasoning_sound": true,
+      "priority_critique": "These redirects can add small delays and are undesirable for crawling, but the output shows no broken links and only a subset of checked links redirect. P3/low appropriately reflects their comparatively minor impact.",
+      "priority": "ok"
+    }
+  ],
+  "model": "gpt-6-luna",
+  "case": "incometax-gov-in-iec-foportal-20261014-152149",
+  "input_tokens": 3090,
+  "output_tokens": 2189,
+  "seconds": 37.1
+}

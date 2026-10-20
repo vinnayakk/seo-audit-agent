@@ -1,0 +1,79 @@
+{
+  "verdicts": [
+    {
+      "finding": 1,
+      "reasoning_critique": "The 14.0-second LCP and Home-Slider element are confirmed, and the LCP request-discovery warning supports investigating earlier loading. However, the outputs do not identify the first slider image as the LCP resource or show that it is lazy-loaded. The prescribed fix assumes an unverified loading configuration.",
+      "reasoning_sound": false,
+      "priority_critique": "High impact is reasonable for such a severe mobile lab LCP. There is no field data showing that real users have fast experiences.",
+      "priority": "ok"
+    },
+    {
+      "finding": 2,
+      "reasoning_critique": "The approximately 6.7 MB page weight and 3,359 KiB image-delivery savings support this finding. The outputs identify relevant image resources, and compression, modern formats, and correctly sized images plausibly address the reported waste.",
+      "reasoning_sound": true,
+      "priority_critique": "High impact is justified by the substantial potential transfer reduction and the severe mobile LCP.",
+      "priority": "ok"
+    },
+    {
+      "finding": 3,
+      "reasoning_critique": "The cited array index is incorrect: top_issues[4] is Network dependency tree, while render-blocking requests are at index 5. Nevertheless, the full output confirms the 2,220 ms estimate and all three named stylesheets. Critical CSS and appropriately conditional or asynchronous stylesheet loading plausibly address the issue.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium impact is reasonable for a substantial lab rendering opportunity, below the severe LCP and image-weight findings.",
+      "priority": "ok"
+    },
+    {
+      "finding": 4,
+      "reasoning_critique": "Both internal links ultimately return 404 on the www host. The non-www hostname is not the cause of those failures, but the finding correctly identifies broken destinations. Linking to verified existing pages or restoring the missing pages would resolve them; merely changing the hostname would not.",
+      "reasoning_sound": true,
+      "priority_critique": "High impact is reasonable for two broken homepage links to business-relevant industry destinations, affecting navigation and internal discovery.",
+      "priority": "ok"
+    },
+    {
+      "finding": 5,
+      "reasoning_critique": "The connection error is explicitly reported for this external URL. Removing the link or replacing it with a verified working destination would address the observed failure, although one failed check does not establish a permanent outage.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium impact overstates a single external connection failure with an empty recorded anchor and no evidence of a critical user journey. It should rank below broken internal destinations and the substantial performance issues.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 6,
+      "reasoning_critique": "The output contains 12 redirected links in total, but one is external. The internal redirects also include three industry URLs ending at image files and two destinations returning 404, not merely hostname normalization. A blanket rewrite to www URLs does not establish that these path redirects or broken destinations will be resolved. The recommendation needs to distinguish straightforward host redirects from links requiring destination repair.",
+      "reasoning_sound": false,
+      "priority_critique": "Routine internal hostname redirects are a lower-impact cleanup than broken links or substantial rendering delays. Their count alone does not justify medium impact, and the broken destinations are already covered separately.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 7,
+      "reasoning_critique": "The empty H1 list directly supports the issue. Adding a descriptive homepage H1 is a plausible structural improvement, and the proposed wording matches the site's documented subject matter.",
+      "reasoning_sound": true,
+      "priority_critique": "Medium impact is reasonable for a missing primary heading on the homepage, though it is less urgent than repairing broken internal links or the major performance problems.",
+      "priority": "ok"
+    },
+    {
+      "finding": 8,
+      "reasoning_critique": "The 77-character title is confirmed, and the proposed replacement is shorter and relevant. However, character count alone does not establish that the title will be truncated: display depends on rendered width and the title Google selects. The finding should describe a truncation risk rather than a certainty.",
+      "reasoning_sound": false,
+      "priority_critique": "The existing title is descriptive and relevant. Shortening it is a modest presentation improvement, not a medium-impact issue comparable to missing structure or broken navigation.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 9,
+      "reasoning_critique": "The description is confirmed at 247 characters, exceeding the tool's suggested range. The proposed shorter description remains consistent with the supplied content and plausibly addresses excessive length.",
+      "reasoning_sound": true,
+      "priority_critique": "This is low-impact snippet optimization. There is no evidence of actual snippet problems or click-through losses, and description length is not itself a direct ranking issue.",
+      "priority": "too_high"
+    },
+    {
+      "finding": 10,
+      "reasoning_critique": "The missing og:image is confirmed, and adding a suitable image would improve control over social previews. However, its absence does not establish that shared links have no preview image: sharing platforms may select an image from page content. The claimed consequence is stronger than the evidence supports.",
+      "reasoning_sound": false,
+      "priority_critique": "Low impact is appropriate because this primarily concerns social-sharing presentation, with little direct effect on search rankings.",
+      "priority": "ok"
+    }
+  ],
+  "model": "gpt-6.1-sol",
+  "case": "unocal-in-20261014-162333",
+  "input_tokens": 3281,
+  "output_tokens": 1651,
+  "seconds": 41.7
+}
