@@ -1,0 +1,378 @@
+{
+  "question": "Do a full SEO audit of https://www.python.org: reachability, meta tags, broken links and mobile speed. Then submit a prioritised report.",
+  "trace_id": "f720c9eae00645b5776df0461e24197a",
+  "report": {
+    "url": "https://www.python.org",
+    "summary": "python.org is healthy: it returns 200 over HTTPS with no redirects, has no broken links among the 50 checked, and real-user Core Web Vitals all rate FAST. The weak spots are thin title and description tags, a missing canonical link, and a mobile lab score of 72 (LCP 5.0 s) caused mainly by render-blocking requests and unused CSS.",
+    "findings": [
+      {
+        "category": "speed",
+        "issue": "Render-blocking requests delay mobile first paint, giving a lab LCP of 5.0 s and FCP of 3.2 s.",
+        "evidence": [
+          {
+            "tool": "check_speed",
+            "field": "top_issues[4]",
+            "value": "Render-blocking requests: Est savings of 2,730 ms"
+          },
+          {
+            "tool": "check_speed",
+            "field": "lab_metrics.LCP",
+            "value": "5.0 s"
+          }
+        ],
+        "fix": "Inline the critical above-the-fold CSS and load the rest of style.6cb9f297dd80.css asynchronously, and add defer to the jQuery UI script tag.",
+        "impact": "medium",
+        "effort": "medium"
+      },
+      {
+        "category": "speed",
+        "issue": "The main stylesheet is the heaviest resource and much of it is unused or unminified.",
+        "evidence": [
+          {
+            "tool": "check_speed",
+            "field": "heaviest_resources[0].kb",
+            "value": "123"
+          },
+          {
+            "tool": "check_speed",
+            "field": "top_issues[6]",
+            "value": "Reduce unused CSS: Est savings of 128 KiB"
+          },
+          {
+            "tool": "check_speed",
+            "field": "top_issues[5]",
+            "value": "Minify CSS: Est savings of 24 KiB"
+          }
+        ],
+        "fix": "Run the stylesheet through a CSS minifier and purge unused rules with a tool such as PurgeCSS in the build.",
+        "impact": "medium",
+        "effort": "medium"
+      },
+      {
+        "category": "speed",
+        "issue": "The page loads jQuery UI from a third-party host, and the speed audit also reports unused JavaScript and short cache lifetimes.",
+        "evidence": [
+          {
+            "tool": "check_speed",
+            "field": "heaviest_resources[1].url",
+            "value": "https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"
+          },
+          {
+            "tool": "check_speed",
+            "field": "top_issues[7]",
+            "value": "Reduce unused JavaScript: Est savings of 59 KiB"
+          },
+          {
+            "tool": "check_speed",
+            "field": "top_issues[0]",
+            "value": "Use efficient cache lifetimes: Est savings of 33 KiB"
+          }
+        ],
+        "fix": "Remove jQuery UI from the homepage, or self-host a custom build with only the components used, and serve static assets with a long Cache-Control max-age.",
+        "impact": "low",
+        "effort": "medium"
+      },
+      {
+        "category": "meta_tags",
+        "issue": "The title is short and generic, so it gives search engines no keywords.",
+        "evidence": [
+          {
+            "tool": "check_meta_tags",
+            "field": "title",
+            "value": "Welcome to Python.org"
+          },
+          {
+            "tool": "check_meta_tags",
+            "field": "title_length",
+            "value": "21"
+          }
+        ],
+        "fix": "Change the title to 'Python.org – Official Python Programming Language Home' (about 55 characters).",
+        "impact": "medium",
+        "effort": "low"
+      },
+      {
+        "category": "meta_tags",
+        "issue": "The meta description is below the recommended length and says little.",
+        "evidence": [
+          {
+            "tool": "check_meta_tags",
+            "field": "description",
+            "value": "The official home of the Python Programming Language"
+          },
+          {
+            "tool": "check_meta_tags",
+            "field": "description_length",
+            "value": "52"
+          }
+        ],
+        "fix": "Rewrite the description as: 'The official home of the Python programming language. Download Python, read the docs, and join the community.' (about 112 characters).",
+        "impact": "medium",
+        "effort": "low"
+      },
+      {
+        "category": "meta_tags",
+        "issue": "No canonical link is set, which risks duplicate-URL signals.",
+        "evidence": [
+          {
+            "tool": "check_meta_tags",
+            "field": "canonical",
+            "value": "null"
+          }
+        ],
+        "fix": "Add <link rel=\"canonical\" href=\"https://www.python.org/\"> to the homepage head.",
+        "impact": "medium",
+        "effort": "low"
+      },
+      {
+        "category": "meta_tags",
+        "issue": "The page has five H1 headings, all feature-slide titles, so no single H1 states the page topic.",
+        "evidence": [
+          {
+            "tool": "check_meta_tags",
+            "field": "h1",
+            "value": "[\"Functions Defined\", \"All the Flow You’d Expect\", \"Compound Data Types\", \"Intuitive Interpretation\", \"Quick & Easy to Learn\"]"
+          }
+        ],
+        "fix": "Make one descriptive heading, such as 'Python Programming Language', the only H1, and change the five slide headings to H2.",
+        "impact": "low",
+        "effort": "low"
+      },
+      {
+        "category": "links",
+        "issue": "Eight internal and external links redirect, including some that point to outdated URLs and some that only lack a trailing slash.",
+        "evidence": [
+          {
+            "tool": "check_links",
+            "field": "redirected[0]",
+            "value": "https://www.python.org/psf/ -> https://www.python.org/psf-landing/"
+          },
+          {
+            "tool": "check_links",
+            "field": "redirected[6]",
+            "value": "https://www.python.org/psf/conduct/ -> https://policies.python.org/python.org/code-of-conduct/"
+          },
+          {
+            "tool": "check_links",
+            "field": "redirected[2]",
+            "value": "https://donate.python.org/ -> https://www.python.org/psf/donations/"
+          }
+        ],
+        "fix": "Change the href values to the final URLs, for example /psf-landing/, the policies.python.org code-of-conduct page, /psf/donations/, and the trailing-slash versions of /download/alternatives/, /doc/av/ and /community/awards/.",
+        "impact": "low",
+        "effort": "low"
+      }
+    ],
+    "not_checked": [
+      "Only 50 of 126 links were checked; 76 were skipped, so broken links among them are unknown.",
+      "The LinkedIn link returned status 999 and is unverified, so check it in a browser.",
+      "Desktop speed was not tested.",
+      "robots.txt and sitemap.xml were not checked.",
+      "Other pages on the site were not audited."
+    ]
+  },
+  "text": "",
+  "tool_outputs": [
+    {
+      "tool": "fetch_page",
+      "input": {
+        "url": "https://www.python.org"
+      },
+      "output": {
+        "requested_url": "https://www.python.org",
+        "final_url": "https://www.python.org",
+        "status": 200,
+        "redirects": [],
+        "response_time_ms": 62,
+        "content_type": "text/html; charset=utf-8",
+        "html_size_kb": 50.9,
+        "word_count": 1122,
+        "is_https": true,
+        "x_robots_tag": null
+      }
+    },
+    {
+      "tool": "check_meta_tags",
+      "input": {
+        "url": "https://www.python.org"
+      },
+      "output": {
+        "url": "https://www.python.org",
+        "title": "Welcome to Python.org",
+        "title_length": 21,
+        "description": "The official home of the Python Programming Language",
+        "description_length": 52,
+        "canonical": null,
+        "robots": null,
+        "x_robots_tag": null,
+        "h1": [
+          "Functions Defined",
+          "All the Flow You’d Expect",
+          "Compound Data Types",
+          "Intuitive Interpretation",
+          "Quick & Easy to Learn"
+        ],
+        "lang": "en",
+        "viewport": "width=device-width, initial-scale=1.0",
+        "open_graph": {
+          "title": "Welcome to Python.org",
+          "description": "The official home of the Python Programming Language",
+          "image": "https://www.python.org/static/opengraph-icon-200x200.png"
+        },
+        "issues": [
+          "Title is 21 chars (aim for ~30-60)",
+          "Meta description is 52 chars (aim for ~70-160)",
+          "No canonical link",
+          "Found 5 <h1> tags (expected 1)"
+        ]
+      }
+    },
+    {
+      "tool": "check_links",
+      "input": {
+        "url": "https://www.python.org"
+      },
+      "output": {
+        "url": "https://www.python.org",
+        "total_links": 126,
+        "checked": 50,
+        "skipped": 76,
+        "internal": 63,
+        "external": 63,
+        "nofollow": 0,
+        "broken": [],
+        "unverified": [
+          {
+            "url": "https://www.linkedin.com/company/python-software-foundation/",
+            "status": 999
+          }
+        ],
+        "redirected": [
+          {
+            "url": "https://www.python.org/psf/",
+            "final_url": "https://www.python.org/psf-landing/"
+          },
+          {
+            "url": "https://docs.python.org",
+            "final_url": "https://docs.python.org/3/"
+          },
+          {
+            "url": "https://donate.python.org/",
+            "final_url": "https://www.python.org/psf/donations/"
+          },
+          {
+            "url": "https://www.linkedin.com/company/python-software-foundation/",
+            "final_url": "https://www.linkedin.com/company/thepsf"
+          },
+          {
+            "url": "https://www.python.org/download/alternatives",
+            "final_url": "https://www.python.org/download/alternatives/"
+          },
+          {
+            "url": "https://www.python.org/doc/av",
+            "final_url": "https://www.python.org/doc/av/"
+          },
+          {
+            "url": "https://www.python.org/psf/conduct/",
+            "final_url": "https://policies.python.org/python.org/code-of-conduct/"
+          },
+          {
+            "url": "https://www.python.org/community/awards",
+            "final_url": "https://www.python.org/community/awards/"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "check_speed",
+      "input": {
+        "url": "https://www.python.org",
+        "strategy": "mobile"
+      },
+      "output": {
+        "url": "https://www.python.org",
+        "strategy": "mobile",
+        "performance_score": 72,
+        "lab_metrics": {
+          "FCP": "3.2 s",
+          "LCP": "5.0 s",
+          "TBT": "0 ms",
+          "CLS": "0",
+          "Speed Index": "4.9 s"
+        },
+        "lcp_element": "Python is a programming language that lets you work quickly and integrate syste…",
+        "page_weight_kb": 497,
+        "heaviest_resources": [
+          {
+            "url": "https://www.python.org/static/stylesheets/style.6cb9f297dd80.css",
+            "kb": 123
+          },
+          {
+            "url": "https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js",
+            "kb": 67
+          },
+          {
+            "url": "https://www.python.org/",
+            "kb": 52
+          }
+        ],
+        "field_data": {
+          "CUMULATIVE_LAYOUT_SHIFT_SCORE": {
+            "p75": 0,
+            "rating": "FAST"
+          },
+          "EXPERIMENTAL_TIME_TO_FIRST_BYTE": {
+            "p75": 538,
+            "rating": "FAST"
+          },
+          "FIRST_CONTENTFUL_PAINT_MS": {
+            "p75": 1195,
+            "rating": "FAST"
+          },
+          "INTERACTION_TO_NEXT_PAINT": {
+            "p75": 88,
+            "rating": "FAST"
+          },
+          "LARGEST_CONTENTFUL_PAINT_MS": {
+            "p75": 1265,
+            "rating": "FAST"
+          }
+        },
+        "top_issues": [
+          {
+            "title": "Use efficient cache lifetimes",
+            "detail": "Est savings of 33 KiB"
+          },
+          {
+            "title": "Font display",
+            "detail": "Est savings of 110 ms"
+          },
+          {
+            "title": "Forced reflow",
+            "detail": null
+          },
+          {
+            "title": "Network dependency tree",
+            "detail": null
+          },
+          {
+            "title": "Render-blocking requests",
+            "detail": "Est savings of 2,730 ms"
+          },
+          {
+            "title": "Minify CSS",
+            "detail": "Est savings of 24 KiB"
+          },
+          {
+            "title": "Reduce unused CSS",
+            "detail": "Est savings of 128 KiB"
+          },
+          {
+            "title": "Reduce unused JavaScript",
+            "detail": "Est savings of 59 KiB"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,3115 @@
+diff --git a/.env.example b/.env.example
+index d1377d3..185d3ac 100644
+--- a/.env.example
++++ b/.env.example
+@@ -4,4 +4,6 @@ PAGESPEED_API_KEY=
+ #Langfuse
+ LANGFUSE_SECRET_KEY=
+ LANGFUSE_PUBLIC_KEY=
+-LANGFUSE_BASE_URL=
+\ No newline at end of file
++LANGFUSE_BASE_URL=
++#OpenAI (only needed for gpt-* judges)
++OPENAI_API_KEY=
+diff --git a/evals/cases/abacusdesk-com-20261014-152343.json b/evals/cases/abacusdesk-com-20261014-152343.json
+new file mode 100644
+index 0000000..2dbf1dd
+--- /dev/null
++++ b/evals/cases/abacusdesk-com-20261014-152343.json
+@@ -0,0 +1,368 @@
++{
++  "question": "Do a full SEO audit of https://www.abacusdesk.com/: reachability, meta tags, broken links and mobile speed. Then submit a prioritised report.",
++  "trace_id": "cbd6169d3ef417e01b53a614034f20bc",
++  "report": {
++    "url": "https://www.abacusdesk.com/",
++    "summary": "The homepage is reachable over HTTPS (200, no redirects) and its core tags are in place: title, description, canonical, a single H1, viewport and indexable robots. The biggest problem is mobile speed. The performance score is 29, LCP is 21.8 s and the page weighs about 5 MB. Smaller issues are a missing og:image, a broken email link and a broken external link.",
++    "findings": [
++      {
++        "category": "speed",
++        "issue": "Mobile LCP is 21.8 s and the performance score is only 29. The LCP element is the hero text block, and Lighthouse flags LCP request discovery and LCP breakdown problems.",
++        "evidence": [
++          {
++            "tool": "check_speed",
++            "field": "lab_metrics.LCP",
++            "value": "21.8 s"
++          },
++          {
++            "tool": "check_speed",
++            "field": "performance_score",
++            "value": "29"
++          },
++          {
++            "tool": "check_speed",
++            "field": "lcp_element",
++            "value": "Business Software\nAutomation for every business need\n\nMake your business more p…"
++          }
++        ],
++        "fix": "Find the hero image or background that the LCP element depends on. Preload it with <link rel=\"preload\" as=\"image\"> and serve it as a compressed, correctly sized WebP or AVIF. Remove any lazy-loading and render-blocking CSS or JS on it.",
++        "impact": "high",
++        "effort": "medium"
++      },
++      {
++        "category": "speed",
++        "issue": "The page is very heavy at about 5 MB. Lighthouse estimates 1,670 KiB of savings from better image delivery and 3,406 KiB from better cache lifetimes.",
++        "evidence": [
++          {
++            "tool": "check_speed",
++            "field": "page_weight_kb",
++            "value": "5123"
++          },
++          {
++            "tool": "check_speed",
++            "field": "top_issues[4]",
++            "value": "Improve image delivery: Est savings of 1,670 KiB"
++          },
++          {
++            "tool": "check_speed",
++            "field": "top_issues[0]",
++            "value": "Use efficient cache lifetimes: Est savings of 3,406 KiB"
++          }
++        ],
++        "fix": "Convert the large images to WebP or AVIF at their displayed dimensions. Set a Cache-Control max-age of at least 1 year on static assets (images, CSS, JS, fonts).",
++        "impact": "high",
++        "effort": "medium"
++      },
++      {
++        "category": "speed",
++        "issue": "Total blocking time is high at 810 ms. The reCAPTCHA script (347 KB) is one of the heaviest resources and is requested more than once.",
++        "evidence": [
++          {
++            "tool": "check_speed",
++            "field": "lab_metrics.TBT",
++            "value": "810 ms"
++          },
++          {
++            "tool": "check_speed",
++            "field": "heaviest_resources[0].url",
++            "value": "https://www.gstatic.com/recaptcha/releases/nY0xPItgwtlvjEjk2TqdwOQz/recaptcha__en.js"
++          }
++        ],
++        "fix": "Load reCAPTCHA only when a visitor interacts with a form, or after the load event. Make sure it is initialised once rather than per form.",
++        "impact": "medium",
++        "effort": "medium"
++      },
++      {
++        "category": "speed",
++        "issue": "The page has layout shift (CLS 0.218, above the 0.1 'good' threshold), and font loading adds delay (about 1,290 ms of estimated savings from font-display).",
++        "evidence": [
++          {
++            "tool": "check_speed",
++            "field": "lab_metrics.CLS",
++            "value": "0.218"
++          },
++          {
++            "tool": "check_speed",
++            "field": "top_issues[2]",
++            "value": "Font display: Est savings of 1,290 ms"
++          }
++        ],
++        "fix": "Add font-display: swap to the @font-face rules. Add explicit width and height attributes to images and banner or slider containers so their space is reserved.",
++        "impact": "medium",
++        "effort": "low"
++      },
++      {
++        "category": "meta_tags",
++        "issue": "There is no og:image, so links shared on social platforms show no preview image.",
++        "evidence": [
++          {
++            "tool": "check_meta_tags",
++            "field": "open_graph.image",
++            "value": "null"
++          },
++          {
++            "tool": "check_meta_tags",
++            "field": "issues[0]",
++            "value": "Missing og:title or og:image (poor social sharing previews)"
++          }
++        ],
++        "fix": "Add <meta property=\"og:image\" content=\"https://www.abacusdesk.com/...\"> pointing to a 1200x630 branded image.",
++        "impact": "medium",
++        "effort": "low"
++      },
++      {
++        "category": "links",
++        "issue": "The Cloudflare email-protection link returns 404, so the obfuscated email link in the page is broken for crawlers and for users without JavaScript.",
++        "evidence": [
++          {
++            "tool": "check_links",
++            "field": "broken[0].url",
++            "value": "https://www.abacusdesk.com/cdn-cgi/l/email-protection"
++          },
++          {
++            "tool": "check_links",
++            "field": "broken[0].status",
++            "value": "404"
++          }
++        ],
++        "fix": "Replace the Cloudflare-obfuscated email link with a plain mailto: link, or turn off Email Address Obfuscation in Cloudflare. Check that the link works in a browser first.",
++        "impact": "low",
++        "effort": "low"
++      },
++      {
++        "category": "links",
++        "issue": "The external link to manavrachna.edu.in fails with TooManyRedirects.",
++        "evidence": [
++          {
++            "tool": "check_links",
++            "field": "broken[1].url",
++            "value": "https://manavrachna.edu.in/"
++          },
++          {
++            "tool": "check_links",
++            "field": "broken[1].error",
++            "value": "TooManyRedirects"
++          }
++        ],
++        "fix": "Open the link in a browser. Update the href to the final working URL, or remove the link if the site is no longer valid.",
++        "impact": "low",
++        "effort": "low"
++      },
++      {
++        "category": "links",
++        "issue": "Several links point to URLs that redirect, including one internal link (/enterprise/google-workspace-2/).",
++        "evidence": [
++          {
++            "tool": "check_links",
++            "field": "redirected[1].url",
++            "value": "https://www.abacusdesk.com/enterprise/google-workspace-2/"
++          },
++          {
++            "tool": "check_links",
++            "field": "redirected[1].final_url",
++            "value": "https://www.abacusdesk.com/enterprise/google-workspace/"
++          }
++        ],
++        "fix": "Change the internal href from /enterprise/google-workspace-2/ to /enterprise/google-workspace/. Update the netkarma.ca and deltaelectronicsindia.com links to their final URLs.",
++        "impact": "low",
++        "effort": "low"
++      },
++      {
++        "category": "meta_tags",
++        "issue": "The title is exactly 60 characters, at the edge of truncation in search results. The og:title and og:description differ from the standard title and description, and the og:description claims 'leading digital marketing company in India', which the standard tags do not.",
++        "evidence": [
++          {
++            "tool": "check_meta_tags",
++            "field": "title_length",
++            "value": "60"
++          },
++          {
++            "tool": "check_meta_tags",
++            "field": "title",
++            "value": "World-Class Software Development, CX & Performance Marketing"
++          },
++          {
++            "tool": "check_meta_tags",
++            "field": "open_graph.title",
++            "value": "Business Software & Digital Marketing Agency - Abacus Desk"
++          }
++        ],
++        "fix": "Shorten the title to something like 'Abacus Desk: Software Development & Digital Marketing' (53 characters). Align the og:title and og:description with it.",
++        "impact": "low",
++        "effort": "low"
++      }
++    ],
++    "not_checked": [
++      "Desktop speed (only mobile was requested)",
++      "Pages other than the homepage",
++      "14 of 64 links were skipped by the link checker (it checks a maximum of 50)",
++      "robots.txt and XML sitemap",
++      "Structured data / schema markup",
++      "Real-user Core Web Vitals (Google returned no field data)"
++    ]
++  },
++  "text": "",
++  "tool_outputs": [
++    {
++      "tool": "fetch_page",
++      "input": {
++        "url": "https://www.abacusdesk.com/"
++      },
++      "output": {
++        "requested_url": "https://www.abacusdesk.com/",
++        "final_url": "https://www.abacusdesk.com/",
++        "status": 200,
++        "redirects": [],
++        "response_time_ms": 1511,
++        "content_type": "text/html; charset=UTF-8",
++        "html_size_kb": 129.1,
++        "word_count": 1598,
++        "is_https": true,
++        "x_robots_tag": null
++      }
++    },
++    {
++      "tool": "check_meta_tags",
++      "input": {
++        "url": "https://www.abacusdesk.com/"
++      },
++      "output": {
++        "url": "https://www.abacusdesk.com/",
++        "title": "World-Class Software Development, CX & Performance Marketing",
++        "title_length": 60,
++        "description": "Abacus desk is the World-Class Software Development, CX & Performance Marketing. We also deal in website designing, business software & social media marketing.",
++        "description_length": 159,
++        "canonical": "https://www.abacusdesk.com/",
++        "robots": "index, follow",
++        "x_robots_tag": null,
++        "h1": [
++          "Encouraging enterprises to do much more"
++        ],
++        "lang": "en-US",
++        "viewport": "width=device-width, initial-scale=1.0",
++        "open_graph": {
++          "title": "Business Software & Digital Marketing Agency - Abacus Desk",
++          "description": "Abacus desk is the leading digital marketing company in India. We also deal in website designing, business software & social media marketing. Visit now",
++          "image": null
++        },
++        "issues": [
++          "Missing og:title or og:image (poor social sharing previews)"
++        ]
++      }
++    },
++    {
++      "tool": "check_links",
++      "input": {
++        "url": "https://www.abacusdesk.com/"
++      },
++      "output": {
++        "url": "https://www.abacusdesk.com/",
++        "total_links": 64,
++        "checked": 50,
++        "skipped": 14,
++        "internal": 47,
++        "external": 17,
++        "nofollow": 0,
++        "broken": [
++          {
++            "url": "https://www.abacusdesk.com/cdn-cgi/l/email-protection",
++            "anchor": "[email protected]",
++            "status": 404,
++            "error": null
++          },
++          {
++            "url": "https://manavrachna.edu.in/",
++            "anchor": "Manav Rachna Explore",
++            "status": null,
++            "error": "TooManyRedirects"
++          }
++        ],
++        "unverified": [],
++        "redirected": [
++          {
++            "url": "https://netkarma.ca/",
++            "final_url": "https://www.netkarma.ca/"
++          },
++          {
++            "url": "https://www.abacusdesk.com/enterprise/google-workspace-2/",
++            "final_url": "https://www.abacusdesk.com/enterprise/google-workspace/"
++          },
++          {
++            "url": "https://www.deltaelectronicsindia.com/",
++            "final_url": "https://www.deltaelectronicsindia.com/en-IN/index"
++          }
++        ]
++      }
++    },
++    {
++      "tool": "check_speed",
++      "input": {
++        "url": "https://www.abacusdesk.com/",
++        "strategy": "mobile"
++      },
++      "output": {
++        "url": "https://www.abacusdesk.com/",
++        "strategy": "mobile",
++        "performance_score": 29,
++        "lab_metrics": {
++          "FCP": "3.5 s",
++          "LCP": "21.8 s",
++          "TBT": "810 ms",
++          "CLS": "0.218",
++          "Speed Index": "13.7 s"
++        },
++        "lcp_element": "Business Software\nAutomation for every business need\n\nMake your business more p…",
++        "page_weight_kb": 5123,
++        "heaviest_resources": [
++          {
++            "url": "https://www.gstatic.com/recaptcha/releases/nY0xPItgwtlvjEjk2TqdwOQz/recaptcha__en.js",
++            "kb": 347
++          },
++          {
++            "url": "https://www.gstatic.com/recaptcha/releases/nY0xPItgwtlvjEjk2TqdwOQz/recaptcha__en.js",
++            "kb": 347
++          },
++          {
++            "url": "https://www.gstatic.com/recaptcha/releases/nY0xPItgwtlvjEjk2TqdwOQz/recaptcha__en.js",
++            "kb": 347
++          }
++        ],
++        "field_data": null,
++        "top_issues": [
++          {
++            "title": "Use efficient cache lifetimes",
++            "detail": "Est savings of 3,406 KiB"
++          },
++          {
++            "title": "Layout shift culprits",
++            "detail": null
++          },
++          {
++            "title": "Font display",
++            "detail": "Est savings of 1,290 ms"
++          },
++          {
++            "title": "Forced reflow",
++            "detail": null
++          },
++          {
++            "title": "Improve image delivery",
++            "detail": "Est savings of 1,670 KiB"
++          },
++          {
++            "title": "LCP breakdown",
++            "detail": null
++          },
++          {
++            "title": "LCP request discovery",
++            "detail": null
++          },
++          {
++            "title": "Legacy JavaScript",
++            "detail": "Est savings of 11 KiB"
++          }
++        ]
++      }
++    }
++  ]
++}
+\ No newline at end of file
+diff --git a/evals/cases/incometax-gov-in-iec-foportal-20261014-152149.json b/evals/cases/incometax-gov-in-iec-foportal-20261014-152149.json
+new file mode 100644
+index 0000000..0fd4398
+--- /dev/null
++++ b/evals/cases/incometax-gov-in-iec-foportal-20261014-152149.json
+@@ -0,0 +1,381 @@
++{
++  "question": "Do a full SEO audit of https://www.incometax.gov.in/iec/foportal/: reachability, meta tags, broken links and mobile speed. Then submit a prioritised report.",
++  "trace_id": "68851f3c7897ac94d15a63d1f64f022d",
++  "report": {
++    "url": "https://www.incometax.gov.in/iec/foportal/",
++    "summary": "The page is reachable over HTTPS (200, no redirects) and has no broken links among the 50 checked. It is held back by missing meta description, an http:// canonical on an https page, and a malformed heading structure. Mobile lab performance is 72 (LCP 4.9 s), though real-user Core Web Vitals are all rated FAST.",
++    "findings": [
++      {
++        "category": "meta_tags",
++        "issue": "The canonical URL uses http:// while the page is served over HTTPS, sending a conflicting signal about the preferred URL.",
++        "evidence": [
++          {
++            "tool": "check_meta_tags",
++            "field": "canonical",
++            "value": "http://www.incometax.gov.in/iec/foportal/"
++          },
++          {
++            "tool": "fetch_page",
++            "field": "is_https",
++            "value": "true"
++          }
++        ],
++        "fix": "Change the canonical link tag to https://www.incometax.gov.in/iec/foportal/.",
++        "impact": "high",
++        "effort": "low"
++      },
++      {
++        "category": "meta_tags",
++        "issue": "The page has no meta description, so search engines will generate their own snippet.",
++        "evidence": [
++          {
++            "tool": "check_meta_tags",
++            "field": "description",
++            "value": "null"
++          }
++        ],
++        "fix": "Add a meta description of 70-160 characters, e.g. 'File income tax returns, pay taxes, check refunds and get the latest updates on the official Income Tax Department e-Filing portal.'",
++        "impact": "high",
++        "effort": "low"
++      },
++      {
++        "category": "meta_tags",
++        "issue": "The page has 7 H1 tags (one empty), which blurs the main topic signal.",
++        "evidence": [
++          {
++            "tool": "check_meta_tags",
++            "field": "h1",
++            "value": "[\"\", \"What's New\", \"Quick Links\", \"Latest Updates\", \"Important Deadlines\", \"Things to Know\", \"Our Success Enablers\"]"
++          }
++        ],
++        "fix": "Keep one descriptive H1 for the page and change the section headings (What's New, Quick Links, etc.) to H2; remove the empty H1.",
++        "impact": "medium",
++        "effort": "low"
++      },
++      {
++        "category": "meta_tags",
++        "issue": "The title is generic and short ('Home | ...'), and the Open Graph tags are incomplete (no og:description or og:image), so shared links have poor previews.",
++        "evidence": [
++          {
++            "tool": "check_meta_tags",
++            "field": "title",
++            "value": "Home | Income Tax Department"
++          },
++          {
++            "tool": "check_meta_tags",
++            "field": "open_graph.image",
++            "value": "null"
++          },
++          {
++            "tool": "check_meta_tags",
++            "field": "open_graph.description",
++            "value": "null"
++          }
++        ],
++        "fix": "Change the title to 'Income Tax e-Filing Portal | Income Tax Department' (under 60 characters) and add og:description and og:image tags.",
++        "impact": "medium",
++        "effort": "low"
++      },
++      {
++        "category": "speed",
++        "issue": "Mobile lab performance is moderate (score 72, LCP 4.9 s, FCP 3.5 s). Render-blocking requests are the largest estimated saving, at 4,060 ms.",
++        "evidence": [
++          {
++            "tool": "check_speed",
++            "field": "performance_score",
++            "value": "72"
++          },
++          {
++            "tool": "check_speed",
++            "field": "lab_metrics.LCP",
++            "value": "4.9 s"
++          },
++          {
++            "tool": "check_speed",
++            "field": "top_issues[3]",
++            "value": "Render-blocking requests: Est savings of 4,060 ms"
++          }
++        ],
++        "fix": "Defer or async-load non-critical JS and CSS files in the head, and inline the critical CSS for above-the-fold content.",
++        "impact": "medium",
++        "effort": "medium"
++      },
++      {
++        "category": "speed",
++        "issue": "The page weighs 2,944 KB, and image delivery could save about 1,081 KiB. The heaviest images are 291-379 KB each.",
++        "evidence": [
++          {
++            "tool": "check_speed",
++            "field": "page_weight_kb",
++            "value": "2944"
++          },
++          {
++            "tool": "check_speed",
++            "field": "top_issues[7]",
++            "value": "Improve image delivery: Est savings of 1,081 KiB"
++          },
++          {
++            "tool": "check_speed",
++            "field": "heaviest_resources[0].kb",
++            "value": "379"
++          }
++        ],
++        "fix": "Resize and recompress the banner images (PhishingMail-01, Bank_Validation2, Revamped e-Filing Portal.jpeg) and serve responsive sizes with srcset. Convert the JPEG to WebP.",
++        "impact": "medium",
++        "effort": "medium"
++      },
++      {
++        "category": "links",
++        "issue": "Many internal links point to redirecting URLs: http:// versions, double-slash paths and the old account-misuse URL. These waste crawl budget.",
++        "evidence": [
++          {
++            "tool": "check_links",
++            "field": "redirected[1].url",
++            "value": "http://www.incometax.gov.in/iec/foportal/contact-us"
++          },
++          {
++            "tool": "check_links",
++            "field": "redirected[3].url",
++            "value": "http://www.incometax.gov.in/iec/foportal//latest-news"
++          },
++          {
++            "tool": "check_links",
++            "field": "redirected[2].final_url",
++            "value": "https://www.incometax.gov.in/iec/foportal/e-filing%20account%20misuse"
++          }
++        ],
++        "fix": "Update the internal hrefs in the page template to the final https URLs, with no double slashes (e.g. https://www.incometax.gov.in/iec/foportal/latest-news).",
++        "impact": "low",
++        "effort": "low"
++      }
++    ],
++    "not_checked": [
++      "20 of 70 links were skipped by check_links (only 50 checked)",
++      "Desktop speed was not run",
++      "Other pages on the site were not audited",
++      "robots.txt and sitemap.xml were not checked"
++    ]
++  },
++  "text": "",
++  "tool_outputs": [
++    {
++      "tool": "fetch_page",
++      "input": {
++        "url": "https://www.incometax.gov.in/iec/foportal/"
++      },
++      "output": {
++        "requested_url": "https://www.incometax.gov.in/iec/foportal/",
++        "final_url": "https://www.incometax.gov.in/iec/foportal/",
++        "status": 200,
++        "redirects": [],
++        "response_time_ms": 115,
++        "content_type": "text/html; charset=UTF-8",
++        "html_size_kb": 249.8,
++        "word_count": 1706,
++        "is_https": true,
++        "x_robots_tag": null
++      }
++    },
++    {
++      "tool": "check_meta_tags",
++      "input": {
++        "url": "https://www.incometax.gov.in/iec/foportal/"
++      },
++      "output": {
++        "url": "https://www.incometax.gov.in/iec/foportal/",
++        "title": "Home | Income Tax Department",
++        "title_length": 28,
++        "description": null,
++        "description_length": 0,
++        "canonical": "http://www.incometax.gov.in/iec/foportal/",
++        "robots": "index, follow",
++        "x_robots_tag": null,
++        "h1": [
++          "",
++          "What's New",
++          "Quick Links",
++          "Latest Updates",
++          "Important Deadlines",
++          "Things to Know",
++          "Our Success Enablers"
++        ],
++        "lang": "en",
++        "viewport": "width=device-width, initial-scale=1.0",
++        "open_graph": {
++          "title": "Home",
++          "description": null,
++          "image": null
++        },
++        "issues": [
++          "Title is 28 chars (aim for ~30-60)",
++          "Missing meta description",
++          "Canonical points to a different URL: http://www.incometax.gov.in/iec/foportal/",
++          "Found 7 <h1> tags (expected 1)",
++          "Missing og:title or og:image (poor social sharing previews)"
++        ]
++      }
++    },
++    {
++      "tool": "check_links",
++      "input": {
++        "url": "https://www.incometax.gov.in/iec/foportal/"
++      },
++      "output": {
++        "url": "https://www.incometax.gov.in/iec/foportal/",
++        "total_links": 70,
++        "checked": 50,
++        "skipped": 20,
++        "internal": 48,
++        "external": 22,
++        "nofollow": 0,
++        "broken": [],
++        "unverified": [],
++        "redirected": [
++          {
++            "url": "https://www.incometax.gov.in/",
++            "final_url": "https://www.incometax.gov.in/iec/foportal/"
++          },
++          {
++            "url": "http://www.incometax.gov.in/iec/foportal/contact-us",
++            "final_url": "https://www.incometax.gov.in/iec/foportal/contact-us"
++          },
++          {
++            "url": "https://www.incometax.gov.in/iec/foportal/account-misuse",
++            "final_url": "https://www.incometax.gov.in/iec/foportal/e-filing%20account%20misuse"
++          },
++          {
++            "url": "http://www.incometax.gov.in/iec/foportal//latest-news",
++            "final_url": "https://www.incometax.gov.in/iec/foportal/latest-news"
++          },
++          {
++            "url": "http://www.incometax.gov.in/iec/foportal//e-Campaigns/sms",
++            "final_url": "https://www.incometax.gov.in/iec/foportal/e-Campaigns/sms"
++          },
++          {
++            "url": "http://www.incometax.gov.in/iec/foportal//e-Campaigns/e-mail",
++            "final_url": "https://www.incometax.gov.in/iec/foportal/e-Campaigns/e-mail"
++          },
++          {
++            "url": "https://youtu.be/wX6L82y2o70",
++            "final_url": "https://www.youtube.com/watch?v=wX6L82y2o70&feature=youtu.be"
++          },
++          {
++            "url": "https://youtu.be/g7jEpvq6R9g",
++            "final_url": "https://www.youtube.com/watch?v=g7jEpvq6R9g&feature=youtu.be"
++          },
++          {
++            "url": "https://youtu.be/naIvEN0I1WY",
++            "final_url": "https://www.youtube.com/watch?v=naIvEN0I1WY&feature=youtu.be"
++          },
++          {
++            "url": "https://youtu.be/rb36JDm8BbY",
++            "final_url": "https://www.youtube.com/watch?v=rb36JDm8BbY&feature=youtu.be"
++          },
++          {
++            "url": "https://t.co/QZMzpVX1wA",
++            "final_url": "https://twitter.com/sanjaytyagi/status/2107663351509840217"
++          },
++          {
++            "url": "https://t.co/T6sl3H9cPq",
++            "final_url": "https://twitter.com/kc0409/status/2106299106167783917"
++          },
++          {
++            "url": "https://t.co/zeNsu3f4qF",
++            "final_url": "https://twitter.com/coachutsav/status/2105956464255013321"
++          }
++        ]
++      }
++    },
++    {
++      "tool": "check_speed",
++      "input": {
++        "url": "https://www.incometax.gov.in/iec/foportal/",
++        "strategy": "mobile"
++      },
++      "output": {
++        "url": "https://www.incometax.gov.in/iec/foportal/",
++        "strategy": "mobile",
++        "performance_score": 72,
++        "lab_metrics": {
++          "FCP": "3.5 s",
++          "LCP": "4.9 s",
++          "TBT": "50 ms",
++          "CLS": "0.034",
++          "Speed Index": "5.3 s"
++        },
++        "lcp_element": "The Income Tax Department has enabled the Foreign Assets of Small Taxpayers Dis…",
++        "page_weight_kb": 2944,
++        "heaviest_resources": [
++          {
++            "url": "https://www.incometax.gov.in/iec/foportal/sites/default/files/2026-08/PhishingMail-01%20%281%29.webp",
++            "kb": 379
++          },
++          {
++            "url": "https://www.incometax.gov.in/iec/foportal/sites/default/files/2026-07/Bank_Validation2.webp",
++            "kb": 336
++          },
++          {
++            "url": "https://www.incometax.gov.in/iec/foportal/sites/default/files/2026-04/Revamped%20e-Filing%20Portal.jpeg",
++            "kb": 291
++          }
++        ],
++        "field_data": {
++          "CUMULATIVE_LAYOUT_SHIFT_SCORE": {
++            "p75": 0,
++            "rating": "FAST"
++          },
++          "EXPERIMENTAL_TIME_TO_FIRST_BYTE": {
++            "p75": 474,
++            "rating": "FAST"
++          },
++          "FIRST_CONTENTFUL_PAINT_MS": {
++            "p75": 1390,
++            "rating": "FAST"
++          },
++          "INTERACTION_TO_NEXT_PAINT": {
++            "p75": 133,
++            "rating": "FAST"
++          },
++          "LARGEST_CONTENTFUL_PAINT_MS": {
++            "p75": 1928,
++            "rating": "FAST"
++          }
++        },
++        "top_issues": [
++          {
++            "title": "Font display",
++            "detail": "Est savings of 200 ms"
++          },
++          {
++            "title": "Forced reflow",
++            "detail": null
++          },
++          {
++            "title": "Network dependency tree",
++            "detail": null
++          },
++          {
++            "title": "Render-blocking requests",
++            "detail": "Est savings of 4,060 ms"
++          },
++          {
++            "title": "Reduce unused CSS",
++            "detail": "Est savings of 129 KiB"
++          },
++          {
++            "title": "Minimize main-thread work",
++            "detail": "3.9 s"
++          },
++          {
++            "title": "Use efficient cache lifetimes",
++            "detail": "Est savings of 1 KiB"
++          },
++          {
++            "title": "Improve image delivery",
++            "detail": "Est savings of 1,081 KiB"
++          }
++        ]
++      }
++    }
++  ]
++}
+\ No newline at end of file
+diff --git a/evals/cases/puredesignsolution-com-20261014-152643.json b/evals/cases/puredesignsolution-com-20261014-152643.json
+new file mode 100644
+index 0000000..b29970a
+--- /dev/null
++++ b/evals/cases/puredesignsolution-com-20261014-152643.json
+@@ -0,0 +1,302 @@
++{
++  "question": "Do a full SEO audit of https://puredesignsolution.com/: reachability, meta tags, broken links and mobile speed. Then submit a prioritised report.",
++  "trace_id": "b429f97ff18cd2cefc11237c7bcab023",
++  "report": {
++    "url": "https://puredesignsolution.com/",
++    "summary": "The homepage is reachable over HTTPS, indexable, and has a canonical, a meta description, a single H1 and no broken links. The biggest problem is mobile speed: a performance score of 39 with a 15.5 s LCP, driven by render-blocking requests and a 2.7 MB page. Social sharing tags and the title are also weak.",
++    "findings": [
++      {
++        "category": "speed",
++        "issue": "Mobile LCP is very slow (15.5 s) and the performance score is only 39, with 900 ms of Total Blocking Time.",
++        "evidence": [
++          {
++            "tool": "check_speed",
++            "field": "lab_metrics.LCP",
++            "value": "15.5 s"
++          },
++          {
++            "tool": "check_speed",
++            "field": "performance_score",
++            "value": "39"
++          },
++          {
++            "tool": "check_speed",
++            "field": "lab_metrics.TBT",
++            "value": "900 ms"
++          }
++        ],
++        "fix": "Defer or async the render-blocking JavaScript and CSS files in the head, and inline the critical CSS for the above-the-fold hero section.",
++        "impact": "high",
++        "effort": "medium"
++      },
++      {
++        "category": "speed",
++        "issue": "Render-blocking requests delay first paint, with an estimated saving of 4,030 ms.",
++        "evidence": [
++          {
++            "tool": "check_speed",
++            "field": "top_issues[5]",
++            "value": "Render-blocking requests: Est savings of 4,030 ms"
++          },
++          {
++            "tool": "check_speed",
++            "field": "lab_metrics.FCP",
++            "value": "3.5 s"
++          }
++        ],
++        "fix": "Add defer to non-critical script tags and load non-critical stylesheets asynchronously, using your caching or optimization plugin's delay-JS and async-CSS settings.",
++        "impact": "high",
++        "effort": "medium"
++      },
++      {
++        "category": "speed",
++        "issue": "The page is heavy (2,766 KB). The reCAPTCHA script (347 KB) is the heaviest resource and is loaded on page load.",
++        "evidence": [
++          {
++            "tool": "check_speed",
++            "field": "page_weight_kb",
++            "value": "2766"
++          },
++          {
++            "tool": "check_speed",
++            "field": "heaviest_resources[0].kb",
++            "value": "347"
++          }
++        ],
++        "fix": "Load the reCAPTCHA script only when a visitor interacts with the contact form, or replace it with a lighter spam-protection method.",
++        "impact": "medium",
++        "effort": "medium"
++      },
++      {
++        "category": "speed",
++        "issue": "Static assets have inefficient cache lifetimes and there is unused and unminified code.",
++        "evidence": [
++          {
++            "tool": "check_speed",
++            "field": "top_issues[0]",
++            "value": "Use efficient cache lifetimes: Est savings of 351 KiB"
++          },
++          {
++            "tool": "check_speed",
++            "field": "top_issues[6]",
++            "value": "Minify JavaScript: Est savings of 21 KiB"
++          },
++          {
++            "tool": "check_speed",
++            "field": "top_issues[7]",
++            "value": "Reduce unused CSS: Est savings of 129 KiB"
++          }
++        ],
++        "fix": "Set a Cache-Control max-age of at least one year on static assets (JS, CSS, fonts, images) in the server or CDN configuration.",
++        "impact": "medium",
++        "effort": "low"
++      },
++      {
++        "category": "meta_tags",
++        "issue": "The Open Graph image is missing, so shared links have poor previews.",
++        "evidence": [
++          {
++            "tool": "check_meta_tags",
++            "field": "open_graph.image",
++            "value": "null"
++          },
++          {
++            "tool": "check_meta_tags",
++            "field": "issues[0]",
++            "value": "Missing og:title or og:image (poor social sharing previews)"
++          }
++        ],
++        "fix": "Add an og:image meta tag pointing to a 1200x630 branded image on the homepage, using the SEO plugin's social settings.",
++        "impact": "medium",
++        "effort": "low"
++      },
++      {
++        "category": "meta_tags",
++        "issue": "The title is generic ('HOME | ...'), short at 32 characters, and has no descriptive keywords.",
++        "evidence": [
++          {
++            "tool": "check_meta_tags",
++            "field": "title",
++            "value": "HOME | Pure Design Solution, LLC"
++          },
++          {
++            "tool": "check_meta_tags",
++            "field": "title_length",
++            "value": "32"
++          }
++        ],
++        "fix": "Change the title to 'B2B Digital Marketing Agency in New York | Pure Design Solution' (about 69 characters is too long, so use 'B2B Digital Marketing Agency NYC | Pure Design' at 47).",
++        "impact": "medium",
++        "effort": "low"
++      },
++      {
++        "category": "links",
++        "issue": "An internal link points to a URL without the trailing slash and triggers a redirect.",
++        "evidence": [
++          {
++            "tool": "check_links",
++            "field": "redirected[0].url",
++            "value": "https://puredesignsolution.com/digital-marketing-consulting"
++          },
++          {
++            "tool": "check_links",
++            "field": "redirected[0].final_url",
++            "value": "https://puredesignsolution.com/digital-marketing-consulting/"
++          }
++        ],
++        "fix": "Update the homepage link to https://puredesignsolution.com/digital-marketing-consulting/ so it points to the final URL.",
++        "impact": "low",
++        "effort": "low"
++      }
++    ],
++    "not_checked": [
++      "Desktop speed (only mobile was requested)",
++      "Other pages on the site (only the homepage was audited)",
++      "Real-user Core Web Vitals (Google has no field data for this URL)",
++      "robots.txt and XML sitemap"
++    ]
++  },
++  "text": "",
++  "tool_outputs": [
++    {
++      "tool": "fetch_page",
++      "input": {
++        "url": "https://puredesignsolution.com/"
++      },
++      "output": {
++        "requested_url": "https://puredesignsolution.com/",
++        "final_url": "https://puredesignsolution.com/",
++        "status": 200,
++        "redirects": [],
++        "response_time_ms": 1588,
++        "content_type": "text/html; charset=UTF-8",
++        "html_size_kb": 175.8,
++        "word_count": 2103,
++        "is_https": true,
++        "x_robots_tag": null
++      }
++    },
++    {
++      "tool": "check_meta_tags",
++      "input": {
++        "url": "https://puredesignsolution.com/"
++      },
++      "output": {
++        "url": "https://puredesignsolution.com/",
++        "title": "HOME | Pure Design Solution, LLC",
++        "title_length": 32,
++        "description": "Drive business growth with data-driven digital marketing, creative strategies, and tech solutions that align marketing & sales to boost revenue and performance.",
++        "description_length": 160,
++        "canonical": "https://puredesignsolution.com/",
++        "robots": "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
++        "x_robots_tag": null,
++        "h1": [
++          "We Help B2B Companies Fuel their Growth Engine."
++        ],
++        "lang": "en-US",
++        "viewport": "width=device-width, initial-scale=1",
++        "open_graph": {
++          "title": "HOME | Pure Design Solution, LLC",
++          "description": "Drive business growth with data-driven digital marketing, creative strategies, and tech solutions that align marketing & sales to boost revenue and performance.",
++          "image": null
++        },
++        "issues": [
++          "Missing og:title or og:image (poor social sharing previews)"
++        ]
++      }
++    },
++    {
++      "tool": "check_links",
++      "input": {
++        "url": "https://puredesignsolution.com/"
++      },
++      "output": {
++        "url": "https://puredesignsolution.com/",
++        "total_links": 30,
++        "checked": 30,
++        "skipped": 0,
++        "internal": 23,
++        "external": 7,
++        "nofollow": 0,
++        "broken": [],
++        "unverified": [],
++        "redirected": [
++          {
++            "url": "https://puredesignsolution.com/digital-marketing-consulting",
++            "final_url": "https://puredesignsolution.com/digital-marketing-consulting/"
++          }
++        ]
++      }
++    },
++    {
++      "tool": "check_speed",
++      "input": {
++        "url": "https://puredesignsolution.com/",
++        "strategy": "mobile"
++      },
++      "output": {
++        "url": "https://puredesignsolution.com/",
++        "strategy": "mobile",
++        "performance_score": 39,
++        "lab_metrics": {
++          "FCP": "3.5 s",
++          "LCP": "15.5 s",
++          "TBT": "900 ms",
++          "CLS": "0",
++          "Speed Index": "10.6 s"
++        },
++        "lcp_element": "Pure Design Solution (PDS) is a New York-based data-driven digital marketing ag…",
++        "page_weight_kb": 2766,
++        "heaviest_resources": [
++          {
++            "url": "https://www.gstatic.com/recaptcha/releases/nY0xPItgwtlvjEjk2TqdwOQz/recaptcha__en.js",
++            "kb": 347
++          },
++          {
++            "url": "https://www.gstatic.com/recaptcha/releases/nY0xPItgwtlvjEjk2TqdwOQz/recaptcha__en.js",
++            "kb": 347
++          },
++          {
++            "url": "https://www.gstatic.com/recaptcha/releases/nY0xPItgwtlvjEjk2TqdwOQz/recaptcha__en.js",
++            "kb": 347
++          }
++        ],
++        "field_data": null,
++        "top_issues": [
++          {
++            "title": "Use efficient cache lifetimes",
++            "detail": "Est savings of 351 KiB"
++          },
++          {
++            "title": "Font display",
++            "detail": "Est savings of 150 ms"
++          },
++          {
++            "title": "Forced reflow",
++            "detail": null
++          },
++          {
++            "title": "LCP breakdown",
++            "detail": null
++          },
++          {
++            "title": "Network dependency tree",
++            "detail": null
++          },
++          {
++            "title": "Render-blocking requests",
++            "detail": "Est savings of 4,030 ms"
++          },
++          {
++            "title": "Minify JavaScript",
++            "detail": "Est savings of 21 KiB"
++          },
++          {
++            "title": "Reduce unused CSS",
++            "detail": "Est savings of 129 KiB"
++          }
++        ]
++      }
++    }
++  ]
++}
+\ No newline at end of file
+diff --git a/evals/cases/python-org-20261014-151521.json b/evals/cases/python-org-20261014-151521.json
+new file mode 100644
+index 0000000..52f61bb
+--- /dev/null
++++ b/evals/cases/python-org-20261014-151521.json
+@@ -0,0 +1,378 @@
++{
++  "question": "Do a full SEO audit of https://www.python.org: reachability, meta tags, broken links and mobile speed. Then submit a prioritised report.",
++  "trace_id": "f720c9eae00645b5776df0461e24197a",
++  "report": {
++    "url": "https://www.python.org",
++    "summary": "python.org is healthy: it returns 200 over HTTPS with no redirects, has no broken links among the 50 checked, and real-user Core Web Vitals all rate FAST. The weak spots are thin title and description tags, a missing canonical link, and a mobile lab score of 72 (LCP 5.0 s) caused mainly by render-blocking requests and unused CSS.",
++    "findings": [
++      {
++        "category": "speed",
++        "issue": "Render-blocking requests delay mobile first paint, giving a lab LCP of 5.0 s and FCP of 3.2 s.",
++        "evidence": [
++          {
++            "tool": "check_speed",
++            "field": "top_issues[4]",
++            "value": "Render-blocking requests: Est savings of 2,730 ms"
++          },
++          {
++            "tool": "check_speed",
++            "field": "lab_metrics.LCP",
++            "value": "5.0 s"
++          }
++        ],
++        "fix": "Inline the critical above-the-fold CSS and load the rest of style.6cb9f297dd80.css asynchronously, and add defer to the jQuery UI script tag.",
++        "impact": "medium",
++        "effort": "medium"
++      },
++      {
++        "category": "speed",
++        "issue": "The main stylesheet is the heaviest resource and much of it is unused or unminified.",
++        "evidence": [
++          {
++            "tool": "check_speed",
++            "field": "heaviest_resources[0].kb",
++            "value": "123"
++          },
++          {
++            "tool": "check_speed",
++            "field": "top_issues[6]",
++            "value": "Reduce unused CSS: Est savings of 128 KiB"
++          },
++          {
++            "tool": "check_speed",
++            "field": "top_issues[5]",
++            "value": "Minify CSS: Est savings of 24 KiB"
++          }
++        ],
++        "fix": "Run the stylesheet through a CSS minifier and purge unused rules with a tool such as PurgeCSS in the build.",
++        "impact": "medium",
++        "effort": "medium"
++      },
++      {
++        "category": "speed",
++        "issue": "The page loads jQuery UI from a third-party host, and the speed audit also reports unused JavaScript and short cache lifetimes.",
++        "evidence": [
++          {
++            "tool": "check_speed",
++            "field": "heaviest_resources[1].url",
++            "value": "https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"
++          },
++          {
++            "tool": "check_speed",
++            "field": "top_issues[7]",
++            "value": "Reduce unused JavaScript: Est savings of 59 KiB"
++          },
++          {
++            "tool": "check_speed",
++            "field": "top_issues[0]",
++            "value": "Use efficient cache lifetimes: Est savings of 33 KiB"
++          }
++        ],
++        "fix": "Remove jQuery UI from the homepage, or self-host a custom build with only the components used, and serve static assets with a long Cache-Control max-age.",
++        "impact": "low",
++        "effort": "medium"
++      },
++      {
++        "category": "meta_tags",
++        "issue": "The title is short and generic, so it gives search engines no keywords.",
++        "evidence": [
++          {
++            "tool": "check_meta_tags",
++            "field": "title",
++            "value": "Welcome to Python.org"
++          },
++          {
++            "tool": "check_meta_tags",
++            "field": "title_length",
++            "value": "21"
++          }
++        ],
++        "fix": "Change the title to 'Python.org – Official Python Programming Language Home' (about 55 characters).",
++        "impact": "medium",
++        "effort": "low"
++      },
++      {
++        "category": "meta_tags",
++        "issue": "The meta description is below the recommended length and says little.",
++        "evidence": [
++          {
++            "tool": "check_meta_tags",
++            "field": "description",
++            "value": "The official home of the Python Programming Language"
++          },
++          {
++            "tool": "check_meta_tags",
++            "field": "description_length",
++            "value": "52"
++          }
++        ],
++        "fix": "Rewrite the description as: 'The official home of the Python programming language. Download Python, read the docs, and join the community.' (about 112 characters).",
++        "impact": "medium",
++        "effort": "low"
++      },
++      {
++        "category": "meta_tags",
++        "issue": "No canonical link is set, which risks duplicate-URL signals.",
++        "evidence": [
++          {
++            "tool": "check_meta_tags",
++            "field": "canonical",
++            "value": "null"
++          }
++        ],
++        "fix": "Add <link rel=\"canonical\" href=\"https://www.python.org/\"> to the homepage head.",
++        "impact": "medium",
++        "effort": "low"
++      },
++      {
++        "category": "meta_tags",
++        "issue": "The page has five H1 headings, all feature-slide titles, so no single H1 states the page topic.",
++        "evidence": [
++          {
++            "tool": "check_meta_tags",
++            "field": "h1",
++            "value": "[\"Functions Defined\", \"All the Flow You’d Expect\", \"Compound Data Types\", \"Intuitive Interpretation\", \"Quick & Easy to Learn\"]"
++          }
++        ],
++        "fix": "Make one descriptive heading, such as 'Python Programming Language', the only H1, and change the five slide headings to H2.",
++        "impact": "low",
++        "effort": "low"
++      },
++      {
++        "category": "links",
++        "issue": "Eight internal and external links redirect, including some that point to outdated URLs and some that only lack a trailing slash.",
++        "evidence": [
++          {
++            "tool": "check_links",
++            "field": "redirected[0]",
++            "value": "https://www.python.org/psf/ -> https://www.python.org/psf-landing/"
++          },
++          {
++            "tool": "check_links",
++            "field": "redirected[6]",
++            "value": "https://www.python.org/psf/conduct/ -> https://policies.python.org/python.org/code-of-conduct/"
++          },
++          {
++            "tool": "check_links",
++            "field": "redirected[2]",
++            "value": "https://donate.python.org/ -> https://www.python.org/psf/donations/"
++          }
++        ],
++        "fix": "Change the href values to the final URLs, for example /psf-landing/, the policies.python.org code-of-conduct page, /psf/donations/, and the trailing-slash versions of /download/alternatives/, /doc/av/ and /community/awards/.",
++        "impact": "low",
++        "effort": "low"
++      }
++    ],
++    "not_checked": [
++      "Only 50 of 126 links were checked; 76 were skipped, so broken links among them are unknown.",
++      "The LinkedIn link returned status 999 and is unverified, so check it in a browser.",
++      "Desktop speed was not tested.",
++      "robots.txt and sitemap.xml were not checked.",
++      "Other pages on the site were not audited."
++    ]
++  },
++  "text": "",
++  "tool_outputs": [
++    {
++      "tool": "fetch_page",
++      "input": {
++        "url": "https://www.python.org"
++      },
++      "output": {
++        "requested_url": "https://www.python.org",
++        "final_url": "https://www.python.org",
++        "status": 200,
++        "redirects": [],
++        "response_time_ms": 62,
++        "content_type": "text/html; charset=utf-8",
++        "html_size_kb": 50.9,
++        "word_count": 1122,
++        "is_https": true,
++        "x_robots_tag": null
++      }
++    },
++    {
++      "tool": "check_meta_tags",
++      "input": {
++        "url": "https://www.python.org"
++      },
++      "output": {
++        "url": "https://www.python.org",
++        "title": "Welcome to Python.org",
++        "title_length": 21,
++        "description": "The official home of the Python Programming Language",
++        "description_length": 52,
++        "canonical": null,
++        "robots": null,
++        "x_robots_tag": null,
++        "h1": [
++          "Functions Defined",
++          "All the Flow You’d Expect",
++          "Compound Data Types",
++          "Intuitive Interpretation",
++          "Quick & Easy to Learn"
++        ],
++        "lang": "en",
++        "viewport": "width=device-width, initial-scale=1.0",
++        "open_graph": {
++          "title": "Welcome to Python.org",
++          "description": "The official home of the Python Programming Language",
++          "image": "https://www.python.org/static/opengraph-icon-200x200.png"
++        },
++        "issues": [
++          "Title is 21 chars (aim for ~30-60)",
++          "Meta description is 52 chars (aim for ~70-160)",
++          "No canonical link",
++          "Found 5 <h1> tags (expected 1)"
++        ]
++      }
++    },
++    {
++      "tool": "check_links",
++      "input": {
++        "url": "https://www.python.org"
++      },
++      "output": {
++        "url": "https://www.python.org",
++        "total_links": 126,
++        "checked": 50,
++        "skipped": 76,
++        "internal": 63,
++        "external": 63,
++        "nofollow": 0,
++        "broken": [],
++        "unverified": [
++          {
++            "url": "https://www.linkedin.com/company/python-software-foundation/",
++            "status": 999
++          }
++        ],
++        "redirected": [
++          {
++            "url": "https://www.python.org/psf/",
++            "final_url": "https://www.python.org/psf-landing/"
++          },
++          {
++            "url": "https://docs.python.org",
++            "final_url": "https://docs.python.org/3/"
++          },
++          {
++            "url": "https://donate.python.org/",
++            "final_url": "https://www.python.org/psf/donations/"
++          },
++          {
++            "url": "https://www.linkedin.com/company/python-software-foundation/",
++            "final_url": "https://www.linkedin.com/company/thepsf"
++          },
++          {
++            "url": "https://www.python.org/download/alternatives",
++            "final_url": "https://www.python.org/download/alternatives/"
++          },
++          {
++            "url": "https://www.python.org/doc/av",
++            "final_url": "https://www.python.org/doc/av/"
++          },
++          {
++            "url": "https://www.python.org/psf/conduct/",
++            "final_url": "https://policies.python.org/python.org/code-of-conduct/"
++          },
++          {
++            "url": "https://www.python.org/community/awards",
++            "final_url": "https://www.python.org/community/awards/"
++          }
++        ]
++      }
++    },
++    {
++      "tool": "check_speed",
++      "input": {
++        "url": "https://www.python.org",
++        "strategy": "mobile"
++      },
++      "output": {
++        "url": "https://www.python.org",
++        "strategy": "mobile",
++        "performance_score": 72,
++        "lab_metrics": {
++          "FCP": "3.2 s",
++          "LCP": "5.0 s",
++          "TBT": "0 ms",
++          "CLS": "0",
++          "Speed Index": "4.9 s"
++        },
++        "lcp_element": "Python is a programming language that lets you work quickly and integrate syste…",
++        "page_weight_kb": 497,
++        "heaviest_resources": [
++          {
++            "url": "https://www.python.org/static/stylesheets/style.6cb9f297dd80.css",
++            "kb": 123
++          },
++          {
++            "url": "https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js",
++            "kb": 67
++          },
++          {
++            "url": "https://www.python.org/",
++            "kb": 52
++          }
++        ],
++        "field_data": {
++          "CUMULATIVE_LAYOUT_SHIFT_SCORE": {
++            "p75": 0,
++            "rating": "FAST"
++          },
++          "EXPERIMENTAL_TIME_TO_FIRST_BYTE": {
++            "p75": 538,
++            "rating": "FAST"
++          },
++          "FIRST_CONTENTFUL_PAINT_MS": {
++            "p75": 1195,
++            "rating": "FAST"
++          },
++          "INTERACTION_TO_NEXT_PAINT": {
++            "p75": 88,
++            "rating": "FAST"
++          },
++          "LARGEST_CONTENTFUL_PAINT_MS": {
++            "p75": 1265,
++            "rating": "FAST"
++          }
++        },
++        "top_issues": [
++          {
++            "title": "Use efficient cache lifetimes",
++            "detail": "Est savings of 33 KiB"
++          },
++          {
++            "title": "Font display",
++            "detail": "Est savings of 110 ms"
++          },
++          {
++            "title": "Forced reflow",
++            "detail": null
++          },
++          {
++            "title": "Network dependency tree",
++            "detail": null
++          },
++          {
++            "title": "Render-blocking requests",
++            "detail": "Est savings of 2,730 ms"
++          },
++          {
++            "title": "Minify CSS",
++            "detail": "Est savings of 24 KiB"
++          },
++          {
++            "title": "Reduce unused CSS",
++            "detail": "Est savings of 128 KiB"
++          },
++          {
++            "title": "Reduce unused JavaScript",
++            "detail": "Est savings of 59 KiB"
++          }
++        ]
++      }
++    }
++  ]
++}
+\ No newline at end of file
+diff --git a/evals/cases/unocal-in-20261014-152519.json b/evals/cases/unocal-in-20261014-152519.json
+new file mode 100644
+index 0000000..222e4b5
+--- /dev/null
++++ b/evals/cases/unocal-in-20261014-152519.json
+@@ -0,0 +1,390 @@
++{
++  "question": "Do a full SEO audit of https://www.unocal.in/: reachability, meta tags, broken links and mobile speed. Then submit a prioritised report.",
++  "trace_id": "cc39fbc6ed8354b4f028a8eab81c3c6a",
++  "report": {
++    "url": "https://www.unocal.in/",
++    "summary": "The homepage is reachable over HTTPS (200, no redirects) and is indexable, but mobile speed is weak (score 66, LCP 8.2 s, 6.7 MB page). The biggest problem is the slow, heavy hero slider and unoptimised images. The page also has no H1, over-long title and description, no og:image, and several internal links that 404 or redirect.",
++    "findings": [
++      {
++        "category": "speed",
++        "issue": "Mobile LCP is very slow (8.2 s) and the LCP element is the home slider.",
++        "evidence": [
++          {
++            "tool": "check_speed",
++            "field": "lab_metrics.LCP",
++            "value": "8.2 s"
++          },
++          {
++            "tool": "check_speed",
++            "field": "lcp_element",
++            "value": "Home-Slider"
++          },
++          {
++            "tool": "check_speed",
++            "field": "performance_score",
++            "value": "66"
++          }
++        ],
++        "fix": "Preload the first slider image with fetchpriority=high and remove lazy-loading and JS-dependent rendering from that first slide.",
++        "impact": "high",
++        "effort": "medium"
++      },
++      {
++        "category": "speed",
++        "issue": "The page is very heavy (about 6.7 MB), with large unoptimised images; Lighthouse estimates 3,874 KiB of savings from better image delivery.",
++        "evidence": [
++          {
++            "tool": "check_speed",
++            "field": "page_weight_kb",
++            "value": "6677"
++          },
++          {
++            "tool": "check_speed",
++            "field": "top_issues[2].detail",
++            "value": "Est savings of 3,874 KiB"
++          },
++          {
++            "tool": "check_speed",
++            "field": "heaviest_resources[0].kb",
++            "value": "736"
++          }
++        ],
++        "fix": "Convert secure-progress.jpg and the product PNGs to WebP/AVIF at display size, and serve them with srcset.",
++        "impact": "high",
++        "effort": "medium"
++      },
++      {
++        "category": "speed",
++        "issue": "Render-blocking requests delay first paint (estimated 2,090 ms savings) and font display adds a 300 ms delay.",
++        "evidence": [
++          {
++            "tool": "check_speed",
++            "field": "top_issues[6].detail",
++            "value": "Est savings of 2,090 ms"
++          },
++          {
++            "tool": "check_speed",
++            "field": "top_issues[0].detail",
++            "value": "Est savings of 300 ms"
++          }
++        ],
++        "fix": "Defer non-critical CSS/JS and add font-display: swap to the @font-face rules.",
++        "impact": "medium",
++        "effort": "medium"
++      },
++      {
++        "category": "meta_tags",
++        "issue": "The homepage has no H1 heading.",
++        "evidence": [
++          {
++            "tool": "check_meta_tags",
++            "field": "h1",
++            "value": "[]"
++          }
++        ],
++        "fix": "Add one H1 to the homepage, e.g. 'Automotive & Industrial Lubricants by Raaj Unocal', in the hero section.",
++        "impact": "medium",
++        "effort": "low"
++      },
++      {
++        "category": "meta_tags",
++        "issue": "The title is too long (77 chars) and will be truncated in search results.",
++        "evidence": [
++          {
++            "tool": "check_meta_tags",
++            "field": "title_length",
++            "value": "77"
++          }
++        ],
++        "fix": "Change the title to 'Automotive & Industrial Lubricants | Raaj Unocal India' (55 chars).",
++        "impact": "medium",
++        "effort": "low"
++      },
++      {
++        "category": "meta_tags",
++        "issue": "The meta description is 247 chars, so it will be truncated.",
++        "evidence": [
++          {
++            "tool": "check_meta_tags",
++            "field": "description_length",
++            "value": "247"
++          }
++        ],
++        "fix": "Rewrite the description to: 'Raaj Unocal blends automotive, industrial, marine and aviation oils and greases, with in-house testing for strict quality control.' (about 135 chars).",
++        "impact": "medium",
++        "effort": "low"
++      },
++      {
++        "category": "meta_tags",
++        "issue": "There is no og:image, so social shares have no preview image.",
++        "evidence": [
++          {
++            "tool": "check_meta_tags",
++            "field": "open_graph.image",
++            "value": "null"
++          }
++        ],
++        "fix": "Add an og:image meta tag pointing to a 1200x630 brand or product image.",
++        "impact": "low",
++        "effort": "low"
++      },
++      {
++        "category": "links",
++        "issue": "Two internal links on the homepage return 404 (the Industrial and Heavy Commercial Vehicle pages, via the non-www host), and an external link to unocalglobal.com fails to connect.",
++        "evidence": [
++          {
++            "tool": "check_links",
++            "field": "broken[0].url",
++            "value": "https://unocal.in/Industries/heavy-commercial-vehicle/"
++          },
++          {
++            "tool": "check_links",
++            "field": "broken[1].url",
++            "value": "https://unocal.in/Industries/industrial/"
++          },
++          {
++            "tool": "check_links",
++            "field": "broken[2].error",
++            "value": "ConnectError"
++          }
++        ],
++        "fix": "Update these hrefs to the working www URLs (https://www.unocal.in/Industries/industrial/ and https://www.unocal.in/Industries/heavy-commercial-vehicle/) and remove or replace the unocalglobal.com link.",
++        "impact": "medium",
++        "effort": "low"
++      },
++      {
++        "category": "links",
++        "issue": "Many internal links point to the non-www host and rely on redirects; some redirect to image files instead of pages.",
++        "evidence": [
++          {
++            "tool": "check_links",
++            "field": "redirected[0]",
++            "value": "https://unocal.in/Industries/small-engine/ -> https://www.unocal.in/wp-content/uploads/2020/09/small-engine.jpg"
++          },
++          {
++            "tool": "check_links",
++            "field": "redirected[5].url",
++            "value": "https://unocal.in/company/"
++          }
++        ],
++        "fix": "Change the internal hrefs to https://www.unocal.in/... URLs, and point the small-engine, passenger-car and agriculture links to real industry pages rather than image files.",
++        "impact": "medium",
++        "effort": "low"
++      }
++    ],
++    "not_checked": [
++      "Desktop speed",
++      "Real-user Core Web Vitals (field_data was null)",
++      "Pages other than the homepage",
++      "robots.txt and sitemap.xml",
++      "Structured data"
++    ]
++  },
++  "text": "",
++  "tool_outputs": [
++    {
++      "tool": "fetch_page",
++      "input": {
++        "url": "https://www.unocal.in/"
++      },
++      "output": {
++        "requested_url": "https://www.unocal.in/",
++        "final_url": "https://www.unocal.in/",
++        "status": 200,
++        "redirects": [],
++        "response_time_ms": 942,
++        "content_type": "text/html; charset=UTF-8",
++        "html_size_kb": 63.6,
++        "word_count": 565,
++        "is_https": true,
++        "x_robots_tag": null
++      }
++    },
++    {
++      "tool": "check_meta_tags",
++      "input": {
++        "url": "https://www.unocal.in/"
++      },
++      "output": {
++        "url": "https://www.unocal.in/",
++        "title": "Automotive Lubricants, Engine & Industrial Oil | Raaj Unocal Lubricants India",
++        "title_length": 77,
++        "description": "Raaj Unocal Lubricants blend all Automotive Oils, Industrial, Marine, Specialty Oils, Greases and Aviation Oils in the shortest possible time and the in-house state-of-the-art testing facility enables the plant to adhere to strict quality control.",
++        "description_length": 247,
++        "canonical": "https://www.unocal.in/",
++        "robots": "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
++        "x_robots_tag": null,
++        "h1": [],
++        "lang": "en-US",
++        "viewport": "width=device-width, initial-scale=1",
++        "open_graph": {
++          "title": "Automotive Lubricants, Engine & Industrial Oil | Raaj Unocal Lubricants India",
++          "description": "Raaj Unocal Lubricants blend all Automotive Oils, Industrial, Marine, Specialty Oils, Greases and Aviation Oils in the shortest possible time and the in-house state-of-the-art testing facility enables the plant to adhere to strict quality control.",
++          "image": null
++        },
++        "issues": [
++          "Title is 77 chars (aim for ~30-60)",
++          "Meta description is 247 chars (aim for ~70-160)",
++          "Found 0 <h1> tags (expected 1)",
++          "Missing og:title or og:image (poor social sharing previews)"
++        ]
++      }
++    },
++    {
++      "tool": "check_links",
++      "input": {
++        "url": "https://www.unocal.in/"
++      },
++      "output": {
++        "url": "https://www.unocal.in/",
++        "total_links": 50,
++        "checked": 50,
++        "skipped": 0,
++        "internal": 34,
++        "external": 16,
++        "nofollow": 0,
++        "broken": [
++          {
++            "url": "https://unocal.in/Industries/heavy-commercial-vehicle/",
++            "anchor": "KNOW MORE",
++            "status": 404,
++            "error": null
++          },
++          {
++            "url": "https://unocal.in/Industries/industrial/",
++            "anchor": "INDUSTRIAL",
++            "status": 404,
++            "error": null
++          },
++          {
++            "url": "https://unocalglobal.com/industries/",
++            "anchor": "",
++            "status": null,
++            "error": "ConnectError"
++          }
++        ],
++        "unverified": [],
++        "redirected": [
++          {
++            "url": "https://unocal.in/Industries/small-engine/",
++            "final_url": "https://www.unocal.in/wp-content/uploads/2020/09/small-engine.jpg"
++          },
++          {
++            "url": "https://unocal.in/Industries/heavy-commercial-vehicle/",
++            "final_url": "https://www.unocal.in/Industries/heavy-commercial-vehicle/"
++          },
++          {
++            "url": "https://unocal.in/Industries/passenger-car/",
++            "final_url": "https://www.unocal.in/wp-content/uploads/2020/09/passenger-car.jpg"
++          },
++          {
++            "url": "https://unocal.in/Industries/agriculture/",
++            "final_url": "https://www.unocal.in/wp-content/uploads/2020/09/agriculture.jpg"
++          },
++          {
++            "url": "https://unocal.in/Industries/industrial/",
++            "final_url": "https://www.unocal.in/Industries/industrial/"
++          },
++          {
++            "url": "https://unocal.in/company/",
++            "final_url": "https://www.unocal.in/company/"
++          },
++          {
++            "url": "https://unocal.in/products/",
++            "final_url": "https://www.unocal.in/products/"
++          },
++          {
++            "url": "https://unocal.in/private-label-manufacturing/",
++            "final_url": "https://www.unocal.in/private-label-manufacturing/"
++          },
++          {
++            "url": "https://unocal.in/news-updates/",
++            "final_url": "https://www.unocal.in/news-updates/"
++          },
++          {
++            "url": "https://unocal.in/why-unocal/",
++            "final_url": "https://www.unocal.in/why-unocal/"
++          },
++          {
++            "url": "https://unocal.in/production/",
++            "final_url": "https://www.unocal.in/production/"
++          },
++          {
++            "url": "https://abacusdesk.com/",
++            "final_url": "https://www.abacusdesk.com/"
++          }
++        ]
++      }
++    },
++    {
++      "tool": "check_speed",
++      "input": {
++        "url": "https://www.unocal.in/",
++        "strategy": "mobile"
++      },
++      "output": {
++        "url": "https://www.unocal.in/",
++        "strategy": "mobile",
++        "performance_score": 66,
++        "lab_metrics": {
++          "FCP": "1.9 s",
++          "LCP": "8.2 s",
++          "TBT": "90 ms",
++          "CLS": "0.001",
++          "Speed Index": "8.0 s"
++        },
++        "lcp_element": "Home-Slider",
++        "page_weight_kb": 6677,
++        "heaviest_resources": [
++          {
++            "url": "https://www.unocal.in/wp-content/uploads/2020/08/secure-progress.jpg",
++            "kb": 736
++          },
++          {
++            "url": "https://www.unocal.in/wp-content/uploads/2020/09/UNO-AGRO-KISAN-SANJEEVANI-20W40-API-CF4.png",
++            "kb": 319
++          },
++          {
++            "url": "https://www.unocal.in/wp-content/uploads/2020/09/UNO-UTTO-WET-BRAKE-FLUID-SAE-30-2-1.png",
++            "kb": 297
++          }
++        ],
++        "field_data": null,
++        "top_issues": [
++          {
++            "title": "Font display",
++            "detail": "Est savings of 300 ms"
++          },
++          {
++            "title": "Forced reflow",
++            "detail": null
++          },
++          {
++            "title": "Improve image delivery",
++            "detail": "Est savings of 3,874 KiB"
++          },
++          {
++            "title": "LCP breakdown",
++            "detail": null
++          },
++          {
++            "title": "LCP request discovery",
++            "detail": null
++          },
++          {
++            "title": "Network dependency tree",
++            "detail": null
++          },
++          {
++            "title": "Render-blocking requests",
++            "detail": "Est savings of 2,090 ms"
++          },
++          {
++            "title": "Reduce unused CSS",
++            "detail": "Est savings of 34 KiB"
++          }
++        ]
++      }
++    }
++  ]
++}
+\ No newline at end of file
+diff --git a/evals/cases/vinnayakk-com-20261014-000201.json b/evals/cases/vinnayakk-com-20261014-000201.json
+new file mode 100644
+index 0000000..21631e9
+--- /dev/null
++++ b/evals/cases/vinnayakk-com-20261014-000201.json
+@@ -0,0 +1,280 @@
++{
++  "question": "Do a full SEO audit of https://www.vinnayakk.com: reachability, meta tags, broken links and mobile speed. Then submit a prioritised report.",
++  "report": {
++    "url": "https://www.vinnayakk.com",
++    "summary": "The site is reachable over HTTPS (200, no redirects), has no broken links, and scores 81 on mobile. The biggest problem is page weight: two animated GIF covers make up about 6.9 MB of a 7.4 MB page, which slows LCP (4.2 s). Social sharing tags, canonical and meta description also need work.",
++    "findings": [
++      {
++        "category": "speed",
++        "issue": "Two animated GIF project covers weigh 5.4 MB and 1.4 MB, making the page 7.4 MB in total and delaying load.",
++        "evidence": [
++          {
++            "tool": "check_speed",
++            "field": "heaviest_resources[0].kb",
++            "value": "5442"
++          },
++          {
++            "tool": "check_speed",
++            "field": "heaviest_resources[1].kb",
++            "value": "1440"
++          },
++          {
++            "tool": "check_speed",
++            "field": "page_weight_kb",
++            "value": "7365"
++          }
++        ],
++        "fix": "Replace the two cover.gif files with short muted autoplay looping MP4/WebM videos (or static WebP posters) and serve those instead.",
++        "impact": "high",
++        "effort": "medium"
++      },
++      {
++        "category": "speed",
++        "issue": "Mobile LCP is 4.2 s and FCP 2.8 s; the LCP element is a text block, so rendering is being delayed by render-blocking requests.",
++        "evidence": [
++          {
++            "tool": "check_speed",
++            "field": "lab_metrics.LCP",
++            "value": "4.2 s"
++          },
++          {
++            "tool": "check_speed",
++            "field": "lab_metrics.FCP",
++            "value": "2.8 s"
++          },
++          {
++            "tool": "check_speed",
++            "field": "top_issues[2].detail",
++            "value": "Est savings of 300 ms"
++          }
++        ],
++        "fix": "Defer or async-load the render-blocking CSS/JS requests flagged by Lighthouse, and load the Google Tag Manager script with the Next.js 'lazyOnload' or 'afterInteractive' strategy.",
++        "impact": "medium",
++        "effort": "medium"
++      },
++      {
++        "category": "meta_tags",
++        "issue": "No og:title, og:description or og:image, so shared links have poor previews.",
++        "evidence": [
++          {
++            "tool": "check_meta_tags",
++            "field": "open_graph.image",
++            "value": "null"
++          },
++          {
++            "tool": "check_meta_tags",
++            "field": "open_graph.title",
++            "value": "null"
++          }
++        ],
++        "fix": "Add og:title, og:description and a 1200x630 og:image via the Next.js metadata openGraph field in the root layout.",
++        "impact": "medium",
++        "effort": "low"
++      },
++      {
++        "category": "meta_tags",
++        "issue": "No canonical link is set, so URL variants could be treated as duplicates.",
++        "evidence": [
++          {
++            "tool": "check_meta_tags",
++            "field": "canonical",
++            "value": "null"
++          }
++        ],
++        "fix": "Add <link rel=\"canonical\" href=\"https://www.vinnayakk.com/\"> using the Next.js metadata alternates.canonical field.",
++        "impact": "medium",
++        "effort": "low"
++      },
++      {
++        "category": "meta_tags",
++        "issue": "Meta description is only 53 characters, which is short and gives little to attract clicks.",
++        "evidence": [
++          {
++            "tool": "check_meta_tags",
++            "field": "description_length",
++            "value": "53"
++          }
++        ],
++        "fix": "Rewrite the description to about 120 characters, e.g. 'Applied AI engineer building generative pipelines and AI tools that make marketing and creative teams faster.'",
++        "impact": "low",
++        "effort": "low"
++      },
++      {
++        "category": "content",
++        "issue": "The only H1 is a greeting ('hello there :)') that contains no descriptive keywords.",
++        "evidence": [
++          {
++            "tool": "check_meta_tags",
++            "field": "h1",
++            "value": "[\"hello there :)\"]"
++          }
++        ],
++        "fix": "Change the H1 to a descriptive phrase such as 'Vinnayakk – Applied AI engineer for marketing and creative teams' and keep the greeting as a subheading.",
++        "impact": "low",
++        "effort": "low"
++      },
++      {
++        "category": "speed",
++        "issue": "Unused and legacy JavaScript adds avoidable payload (about 99 KiB unused, 14 KiB legacy).",
++        "evidence": [
++          {
++            "tool": "check_speed",
++            "field": "top_issues[3].detail",
++            "value": "Est savings of 99 KiB"
++          },
++          {
++            "tool": "check_speed",
++            "field": "top_issues[0].detail",
++            "value": "Est savings of 14 KiB"
++          }
++        ],
++        "fix": "Dynamically import below-the-fold components with next/dynamic and drop legacy polyfills by setting a modern browserslist target.",
++        "impact": "low",
++        "effort": "medium"
++      }
++    ],
++    "not_checked": [
++      "LinkedIn link returned status 999 (automated checks refused); verify it manually in a browser",
++      "Desktop speed was not tested",
++      "Only the homepage was audited; other pages, sitemap.xml and robots.txt were not checked",
++      "Real-user Core Web Vitals field data was not available (field_data is null)"
++    ]
++  },
++  "text": "",
++  "tool_outputs": [
++    {
++      "tool": "fetch_page",
++      "input": {
++        "url": "https://www.vinnayakk.com"
++      },
++      "output": {
++        "requested_url": "https://www.vinnayakk.com",
++        "final_url": "https://www.vinnayakk.com",
++        "status": 200,
++        "redirects": [],
++        "response_time_ms": 357,
++        "content_type": "text/html; charset=utf-8",
++        "html_size_kb": 24.3,
++        "word_count": 231,
++        "is_https": true,
++        "x_robots_tag": null
++      }
++    },
++    {
++      "tool": "check_meta_tags",
++      "input": {
++        "url": "https://www.vinnayakk.com"
++      },
++      "output": {
++        "url": "https://www.vinnayakk.com",
++        "title": "Vinnayakk | Applied AI engineer",
++        "title_length": 31,
++        "description": "Applied AI engineer for marketing and creative teams.",
++        "description_length": 53,
++        "canonical": null,
++        "robots": null,
++        "x_robots_tag": null,
++        "h1": [
++          "hello there :)"
++        ],
++        "lang": "en",
++        "viewport": "width=device-width, initial-scale=1",
++        "open_graph": {
++          "title": null,
++          "description": null,
++          "image": null
++        },
++        "issues": [
++          "Meta description is 53 chars (aim for ~70-160)",
++          "No canonical link",
++          "Missing og:title or og:image (poor social sharing previews)"
++        ]
++      }
++    },
++    {
++      "tool": "check_links",
++      "input": {
++        "url": "https://www.vinnayakk.com"
++      },
++      "output": {
++        "url": "https://www.vinnayakk.com",
++        "total_links": 8,
++        "checked": 8,
++        "skipped": 0,
++        "internal": 5,
++        "external": 3,
++        "nofollow": 0,
++        "broken": [],
++        "unverified": [
++          {
++            "url": "https://www.linkedin.com/in/vinnayakk/",
++            "status": 999
++          }
++        ],
++        "redirected": []
++      }
++    },
++    {
++      "tool": "check_speed",
++      "input": {
++        "url": "https://www.vinnayakk.com",
++        "strategy": "mobile"
++      },
++      "output": {
++        "url": "https://www.vinnayakk.com",
++        "strategy": "mobile",
++        "performance_score": 81,
++        "lab_metrics": {
++          "FCP": "2.8 s",
++          "LCP": "4.2 s",
++          "TBT": "40 ms",
++          "CLS": "0.023",
++          "Speed Index": "3.0 s"
++        },
++        "lcp_element": "I build the systems that make creative work faster: generative pipelines for fi…",
++        "page_weight_kb": 7365,
++        "heaviest_resources": [
++          {
++            "url": "https://www.vinnayakk.com/_next/image?url=%2Fprojects%2Fai-ad-creative-generator%2Fcover.gif&w=750&q=75",
++            "kb": 5442
++          },
++          {
++            "url": "https://www.vinnayakk.com/_next/image?url=%2Fprojects%2Frag-docs-assistant%2Fcover.gif&w=750&q=75",
++            "kb": 1440
++          },
++          {
++            "url": "https://www.googletagmanager.com/gtag/js?id=G-VBPK275QH9",
++            "kb": 176
++          }
++        ],
++        "field_data": null,
++        "top_issues": [
++          {
++            "title": "Legacy JavaScript",
++            "detail": "Est savings of 14 KiB"
++          },
++          {
++            "title": "Network dependency tree",
++            "detail": null
++          },
++          {
++            "title": "Render-blocking requests",
++            "detail": "Est savings of 300 ms"
++          },
++          {
++            "title": "Reduce unused JavaScript",
++            "detail": "Est savings of 99 KiB"
++          },
++          {
++            "title": "Improve image delivery",
++            "detail": "Est savings of 6,652 KiB"
++          },
++          {
++            "title": "Avoid enormous network payloads",
++            "detail": "Total size was 7,365 KiB"
++          }
++        ]
++      }
++    }
++  ]
++}
+\ No newline at end of file
+diff --git a/evals/cases/vinnayakk-com-this-page-does-not-exist-20261014-152038.json b/evals/cases/vinnayakk-com-this-page-does-not-exist-20261014-152038.json
+new file mode 100644
+index 0000000..147e7b6
+--- /dev/null
++++ b/evals/cases/vinnayakk-com-this-page-does-not-exist-20261014-152038.json
+@@ -0,0 +1,218 @@
++{
++  "question": "Do a full SEO audit of https://www.vinnayakk.com/this-page-does-not-exist: reachability, meta tags, broken links and mobile speed. Then submit a prioritised report.",
++  "trace_id": "1816799b6ff260e78b86b8c26fd5c511",
++  "report": {
++    "url": "https://www.vinnayakk.com/this-page-does-not-exist",
++    "summary": "This URL is a non-existent page, and the site handles it correctly. It returns a real HTTP 404, is set to noindex, and its 3 internal links all work. The main weakness is mobile speed. The score is a good 92, but LCP is 3.3 s because the largest element is the cookie-consent text, and the 176 KB Google Tag Manager script is the heaviest resource. Meta-tag warnings (noindex, no canonical, no Open Graph tags, short description) don't matter on an error page. They only matter if the same template is used on real pages, which I didn't check.",
++    "findings": [
++      {
++        "category": "speed",
++        "issue": "Mobile LCP is 3.3 s, and the LCP element is the cookie-consent banner text rather than page content.",
++        "evidence": [
++          {
++            "tool": "check_speed",
++            "field": "lab_metrics.LCP",
++            "value": "3.3 s"
++          },
++          {
++            "tool": "check_speed",
++            "field": "lcp_element",
++            "value": "This site uses cookies to understand how visitors use it and to measure the eff…"
++          }
++        ],
++        "fix": "Make the cookie banner a small fixed-position overlay with short text, so it is not the largest element painted. Alternatively, make sure the main heading or content paints larger than the banner.",
++        "impact": "medium",
++        "effort": "low"
++      },
++      {
++        "category": "speed",
++        "issue": "The Google Tag Manager script (176 KB) is the heaviest resource on the page. Lighthouse also flags 99 KiB of unused JavaScript and render-blocking requests.",
++        "evidence": [
++          {
++            "tool": "check_speed",
++            "field": "heaviest_resources[0].kb",
++            "value": "176"
++          },
++          {
++            "tool": "check_speed",
++            "field": "top_issues[2].detail",
++            "value": "Est savings of 99 KiB"
++          },
++          {
++            "tool": "check_speed",
++            "field": "top_issues[1].detail",
++            "value": "Est savings of 170 ms"
++          }
++        ],
++        "fix": "Load the gtag/GTM script with the Next.js Script component using strategy=\"afterInteractive\" or \"lazyOnload\", so it doesn't block rendering.",
++        "impact": "medium",
++        "effort": "low"
++      },
++      {
++        "category": "speed",
++        "issue": "Legacy JavaScript is being shipped to modern browsers.",
++        "evidence": [
++          {
++            "tool": "check_speed",
++            "field": "top_issues[3].detail",
++            "value": "Est savings of 14 KiB"
++          }
++        ],
++        "fix": "Update the browserslist config in the project to target modern browsers, so Next.js stops adding unneeded polyfills and transforms.",
++        "impact": "low",
++        "effort": "low"
++      },
++      {
++        "category": "meta_tags",
++        "issue": "The 404 template has no Open Graph tags and a 53-character meta description. This only matters if real pages share the same head template.",
++        "evidence": [
++          {
++            "tool": "check_meta_tags",
++            "field": "open_graph.title",
++            "value": "null"
++          },
++          {
++            "tool": "check_meta_tags",
++            "field": "description_length",
++            "value": "53"
++          }
++        ],
++        "fix": "Check a real page such as the homepage. If it also lacks og:title, og:description and og:image, add them in the shared Next.js metadata config, and lengthen the description to 70–160 characters.",
++        "impact": "low",
++        "effort": "low"
++      }
++    ],
++    "not_checked": [
++      "Other pages on the site (homepage and real content pages), so it is unknown whether the missing Open Graph tags and missing canonical also affect them",
++      "Real-user Core Web Vitals (field_data was null; Google has too little traffic data)",
++      "Desktop speed",
++      "robots.txt and sitemap.xml",
++      "Structured data"
++    ]
++  },
++  "text": "",
++  "tool_outputs": [
++    {
++      "tool": "fetch_page",
++      "input": {
++        "url": "https://www.vinnayakk.com/this-page-does-not-exist"
++      },
++      "output": {
++        "requested_url": "https://www.vinnayakk.com/this-page-does-not-exist",
++        "final_url": "https://www.vinnayakk.com/this-page-does-not-exist",
++        "status": 404,
++        "redirects": [],
++        "response_time_ms": 1291,
++        "content_type": "text/html; charset=utf-8",
++        "html_size_kb": 14.5,
++        "word_count": 27,
++        "is_https": true,
++        "x_robots_tag": null
++      }
++    },
++    {
++      "tool": "check_meta_tags",
++      "input": {
++        "url": "https://www.vinnayakk.com/this-page-does-not-exist"
++      },
++      "output": {
++        "url": "https://www.vinnayakk.com/this-page-does-not-exist",
++        "title": "Vinnayakk | Applied AI engineer",
++        "title_length": 31,
++        "description": "Applied AI engineer for marketing and creative teams.",
++        "description_length": 53,
++        "canonical": null,
++        "robots": "noindex",
++        "x_robots_tag": null,
++        "h1": [
++          "404"
++        ],
++        "lang": "en",
++        "viewport": "width=device-width, initial-scale=1",
++        "open_graph": {
++          "title": null,
++          "description": null,
++          "image": null
++        },
++        "issues": [
++          "Meta description is 53 chars (aim for ~70-160)",
++          "No canonical link",
++          "Page is set to noindex (it won't appear in search)",
++          "Missing og:title or og:image (poor social sharing previews)"
++        ]
++      }
++    },
++    {
++      "tool": "check_links",
++      "input": {
++        "url": "https://www.vinnayakk.com/this-page-does-not-exist"
++      },
++      "output": {
++        "url": "https://www.vinnayakk.com/this-page-does-not-exist",
++        "total_links": 3,
++        "checked": 3,
++        "skipped": 0,
++        "internal": 3,
++        "external": 0,
++        "nofollow": 0,
++        "broken": [],
++        "unverified": [],
++        "redirected": []
++      }
++    },
++    {
++      "tool": "check_speed",
++      "input": {
++        "url": "https://www.vinnayakk.com/this-page-does-not-exist",
++        "strategy": "mobile"
++      },
++      "output": {
++        "url": "https://www.vinnayakk.com/this-page-does-not-exist",
++        "strategy": "mobile",
++        "performance_score": 92,
++        "lab_metrics": {
++          "FCP": "0.8 s",
++          "LCP": "3.3 s",
++          "TBT": "30 ms",
++          "CLS": "0",
++          "Speed Index": "2.5 s"
++        },
++        "lcp_element": "This site uses cookies to understand how visitors use it and to measure the eff…",
++        "page_weight_kb": 420,
++        "heaviest_resources": [
++          {
++            "url": "https://www.googletagmanager.com/gtag/js?id=G-VBPK275QH9",
++            "kb": 176
++          },
++          {
++            "url": "https://www.vinnayakk.com/_next/static/immutable/chunks/0slj9b5-5i81h.js",
++            "kb": 72
++          },
++          {
++            "url": "https://www.vinnayakk.com/_next/static/immutable/chunks/0n0fwvxjnvj-g.js",
++            "kb": 44
++          }
++        ],
++        "field_data": null,
++        "top_issues": [
++          {
++            "title": "Network dependency tree",
++            "detail": null
++          },
++          {
++            "title": "Render-blocking requests",
++            "detail": "Est savings of 170 ms"
++          },
++          {
++            "title": "Reduce unused JavaScript",
++            "detail": "Est savings of 99 KiB"
++          },
++          {
++            "title": "Legacy JavaScript",
++            "detail": "Est savings of 14 KiB"
++          }
++        ]
++      }
++    }
++  ]
++}
+\ No newline at end of file
+diff --git a/pyproject.toml b/pyproject.toml
+index bc8bae5..e0aa54b 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -13,12 +13,14 @@ dependencies = [
+     "httpx>=0.28.1",
+     "langfuse>=4.17.0",
+     "mcp[cli]>=2.3.0",
++    "openai>=3.35.1",
+     "python-dotenv>=1.2.4",
+ ]
+ 
+ [project.scripts]
+ seo-audit = "seo_audit_agent.agent:main"
+ seo-eval = "seo_audit_agent.evals:main"
++seo-judge = "seo_audit_agent.judge:main"
+ 
+ [build-system]
+ requires = ["uv_build>=0.13.0,<0.14.0"]
+diff --git a/src/seo_audit_agent/evals.py b/src/seo_audit_agent/evals.py
+index c298da2..d6c751f 100644
+--- a/src/seo_audit_agent/evals.py
++++ b/src/seo_audit_agent/evals.py
+@@ -69,6 +69,21 @@ def cites(finding: Finding, *fields: str) -> bool:
+ 
+ # ---------- checks ----------
+ 
++def find_value(obj, target: str, path: str = "") -> str | None:
++    """Where does this value actually live? Turns 'wrong' into 'wrong index, right value'."""
++    if isinstance(obj, dict):
++        for k, v in obj.items():
++            if (hit := find_value(v, target, f"{path}.{k}" if path else k)):
++                return hit
++    elif isinstance(obj, list):
++        for i, v in enumerate(obj):
++            if (hit := find_value(v, target, f"{path}[{i}]")):
++                return hit
++    elif normalise(obj) == target:
++        return path
++    return None
++
++
+ def check_evidence(run: AuditRun) -> list[CheckResult]:
+     """Every cited value must exist at that field in that tool's output.
+ 
+@@ -96,7 +111,10 @@ def check_evidence(run: AuditRun) -> list[CheckResult]:
+             if isinstance(actual, dict) and all(v in cited for v in scalars(actual)):
+                 precise.failures.append(f"{where} cites a whole object; cite one field inside it instead")
+             else:
+-                grounded.failures.append(f"{where} cited {e.value!r} but the tool returned {normalise(actual)!r}")
++                msg = f"{where} cited {e.value!r} but the tool returned {normalise(actual)!r}"
++                if (elsewhere := find_value(outputs[e.tool], cited)):
++                    msg += f" (that value is at {elsewhere}: right value, wrong pointer)"
++                grounded.failures.append(msg)
+     return [grounded, precise]
+ 
+ 
+diff --git a/src/seo_audit_agent/judge.py b/src/seo_audit_agent/judge.py
+new file mode 100644
+index 0000000..6fe705d
+--- /dev/null
++++ b/src/seo_audit_agent/judge.py
+@@ -0,0 +1,423 @@
++"""LLM-as-judge for audit reports, plus the hand-labelling and agreement workflow.
++
++    uv run seo-judge label                                   # 1. findings to label in evals/labels.json
++    uv run seo-judge run --model claude-sonnet-5-5 --model gpt-6.1-sol   # 2. judge with one or more models
++    uv run seo-judge agree --model gpt-6.1-sol               # 3. one judge vs your labels, with disagreements
++    uv run seo-judge compare                                 # 4. every judge side by side
++
++Every `run` writes a NEW folder, evals/judgements/<model>/<timestamp>/, so nothing is ever overwritten.
++Running the same model twice gives you its self-consistency (how often it disagrees with itself).
++
++The judge only rules on what code can't check (evals.py handles grounding and lengths):
++  - reasoning_sound: does the issue follow from the evidence, and would the fix resolve it?
++  - priority: is the impact rating right for this site, relative to its other findings?
++"""
++import argparse
++import json
++import sys
++import time
++from datetime import datetime
++from itertools import combinations
++from pathlib import Path
++from typing import Literal
++
++from dotenv import load_dotenv
++from pydantic import BaseModel, Field
++
++from seo_audit_agent.evals import load_runs
++from seo_audit_agent.report import AuditRun, priority_label
++
++DEFAULT_MODEL = "claude-sonnet-5-5"
++CASES = "evals/cases"
++LABELS = Path("evals/labels.json")
++JUDGEMENTS = Path("evals/judgements")
++
++# USD per 1M tokens (input, output), standard tier. Only used to estimate cost in `compare`.
++# Check the providers' pricing pages; models missing here show cost as n/a.
++PRICES = {
++    "claude-sonnet-5-5": (2.00, 10.00),   # matches the costs Langfuse computed for your audit runs
++    "gpt-6-luna": (0.10, 0.50),
++    "gpt-6.1-sol": (2.00, 10.00),         # promotional price, listed "at least through November 21, 2026"
++    "gpt-6-astra": (10.00, 50.00),
++}
++
++
++# ---------- What the judge must return (critique BEFORE verdict: reason first, then decide) ----------
++
++class FindingVerdict(BaseModel):
++    finding: int = Field(description="The finding number, as given")
++    reasoning_critique: str = Field(description="Check the issue against the cited evidence and the full tool "
++                                                "outputs, then check whether the fix would resolve that issue")
++    reasoning_sound: bool
++    priority_critique: str = Field(description="Weigh this finding's impact rating against the tool data "
++                                               "(e.g. real-user field data) and the other findings")
++    priority: Literal["ok", "too_high", "too_low"]
++
++
++class Judgement(BaseModel):
++    verdicts: list[FindingVerdict]
++
++
++class JudgementRecord(Judgement):
++    """A saved judgement: the verdicts plus what it cost to get them."""
++    model: str
++    case: str
++    input_tokens: int
++    output_tokens: int
++    seconds: float
++
++
++JUDGE_TOOL = {"name": "submit_verdicts", "description": "Submit one verdict per finding.",
++              "input_schema": Judgement.model_json_schema()}
++
++# Examples are invented (shop.test), never taken from the labelled cases: examples copied from
++# the test set would inflate agreement, because the judge would just recognise the answers.
++RUBRIC = """You review findings from an automated SEO audit. You get the raw tool outputs the audit was
++based on and the findings it reported. For EACH finding, decide two things.
++
++1. reasoning_sound (true/false). True only if ALL hold:
++   a. The issue follows from the cited evidence and the tool outputs (read the whole output, not just
++      the cited field: a cited value can be real but misread).
++   b. The fix would plausibly resolve that issue on this site.
++   c. The fix doesn't depend on facts the tool outputs don't show. Naming a file, script or image as
++      the cause is only sound if a tool output lists it for that problem.
++   d. The fix doesn't point the site owner somewhere the tool data shows is broken or already done.
++   Example (unsound, c): issue "render-blocking requests cost 900 ms"; fix "defer analytics.js";
++   but top_issues lists only app.css under render-blocking. The culprit is invented.
++   Example (unsound, d): issue "link to http://shop.test/sale 404s"; fix "point it at
++   https://www.shop.test/sale", but check_links shows that URL is the one returning 404.
++   Example (sound): issue "page weighs 6 MB, hero.gif is 4.8 MB (heaviest_resources[0])";
++   fix "replace hero.gif with an MP4 video".
++
++2. priority ("ok", "too_high", "too_low"): is the impact rating right for THIS site?
++   Consider how much fixing it would change search visibility or real users' experience,
++   compared with the other findings in the same report. Lab-only speed problems matter less when
++   field_data shows real users are all FAST. Broken internal links and noindex mistakes matter more
++   than cosmetic tag lengths. Missing og:image matters for sharing, little for ranking.
++
++Be strict and specific. Write the critique first, then decide."""
++
++
++def render_case(run: AuditRun) -> str:
++    """What the judge sees: all tool outputs, then each finding with its rating and evidence."""
++    lines = ["TOOL OUTPUTS:"]
++    for t in run.tool_outputs:
++        lines.append(f"--- {t['tool']} ---\n{json.dumps(t['output'], ensure_ascii=False)}")
++    lines += ["", f"AUDITED URL: {run.report.url}", "", "FINDINGS:"]
++    for i, f in enumerate(run.report.findings, 1):
++        cited = "; ".join(f"{e.tool}.{e.field} = {e.value}" for e in f.evidence)
++        lines.append(f"[{i}] ({f.category}) impact={f.impact} effort={f.effort} priority={priority_label(f)}\n"
++                     f"    issue: {f.issue}\n    fix: {f.fix}\n    evidence: {cited}")
++    return "\n".join(lines)
++
++
++# ---------- Providers: same rubric and schema, different API shapes ----------
++
++def provider_for(model: str) -> str:
++    if model.startswith("claude-"):
++        return "anthropic"
++    if model.startswith(("gpt-", "o1", "o3", "o4", "chat-")):
++        return "openai"
++    raise ValueError(f"Don't know which provider serves {model!r} (expected claude-* or gpt-*)")
++
++
++def call_anthropic(client, model: str, prompt: str) -> tuple[dict, int, int]:
++    """Anthropic: structured output via a forced tool call."""
++    resp = client.messages.create(
++        model=model, max_tokens=8192, system=RUBRIC, tools=[JUDGE_TOOL],
++        tool_choice={"type": "tool", "name": "submit_verdicts"},
++        messages=[{"role": "user", "content": prompt}],
++    )
++    block = next(b for b in resp.content if b.type == "tool_use")
++    return block.input, resp.usage.input_tokens, resp.usage.output_tokens
++
++
++def call_openai(client, model: str, prompt: str) -> tuple[dict, int, int]:
++    """OpenAI: structured output via text_format (the SDK turns the Pydantic model into a strict schema)."""
++    resp = client.responses.parse(model=model, instructions=RUBRIC, input=prompt, text_format=Judgement)
++    if resp.output_parsed is None:
++        raise RuntimeError(f"{model} returned no parsed output (refusal or empty response)")
++    return resp.output_parsed.model_dump(), resp.usage.input_tokens, resp.usage.output_tokens
++
++
++def make_client(provider: str):
++    if provider == "anthropic":
++        from anthropic import Anthropic
++        return Anthropic(timeout=180, max_retries=3)
++    from openai import OpenAI
++    return OpenAI(timeout=180, max_retries=3)  # reads OPENAI_API_KEY
++
++
++CALLERS = {"anthropic": call_anthropic, "openai": call_openai}
++
++
++def judge_run(run: AuditRun, client, model: str = DEFAULT_MODEL, case: str = "") -> JudgementRecord:
++    started = time.perf_counter()
++    raw, tokens_in, tokens_out = CALLERS[provider_for(model)](client, model, render_case(run))
++    judgement = Judgement.model_validate(raw)
++    expected = set(range(1, len(run.report.findings) + 1))
++    if {v.finding for v in judgement.verdicts} != expected:
++        raise ValueError(f"{model} returned verdicts for {sorted(v.finding for v in judgement.verdicts)}, "
++                         f"expected {sorted(expected)}")
++    return JudgementRecord(verdicts=judgement.verdicts, model=model, case=case, input_tokens=tokens_in,
++                           output_tokens=tokens_out, seconds=round(time.perf_counter() - started, 1))
++
++
++# ---------- Storage: evals/judgements/<model>/<timestamp>/<case>.json, never overwritten ----------
++
++def model_dir(model: str) -> Path:
++    return JUDGEMENTS / model.replace("/", "_")
++
++
++def list_runs(model: str) -> list[Path]:
++    """Run folders for a model, oldest first (timestamps sort as text)."""
++    d = model_dir(model)
++    return sorted(p for p in d.iterdir() if p.is_dir()) if d.exists() else []
++
++
++def judged_models() -> list[str]:
++    return sorted(p.name for p in JUDGEMENTS.iterdir() if p.is_dir() and list_runs(p.name)) \
++        if JUDGEMENTS.exists() else []
++
++
++def load_judgements(run_dir: Path) -> dict:
++    return {p.stem: json.loads(p.read_text()) for p in sorted(run_dir.glob("*.json"))}
++
++
++def migrate_flat_judgements() -> None:
++    """Judgements from the first version lived directly in evals/judgements/*.json. Move them into
++    the per-model layout (they were made with the default model) instead of mixing layouts."""
++    flat = sorted(JUDGEMENTS.glob("*.json")) if JUDGEMENTS.exists() else []
++    if not flat:
++        return
++    dest = model_dir(DEFAULT_MODEL) / "first-run"
++    dest.mkdir(parents=True, exist_ok=True)
++    for p in flat:
++        p.rename(dest / p.name)
++    print(f"Moved {len(flat)} earlier judgement(s) to {dest}/")
++
++
++# ---------- 1. label: one entry per finding, for a human ----------
++
++def build_labels(runs: list[tuple[Path, AuditRun]], existing: dict) -> dict:
++    """Add new findings; keep labels already given (matched by case + finding + issue text)."""
++    labels = {}
++    for path, run in runs:
++        if run.report is None:
++            continue
++        old = {(e["finding"], e["issue"]): e for e in existing.get(path.stem, [])}
++        entries = []
++        for i, f in enumerate(run.report.findings, 1):
++            prev = old.get((i, f.issue), {})
++            entries.append({
++                "finding": i, "priority_label": priority_label(f), "impact": f.impact, "effort": f.effort,
++                "issue": f.issue, "fix": f.fix,
++                "evidence": [f"{e.tool}.{e.field} = {e.value}" for e in f.evidence],
++                "reasoning_sound": prev.get("reasoning_sound"),   # you fill in: true / false
++                "priority": prev.get("priority"),                 # you fill in: "ok" / "too_high" / "too_low"
++                "note": prev.get("note", ""),
++            })
++        labels[path.stem] = entries
++    return labels
++
++
++# ---------- 3/4. agreement ----------
++
++def cohen_kappa(pairs: list[tuple]) -> float:
++    """Agreement corrected for chance: 1 = perfect, 0 = no better than guessing, <0 = worse."""
++    n = len(pairs)
++    if n == 0:
++        return float("nan")
++    observed = sum(a == b for a, b in pairs) / n
++    classes = {c for pair in pairs for c in pair}
++    expected = sum((sum(a == c for a, _ in pairs) / n) * (sum(b == c for _, b in pairs) / n) for c in classes)
++    return 1.0 if expected == 1 else (observed - expected) / (1 - expected)
++
++
++def agreement_report(labels: dict, judgements: dict) -> dict:
++    """Compare judge verdicts with human labels on every finding the human has labelled."""
++    reasoning, priority, disagreements = [], [], []
++    for case, entries in labels.items():
++        verdicts = {v["finding"]: v for v in judgements.get(case, {}).get("verdicts", [])}
++        for e in entries:
++            v = verdicts.get(e["finding"])
++            if v is None:
++                continue
++            if e["reasoning_sound"] is not None:
++                reasoning.append((e["reasoning_sound"], v["reasoning_sound"]))
++                if e["reasoning_sound"] != v["reasoning_sound"]:
++                    disagreements.append((case, e, v, "reasoning"))
++            if e["priority"] is not None:
++                priority.append((e["priority"], v["priority"]))
++                if e["priority"] != v["priority"]:
++                    disagreements.append((case, e, v, "priority"))
++
++    # "Catching unsound reasoning" is the job, so measure it directly (unsound = positive class).
++    caught = sum(1 for h, j in reasoning if not h and not j)
++    flagged = sum(1 for _, j in reasoning if not j)
++    actual = sum(1 for h, _ in reasoning if not h)
++    return {
++        "reasoning_n": len(reasoning),
++        "reasoning_accuracy": sum(h == j for h, j in reasoning) / len(reasoning) if reasoning else None,
++        "reasoning_kappa": cohen_kappa(reasoning),
++        "unsound_precision": caught / flagged if flagged else None,  # when it says unsound, is it right?
++        "unsound_recall": caught / actual if actual else None,       # of the truly unsound, how many caught?
++        "priority_n": len(priority),
++        "priority_accuracy": sum(h == j for h, j in priority) / len(priority) if priority else None,
++        "priority_kappa": cohen_kappa(priority),
++        "disagreements": disagreements,
++    }
++
++
++def verdict_pairs(a: dict, b: dict, key: str) -> list[tuple]:
++    """Pair two judgement sets finding by finding (judge vs judge, or a judge vs itself)."""
++    pairs = []
++    for case in a.keys() & b.keys():
++        va = {v["finding"]: v[key] for v in a[case]["verdicts"]}
++        vb = {v["finding"]: v[key] for v in b[case]["verdicts"]}
++        pairs += [(va[f], vb[f]) for f in va.keys() & vb.keys()]
++    return pairs
++
++
++def cost_summary(model: str, judgements: dict) -> dict:
++    n = len(judgements) or 1
++    tokens_in = sum(j.get("input_tokens", 0) for j in judgements.values())
++    tokens_out = sum(j.get("output_tokens", 0) for j in judgements.values())
++    price = PRICES.get(model)
++    cost = (tokens_in * price[0] + tokens_out * price[1]) / 1e6 if price else None
++    seconds = sum(j.get("seconds", 0) for j in judgements.values())
++    return {"cost": cost, "cost_per_case": cost / n if cost is not None else None, "seconds_per_case": seconds / n}
++
++
++def fmt(x, pct=False) -> str:
++    if x is None or x != x:
++        return "n/a"
++    return f"{x:.0%}" if pct else f"{x:.2f}"
++
++
++def pick_run(model: str, run_name: str | None) -> Path:
++    runs = list_runs(model)
++    if not runs:
++        sys.exit(f"No judgements for {model}: run `seo-judge run --model {model}` first.")
++    if run_name is None:
++        return runs[-1]
++    match = [r for r in runs if r.name == run_name]
++    if not match:
++        sys.exit(f"No run {run_name!r} for {model}. Available: {', '.join(r.name for r in runs)}")
++    return match[0]
++
++
++# ---------- CLI ----------
++
++def main() -> None:
++    parser = argparse.ArgumentParser(prog="seo-judge", description="LLM judge for SEO audit reports")
++    sub = parser.add_subparsers(dest="command", required=True)
++    sub.add_parser("label", help="Write/refresh evals/labels.json for hand labelling")
++    run_p = sub.add_parser("run", help="Judge every case with one or more models (new folder per run)")
++    run_p.add_argument("--model", action="append", help=f"Repeat for several judges (default {DEFAULT_MODEL})")
++    run_p.add_argument("--scores", action="store_true", help="Also attach scores to each case's Langfuse trace")
++    agree_p = sub.add_parser("agree", help="One judge vs your labels, with every disagreement")
++    agree_p.add_argument("--model", default=DEFAULT_MODEL)
++    agree_p.add_argument("--run", help="Run folder name (default: the latest)")
++    sub.add_parser("compare", help="All judges side by side: agreement, cost, consistency")
++    for p in sub.choices.values():
++        p.add_argument("--cases", default=CASES)
++    args = parser.parse_args()
++    load_dotenv()
++    migrate_flat_judgements()
++
++    if args.command == "label":
++        runs = load_runs(args.cases)
++        existing = json.loads(LABELS.read_text()) if LABELS.exists() else {}
++        labels = build_labels(runs, existing)
++        LABELS.parent.mkdir(parents=True, exist_ok=True)
++        LABELS.write_text(json.dumps(labels, indent=2, ensure_ascii=False) + "\n")
++        total = sum(len(v) for v in labels.values())
++        done = sum(e["reasoning_sound"] is not None for v in labels.values() for e in v)
++        print(f"{LABELS}: {total} findings across {len(labels)} cases, {done} labelled so far.")
++
++    elif args.command == "run":
++        runs = [(p, r) for p, r in load_runs(args.cases) if r.report is not None]
++        langfuse = None
++        if args.scores:
++            from langfuse import get_client
++            langfuse = get_client()
++        stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
++        for model in args.model or [DEFAULT_MODEL]:
++            client = make_client(provider_for(model))
++            out_dir = model_dir(model) / stamp
++            out_dir.mkdir(parents=True, exist_ok=True)
++            print(f"\n{model} -> {out_dir}/")
++            for path, run in runs:
++                try:
++                    record = judge_run(run, client, model, case=path.stem)
++                except Exception as e:  # one failed case shouldn't lose the rest of the run
++                    print(f"  FAILED  {path.stem}: {type(e).__name__}: {e}")
++                    continue
++                (out_dir / f"{path.stem}.json").write_text(record.model_dump_json(indent=2) + "\n")
++                unsound = [v.finding for v in record.verdicts if not v.reasoning_sound]
++                print(f"  {path.stem}: unsound {unsound or 'none'}  ({record.seconds}s)")
++                if langfuse and run.trace_id:
++                    rate = 1 - len(unsound) / len(record.verdicts)
++                    langfuse.create_score(trace_id=run.trace_id, name=f"judge_reasoning_sound_rate/{model}",
++                                          value=rate, data_type="NUMERIC", comment=f"run {stamp}")
++        if langfuse:
++            langfuse.flush()
++
++    elif args.command == "agree":
++        if not LABELS.exists():
++            sys.exit("No labels yet: run `seo-judge label` and fill in evals/labels.json first.")
++        run_dir = pick_run(args.model, args.run)
++        r = agreement_report(json.loads(LABELS.read_text()), load_judgements(run_dir))
++        print(f"\n{args.model}  (run {run_dir.name})")
++        print(f"Reasoning  (n={r['reasoning_n']}): accuracy {fmt(r['reasoning_accuracy'], True)}, "
++              f"kappa {fmt(r['reasoning_kappa'])}")
++        print(f"  catching unsound findings: precision {fmt(r['unsound_precision'], True)}, "
++              f"recall {fmt(r['unsound_recall'], True)}")
++        print(f"Priority   (n={r['priority_n']}): accuracy {fmt(r['priority_accuracy'], True)}, "
++              f"kappa {fmt(r['priority_kappa'])}")
++        if r["disagreements"]:
++            print(f"\nDisagreements ({len(r['disagreements'])}): read these, then decide who was right")
++        for case, e, v, kind in r["disagreements"]:
++            human, judge = (e["reasoning_sound"], v["reasoning_sound"]) if kind == "reasoning" \
++                else (e["priority"], v["priority"])
++            critique = v["reasoning_critique"] if kind == "reasoning" else v["priority_critique"]
++            print(f"\n- {case} #{e['finding']} [{kind}] you: {human}  judge: {judge}\n"
++                  f"  issue: {e['issue']}\n  judge said: {critique}")
++
++    elif args.command == "compare":
++        models = judged_models()
++        if not models:
++            sys.exit("No judgements yet: run `seo-judge run --model ...` first.")
++        labels = json.loads(LABELS.read_text()) if LABELS.exists() else {}
++        latest = {m: load_judgements(list_runs(m)[-1]) for m in models}
++
++        print("\nAgainst your labels (latest run of each judge)")
++        header = f"{'judge':22} {'n':>3} {'reason κ':>9} {'unsound recall':>15} {'precision':>10} " \
++                 f"{'priority κ':>11} {'$/case':>8} {'s/case':>7}"
++        print(header + "\n" + "-" * len(header))
++        for m in models:
++            r = agreement_report(labels, latest[m])
++            c = cost_summary(m, latest[m])
++            cost = f"{c['cost_per_case']:.3f}" if c["cost_per_case"] is not None else "n/a"
++            print(f"{m:22} {r['reasoning_n']:>3} {fmt(r['reasoning_kappa']):>9} "
++                  f"{fmt(r['unsound_recall'], True):>15} {fmt(r['unsound_precision'], True):>10} "
++                  f"{fmt(r['priority_kappa']):>11} {cost:>8} {c['seconds_per_case']:>7.1f}")
++
++        if len(models) > 1:
++            print("\nJudge vs judge (reasoning κ): where judges split, the finding or the rubric is ambiguous")
++            for a, b in combinations(models, 2):
++                print(f"  {a} vs {b}: {fmt(cohen_kappa(verdict_pairs(latest[a], latest[b], 'reasoning_sound')))}")
++
++        print("\nSelf-consistency (same judge, its last two runs; reasoning κ)")
++        for m in models:
++            runs = list_runs(m)
++            if len(runs) < 2:
++                print(f"  {m}: only 1 run. Run it again to measure its noise floor.")
++                continue
++            pairs = verdict_pairs(load_judgements(runs[-2]), load_judgements(runs[-1]), "reasoning_sound")
++            print(f"  {m}: {fmt(cohen_kappa(pairs))}  ({runs[-2].name} vs {runs[-1].name})")
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/tests/test_judge.py b/tests/test_judge.py
+new file mode 100644
+index 0000000..8af207a
+--- /dev/null
++++ b/tests/test_judge.py
+@@ -0,0 +1,193 @@
++import json
++import sys
++from pathlib import Path
++from types import SimpleNamespace
++
++import pytest
++
++from seo_audit_agent import judge
++from seo_audit_agent.report import AuditRun
++
++RUN = AuditRun(question="q", trace_id="t1", tool_outputs=[
++    {"tool": "check_links", "input": {}, "output": {"broken": [
++        {"url": "http://shop.test/sale", "final_url": "https://www.shop.test/sale", "status": 404}]}},
++], report={"url": "https://shop.test/", "summary": "s", "findings": [
++    {"category": "links", "issue": "Sale link 404s", "fix": "Point it at https://www.shop.test/sale",
++     "impact": "high", "effort": "low",
++     "evidence": [{"tool": "check_links", "field": "broken[0].status", "value": "404"}]},
++    {"category": "meta_tags", "issue": "No og:image", "fix": "Add og:image",
++     "impact": "low", "effort": "low",
++     "evidence": [{"tool": "check_links", "field": "broken[0].url", "value": "http://shop.test/sale"}]},
++]})
++
++
++def verdict(n, sound, priority="ok"):
++    return {"finding": n, "reasoning_critique": "c", "reasoning_sound": sound,
++            "priority_critique": "p", "priority": priority}
++
++
++class FakeAnthropic:
++    def __init__(self, verdicts):
++        self.calls, self._verdicts = [], verdicts
++        self.messages = SimpleNamespace(create=self._create)
++
++    def _create(self, **kw):
++        self.calls.append(kw)
++        return SimpleNamespace(content=[SimpleNamespace(type="tool_use", input={"verdicts": self._verdicts})],
++                               usage=SimpleNamespace(input_tokens=1000, output_tokens=200))
++
++
++class FakeOpenAI:
++    def __init__(self, verdicts, refuse=False):
++        self.calls, self._verdicts, self._refuse = [], verdicts, refuse
++        self.responses = SimpleNamespace(parse=self._parse)
++
++    def _parse(self, **kw):
++        self.calls.append(kw)
++        parsed = None if self._refuse else kw["text_format"].model_validate({"verdicts": self._verdicts})
++        return SimpleNamespace(output_parsed=parsed, usage=SimpleNamespace(input_tokens=900, output_tokens=150))
++
++
++# ---------- providers ----------
++
++def test_provider_routing():
++    assert judge.provider_for("claude-sonnet-5-5") == "anthropic"
++    assert judge.provider_for("claude-fable-5-1") == "anthropic"
++    assert judge.provider_for("gpt-6.1-sol") == "openai"
++    with pytest.raises(ValueError):
++        judge.provider_for("llama-4")
++
++
++def test_anthropic_judge_sees_full_tool_outputs_and_records_usage():
++    client = FakeAnthropic([verdict(1, False), verdict(2, True)])
++    record = judge.judge_run(RUN, client, "claude-sonnet-5-5", case="shop")
++    prompt = client.calls[0]["messages"][0]["content"]
++    assert '"final_url": "https://www.shop.test/sale"' in prompt   # whole output, not just cited fields
++    assert "[1] (links) impact=high effort=low priority=P1" in prompt
++    assert client.calls[0]["tool_choice"] == {"type": "tool", "name": "submit_verdicts"}
++    assert [v.reasoning_sound for v in record.verdicts] == [False, True]
++    assert (record.model, record.case, record.input_tokens, record.output_tokens) == \
++           ("claude-sonnet-5-5", "shop", 1000, 200)
++
++
++def test_openai_judge_gets_same_rubric_and_prompt():
++    client = FakeOpenAI([verdict(1, False), verdict(2, True)])
++    record = judge.judge_run(RUN, client, "gpt-6.1-sol", case="shop")
++    call = client.calls[0]
++    assert call["instructions"] == judge.RUBRIC
++    assert call["input"] == judge.render_case(RUN)             # identical prompt across providers
++    assert call["text_format"] is judge.Judgement
++    assert record.input_tokens == 900 and record.verdicts[0].reasoning_sound is False
++
++
++def test_openai_refusal_is_an_error():
++    with pytest.raises(RuntimeError, match="no parsed output"):
++        judge.judge_run(RUN, FakeOpenAI([], refuse=True), "gpt-6-luna")
++
++
++def test_judge_must_cover_every_finding():
++    with pytest.raises(ValueError, match="expected"):
++        judge.judge_run(RUN, FakeAnthropic([verdict(1, True)]), "claude-sonnet-5-5")
++
++
++def test_critique_comes_before_verdict_in_schema():
++    fields = list(judge.FindingVerdict.model_fields)
++    assert fields.index("reasoning_critique") < fields.index("reasoning_sound")
++    assert fields.index("priority_critique") < fields.index("priority")
++
++
++# ---------- labels and agreement ----------
++
++def test_build_labels_keeps_existing_labels():
++    runs = [(Path("shop.json"), RUN)]
++    first = judge.build_labels(runs, {})
++    assert first["shop"][0]["reasoning_sound"] is None
++    first["shop"][0].update(reasoning_sound=False, note="points at the 404")
++    again = judge.build_labels(runs, first)
++    assert again["shop"][0]["reasoning_sound"] is False
++    assert again["shop"][0]["note"] == "points at the 404"
++
++
++def test_cohen_kappa():
++    assert judge.cohen_kappa([(True, True), (False, False)]) == 1.0
++    assert judge.cohen_kappa([(True, False), (False, True)]) == -1.0
++    # agrees 3/4 times, but "always True" would agree often too: kappa corrects for that
++    assert judge.cohen_kappa([(True, True), (True, True), (True, True), (False, True)]) == 0.0
++
++
++def test_agreement_report_measures_catching_unsound_findings():
++    labels = {"shop": [
++        {"finding": 1, "issue": "a", "reasoning_sound": False, "priority": "ok"},
++        {"finding": 2, "issue": "b", "reasoning_sound": True, "priority": "too_high"},
++        {"finding": 3, "issue": "c", "reasoning_sound": False, "priority": None},
++        {"finding": 4, "issue": "d", "reasoning_sound": None, "priority": None},
++    ]}
++    judgements = {"shop": {"verdicts": [verdict(1, False), verdict(2, False, "too_high"),
++                                        verdict(3, True), verdict(4, False)]}}
++    r = judge.agreement_report(labels, judgements)
++    assert r["reasoning_n"] == 3 and r["priority_n"] == 2
++    assert r["unsound_recall"] == 0.5 and r["unsound_precision"] == 0.5
++    assert r["priority_accuracy"] == 1.0
++    assert len(r["disagreements"]) == 2
++
++
++def test_cost_summary_uses_price_table():
++    j = {"a": {"input_tokens": 1_000_000, "output_tokens": 100_000, "seconds": 10}}
++    assert judge.cost_summary("gpt-6-luna", j)["cost"] == pytest.approx(0.10 + 0.05)
++    assert judge.cost_summary("claude-fable-5-1", j)["cost"] is None      # unknown price -> n/a
++
++
++# ---------- storage and CLI ----------
++
++@pytest.fixture
++def workspace(tmp_path, monkeypatch):
++    """Run the CLI inside a temp folder with one saved case."""
++    monkeypatch.chdir(tmp_path)
++    monkeypatch.setattr(judge, "JUDGEMENTS", Path("evals/judgements"))
++    monkeypatch.setattr(judge, "LABELS", Path("evals/labels.json"))
++    (tmp_path / "evals/cases").mkdir(parents=True)
++    (tmp_path / "evals/cases/shop.json").write_text(RUN.model_dump_json())
++    return tmp_path
++
++
++def cli(monkeypatch, *argv):
++    monkeypatch.setattr(sys, "argv", ["seo-judge", *argv])
++    judge.main()
++
++
++def test_each_run_gets_its_own_folder_per_model(workspace, monkeypatch, capsys):
++    fakes = {"anthropic": FakeAnthropic([verdict(1, False), verdict(2, True)]),
++             "openai": FakeOpenAI([verdict(1, True), verdict(2, True)])}
++    monkeypatch.setattr(judge, "make_client", lambda provider: fakes[provider])
++    stamps = iter(["20261020-100000", "20261020-110000"])
++    monkeypatch.setattr(judge, "datetime", SimpleNamespace(now=lambda: SimpleNamespace(
++        strftime=lambda fmt: next(stamps))))
++
++    cli(monkeypatch, "run", "--model", "claude-sonnet-5-5", "--model", "gpt-6.1-sol")
++    cli(monkeypatch, "run", "--model", "claude-sonnet-5-5")              # second run: new folder
++
++    sonnet_runs = [p.name for p in judge.list_runs("claude-sonnet-5-5")]
++    assert sonnet_runs == ["20261020-100000", "20261020-110000"]         # nothing overwritten
++    saved = json.loads((workspace / "evals/judgements/gpt-6.1-sol/20261020-100000/shop.json").read_text())
++    assert saved["model"] == "gpt-6.1-sol" and saved["input_tokens"] == 900
++    assert judge.judged_models() == ["claude-sonnet-5-5", "gpt-6.1-sol"]
++
++    labels = {"shop": [{"finding": 1, "issue": "Sale link 404s", "reasoning_sound": False, "priority": "ok"},
++                       {"finding": 2, "issue": "No og:image", "reasoning_sound": True, "priority": "ok"}]}
++    (workspace / "evals/labels.json").write_text(json.dumps(labels))
++    capsys.readouterr()
++    cli(monkeypatch, "compare")
++    out = capsys.readouterr().out
++    assert "claude-sonnet-5-5" in out and "gpt-6.1-sol" in out
++    assert "Judge vs judge" in out
++    assert "claude-sonnet-5-5: 1.00" in out          # two identical sonnet runs agree with themselves
++    assert "gpt-6.1-sol: only 1 run" in out
++
++
++def test_flat_judgements_from_v1_are_moved_not_lost(workspace, monkeypatch):
++    flat = workspace / "evals/judgements"
++    flat.mkdir(parents=True)
++    (flat / "shop.json").write_text(json.dumps({"verdicts": [verdict(1, True), verdict(2, True)]}))
++    judge.migrate_flat_judgements()
++    assert not (flat / "shop.json").exists()
++    assert (flat / "claude-sonnet-5-5/first-run/shop.json").exists()
+diff --git a/uv.lock b/uv.lock
+index 95aca7f..9669637 100644
+--- a/uv.lock
++++ b/uv.lock
+@@ -1,5 +1,5 @@
+ version = 1
+-revision = 5
++revision = 3
+ requires-python = ">=3.12"
+ resolution-markers = [
+     "python_full_version >= '3.14'",
+@@ -714,6 +714,23 @@ wheels = [
+     { url = "https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8", size = 9979, upload-time = "2022-08-14T12:40:09.779Z" },
+ ]
+ 
++[[package]]
++name = "openai"
++version = "3.35.1"
++source = { registry = "https://pypi.org/simple" }
++dependencies = [
++    { name = "anyio" },
++    { name = "httpx2" },
++    { name = "jiter" },
++    { name = "pydantic" },
++    { name = "sniffio" },
++    { name = "typing-extensions" },
++]
++sdist = { url = "https://files.pythonhosted.org/packages/87/4c/609b16f2a6e9a99f27a82ce93ff75868e7cb364fe6daff50cc0c1d620772/openai-3.35.1.tar.gz", hash = "sha256:b33e6561b90586e450def8a388e7d364755325da6884fc71348be5542e043bd0", size = 2250942, upload-time = "2026-10-18T01:06:38.964Z" }
++wheels = [
++    { url = "https://files.pythonhosted.org/packages/22/7b/6d7e70f0762d1b286051bd7cb2fd0c364c1830d0f8826738673aeec05c2b/openai-3.35.1-py3-none-any.whl", hash = "sha256:264fd0fafc889021f526b7c1e5a2df5ca3e8dea874738ecd31da666434f25967", size = 2280230, upload-time = "2026-10-18T01:06:36.16Z" },
++]
++
+ [[package]]
+ name = "opentelemetry-api"
+ version = "1.45.1"
+@@ -1237,6 +1254,7 @@ dependencies = [
+     { name = "httpx" },
+     { name = "langfuse" },
+     { name = "mcp", extra = ["cli"] },
++    { name = "openai" },
+     { name = "python-dotenv" },
+ ]
+ 
+@@ -1253,6 +1271,7 @@ requires-dist = [
+     { name = "httpx", specifier = ">=0.28.1" },
+     { name = "langfuse", specifier = ">=4.17.0" },
+     { name = "mcp", extras = ["cli"], specifier = ">=2.3.0" },
++    { name = "openai", specifier = ">=3.35.1" },
+     { name = "python-dotenv", specifier = ">=1.2.4" },
+ ]
+ 

@@ -69,6 +69,21 @@ def cites(finding: Finding, *fields: str) -> bool:
 
 # ---------- checks ----------
 
+def find_value(obj, target: str, path: str = "") -> str | None:
+    """Where does this value actually live? Turns 'wrong' into 'wrong index, right value'."""
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if (hit := find_value(v, target, f"{path}.{k}" if path else k)):
+                return hit
+    elif isinstance(obj, list):
+        for i, v in enumerate(obj):
+            if (hit := find_value(v, target, f"{path}[{i}]")):
+                return hit
+    elif normalise(obj) == target:
+        return path
+    return None
+
+
 def check_evidence(run: AuditRun) -> list[CheckResult]:
     """Every cited value must exist at that field in that tool's output.
 
@@ -96,7 +111,10 @@ def check_evidence(run: AuditRun) -> list[CheckResult]:
             if isinstance(actual, dict) and all(v in cited for v in scalars(actual)):
                 precise.failures.append(f"{where} cites a whole object; cite one field inside it instead")
             else:
-                grounded.failures.append(f"{where} cited {e.value!r} but the tool returned {normalise(actual)!r}")
+                msg = f"{where} cited {e.value!r} but the tool returned {normalise(actual)!r}"
+                if (elsewhere := find_value(outputs[e.tool], cited)):
+                    msg += f" (that value is at {elsewhere}: right value, wrong pointer)"
+                grounded.failures.append(msg)
     return [grounded, precise]
 
 

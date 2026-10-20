@@ -1,0 +1,1162 @@
+{
+  "abacusdesk-com-20261014-152343": [
+    {
+      "finding": 1,
+      "priority_label": "P1",
+      "impact": "high",
+      "effort": "medium",
+      "issue": "Mobile LCP is 21.8 s and the performance score is only 29. The LCP element is the hero text block, and Lighthouse flags LCP request discovery and LCP breakdown problems.",
+      "fix": "Find the hero image or background that the LCP element depends on. Preload it with <link rel=\"preload\" as=\"image\"> and serve it as a compressed, correctly sized WebP or AVIF. Remove any lazy-loading and render-blocking CSS or JS on it.",
+      "evidence": [
+        "check_speed.lab_metrics.LCP = 21.8 s",
+        "check_speed.performance_score = 29",
+        "check_speed.lcp_element = Business Software\nAutomation for every business need\n\nMake your business more p…"
+      ],
+      "reasoning_sound": false,
+      "priority": "ok",
+      "note": "LCP element is a text block; the fix invents a hero image to preload. Font-display (1,290 ms) and render-blocking aren't addressed."
+    },
+    {
+      "finding": 2,
+      "priority_label": "P1",
+      "impact": "high",
+      "effort": "medium",
+      "issue": "The page is very heavy at about 5 MB. Lighthouse estimates 1,670 KiB of savings from better image delivery and 3,406 KiB from better cache lifetimes.",
+      "fix": "Convert the large images to WebP or AVIF at their displayed dimensions. Set a Cache-Control max-age of at least 1 year on static assets (images, CSS, JS, fonts).",
+      "evidence": [
+        "check_speed.page_weight_kb = 5123",
+        "check_speed.top_issues[4] = Improve image delivery: Est savings of 1,670 KiB",
+        "check_speed.top_issues[0] = Use efficient cache lifetimes: Est savings of 3,406 KiB"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": "Note: cache-lifetime savings help repeat visits, not first-load weight, but both fixes are valid."
+    },
+    {
+      "finding": 3,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "medium",
+      "issue": "Total blocking time is high at 810 ms. The reCAPTCHA script (347 KB) is one of the heaviest resources and is requested more than once.",
+      "fix": "Load reCAPTCHA only when a visitor interacts with a form, or after the load event. Make sure it is initialised once rather than per form.",
+      "evidence": [
+        "check_speed.lab_metrics.TBT = 810 ms",
+        "check_speed.heaviest_resources[0].url = https://www.gstatic.com/recaptcha/releases/nY0xPItgwtlvjEjk2TqdwOQz/recaptcha__en.js"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": "reCAPTCHA really is listed 3x in heaviest_resources; loading it on interaction is standard."
+    },
+    {
+      "finding": 4,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "The page has layout shift (CLS 0.218, above the 0.1 'good' threshold), and font loading adds delay (about 1,290 ms of estimated savings from font-display).",
+      "fix": "Add font-display: swap to the @font-face rules. Add explicit width and height attributes to images and banner or slider containers so their space is reserved.",
+      "evidence": [
+        "check_speed.lab_metrics.CLS = 0.218",
+        "check_speed.top_issues[2] = Font display: Est savings of 1,290 ms"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 5,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "There is no og:image, so links shared on social platforms show no preview image.",
+      "fix": "Add <meta property=\"og:image\" content=\"https://www.abacusdesk.com/...\"> pointing to a 1200x630 branded image.",
+      "evidence": [
+        "check_meta_tags.open_graph.image = null",
+        "check_meta_tags.issues[0] = Missing og:title or og:image (poor social sharing previews)"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": "og:image is a sharing issue; medium is acceptable for an agency site."
+    },
+    {
+      "finding": 6,
+      "priority_label": "P3",
+      "impact": "low",
+      "effort": "low",
+      "issue": "The Cloudflare email-protection link returns 404, so the obfuscated email link in the page is broken for crawlers and for users without JavaScript.",
+      "fix": "Replace the Cloudflare-obfuscated email link with a plain mailto: link, or turn off Email Address Obfuscation in Cloudflare. Check that the link works in a browser first.",
+      "evidence": [
+        "check_links.broken[0].url = https://www.abacusdesk.com/cdn-cgi/l/email-protection",
+        "check_links.broken[0].status = 404"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": "Cloudflare email-protection artefact; good that the fix says to check in a browser first."
+    },
+    {
+      "finding": 7,
+      "priority_label": "P3",
+      "impact": "low",
+      "effort": "low",
+      "issue": "The external link to manavrachna.edu.in fails with TooManyRedirects.",
+      "fix": "Open the link in a browser. Update the href to the final working URL, or remove the link if the site is no longer valid.",
+      "evidence": [
+        "check_links.broken[1].url = https://manavrachna.edu.in/",
+        "check_links.broken[1].error = TooManyRedirects"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 8,
+      "priority_label": "P3",
+      "impact": "low",
+      "effort": "low",
+      "issue": "Several links point to URLs that redirect, including one internal link (/enterprise/google-workspace-2/).",
+      "fix": "Change the internal href from /enterprise/google-workspace-2/ to /enterprise/google-workspace/. Update the netkarma.ca and deltaelectronicsindia.com links to their final URLs.",
+      "evidence": [
+        "check_links.redirected[1].url = https://www.abacusdesk.com/enterprise/google-workspace-2/",
+        "check_links.redirected[1].final_url = https://www.abacusdesk.com/enterprise/google-workspace/"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 9,
+      "priority_label": "P3",
+      "impact": "low",
+      "effort": "low",
+      "issue": "The title is exactly 60 characters, at the edge of truncation in search results. The og:title and og:description differ from the standard title and description, and the og:description claims 'leading digital marketing company in India', which the standard tags do not.",
+      "fix": "Shorten the title to something like 'Abacus Desk: Software Development & Digital Marketing' (53 characters). Align the og:title and og:description with it.",
+      "evidence": [
+        "check_meta_tags.title_length = 60",
+        "check_meta_tags.title = World-Class Software Development, CX & Performance Marketing",
+        "check_meta_tags.open_graph.title = Business Software & Digital Marketing Agency - Abacus Desk"
+      ],
+      "reasoning_sound": false,
+      "priority": "ok",
+      "note": "Borderline. A 60-char title is within limits (the tool didn't flag it), so the fix solves a non-problem."
+    }
+  ],
+  "incometax-gov-in-iec-foportal-20261014-152149": [
+    {
+      "finding": 1,
+      "priority_label": "P1",
+      "impact": "high",
+      "effort": "low",
+      "issue": "The canonical URL uses http:// while the page is served over HTTPS, sending a conflicting signal about the preferred URL.",
+      "fix": "Change the canonical link tag to https://www.incometax.gov.in/iec/foportal/.",
+      "evidence": [
+        "check_meta_tags.canonical = http://www.incometax.gov.in/iec/foportal/",
+        "fetch_page.is_https = true"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": "A real canonicalisation conflict and a one-line fix, so P1 is defensible."
+    },
+    {
+      "finding": 2,
+      "priority_label": "P1",
+      "impact": "high",
+      "effort": "low",
+      "issue": "The page has no meta description, so search engines will generate their own snippet.",
+      "fix": "Add a meta description of 70-160 characters, e.g. 'File income tax returns, pay taxes, check refunds and get the latest updates on the official Income Tax Department e-Filing portal.'",
+      "evidence": [
+        "check_meta_tags.description = null"
+      ],
+      "reasoning_sound": true,
+      "priority": "too_high",
+      "note": "A missing description doesn't affect ranking (Google writes a snippet). For a navigational gov portal it's low or medium, not high."
+    },
+    {
+      "finding": 3,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "The page has 7 H1 tags (one empty), which blurs the main topic signal.",
+      "fix": "Keep one descriptive H1 for the page and change the section headings (What's New, Quick Links, etc.) to H2; remove the empty H1.",
+      "evidence": [
+        "check_meta_tags.h1 = [\"\", \"What's New\", \"Quick Links\", \"Latest Updates\", \"Important Deadlines\", \"Things to Know\", \"Our Success Enablers\"]"
+      ],
+      "reasoning_sound": true,
+      "priority": "too_high",
+      "note": "Google says multiple H1s are fine. Remove the empty H1, but this is low impact."
+    },
+    {
+      "finding": 4,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "The title is generic and short ('Home | ...'), and the Open Graph tags are incomplete (no og:description or og:image), so shared links have poor previews.",
+      "fix": "Change the title to 'Income Tax e-Filing Portal | Income Tax Department' (under 60 characters) and add og:description and og:image tags.",
+      "evidence": [
+        "check_meta_tags.title = Home | Income Tax Department",
+        "check_meta_tags.open_graph.image = null",
+        "check_meta_tags.open_graph.description = null"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 5,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "medium",
+      "issue": "Mobile lab performance is moderate (score 72, LCP 4.9 s, FCP 3.5 s). Render-blocking requests are the largest estimated saving, at 4,060 ms.",
+      "fix": "Defer or async-load non-critical JS and CSS files in the head, and inline the critical CSS for above-the-fold content.",
+      "evidence": [
+        "check_speed.performance_score = 72",
+        "check_speed.lab_metrics.LCP = 4.9 s",
+        "check_speed.top_issues[3] = Render-blocking requests: Est savings of 4,060 ms"
+      ],
+      "reasoning_sound": true,
+      "priority": "too_high",
+      "note": "field_data shows real users are all FAST. A lab-only speed problem matters less."
+    },
+    {
+      "finding": 6,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "medium",
+      "issue": "The page weighs 2,944 KB, and image delivery could save about 1,081 KiB. The heaviest images are 291-379 KB each.",
+      "fix": "Resize and recompress the banner images (PhishingMail-01, Bank_Validation2, Revamped e-Filing Portal.jpeg) and serve responsive sizes with srcset. Convert the JPEG to WebP.",
+      "evidence": [
+        "check_speed.page_weight_kb = 2944",
+        "check_speed.top_issues[7] = Improve image delivery: Est savings of 1,081 KiB",
+        "check_speed.heaviest_resources[0].kb = 379"
+      ],
+      "reasoning_sound": true,
+      "priority": "too_high",
+      "note": "field_data all FAST. The image savings are real but lower impact for real users."
+    },
+    {
+      "finding": 7,
+      "priority_label": "P3",
+      "impact": "low",
+      "effort": "low",
+      "issue": "Many internal links point to redirecting URLs: http:// versions, double-slash paths and the old account-misuse URL. These waste crawl budget.",
+      "fix": "Update the internal hrefs in the page template to the final https URLs, with no double slashes (e.g. https://www.incometax.gov.in/iec/foportal/latest-news).",
+      "evidence": [
+        "check_links.redirected[1].url = http://www.incometax.gov.in/iec/foportal/contact-us",
+        "check_links.redirected[3].url = http://www.incometax.gov.in/iec/foportal//latest-news",
+        "check_links.redirected[2].final_url = https://www.incometax.gov.in/iec/foportal/e-filing%20account%20misuse"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    }
+  ],
+  "puredesignsolution-com-20261014-152643": [
+    {
+      "finding": 1,
+      "priority_label": "P1",
+      "impact": "high",
+      "effort": "medium",
+      "issue": "Mobile LCP is very slow (15.5 s) and the performance score is only 39, with 900 ms of Total Blocking Time.",
+      "fix": "Defer or async the render-blocking JavaScript and CSS files in the head, and inline the critical CSS for the above-the-fold hero section.",
+      "evidence": [
+        "check_speed.lab_metrics.LCP = 15.5 s",
+        "check_speed.performance_score = 39",
+        "check_speed.lab_metrics.TBT = 900 ms"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 2,
+      "priority_label": "P1",
+      "impact": "high",
+      "effort": "medium",
+      "issue": "Render-blocking requests delay first paint, with an estimated saving of 4,030 ms.",
+      "fix": "Add defer to non-critical script tags and load non-critical stylesheets asynchronously, using your caching or optimization plugin's delay-JS and async-CSS settings.",
+      "evidence": [
+        "check_speed.top_issues[5] = Render-blocking requests: Est savings of 4,030 ms",
+        "check_speed.lab_metrics.FCP = 3.5 s"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": "Duplicates finding 1 (same render-blocking fix). The report should merge them."
+    },
+    {
+      "finding": 3,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "medium",
+      "issue": "The page is heavy (2,766 KB). The reCAPTCHA script (347 KB) is the heaviest resource and is loaded on page load.",
+      "fix": "Load the reCAPTCHA script only when a visitor interacts with the contact form, or replace it with a lighter spam-protection method.",
+      "evidence": [
+        "check_speed.page_weight_kb = 2766",
+        "check_speed.heaviest_resources[0].kb = 347"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 4,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "Static assets have inefficient cache lifetimes and there is unused and unminified code.",
+      "fix": "Set a Cache-Control max-age of at least one year on static assets (JS, CSS, fonts, images) in the server or CDN configuration.",
+      "evidence": [
+        "check_speed.top_issues[0] = Use efficient cache lifetimes: Est savings of 351 KiB",
+        "check_speed.top_issues[6] = Minify JavaScript: Est savings of 21 KiB",
+        "check_speed.top_issues[7] = Reduce unused CSS: Est savings of 129 KiB"
+      ],
+      "reasoning_sound": false,
+      "priority": "ok",
+      "note": "The issue covers cache lifetimes AND unused/unminified code, but the fix only addresses caching."
+    },
+    {
+      "finding": 5,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "The Open Graph image is missing, so shared links have poor previews.",
+      "fix": "Add an og:image meta tag pointing to a 1200x630 branded image on the homepage, using the SEO plugin's social settings.",
+      "evidence": [
+        "check_meta_tags.open_graph.image = null",
+        "check_meta_tags.issues[0] = Missing og:title or og:image (poor social sharing previews)"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 6,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "The title is generic ('HOME | ...'), short at 32 characters, and has no descriptive keywords.",
+      "fix": "Change the title to 'B2B Digital Marketing Agency in New York | Pure Design Solution' (about 69 characters is too long, so use 'B2B Digital Marketing Agency NYC | Pure Design' at 47).",
+      "evidence": [
+        "check_meta_tags.title = HOME | Pure Design Solution, LLC",
+        "check_meta_tags.title_length = 32"
+      ],
+      "reasoning_sound": false,
+      "priority": "ok",
+      "note": "The fix revises itself mid-sentence and miscounts (calls a 63-char title '69'). Not one clean suggestion."
+    },
+    {
+      "finding": 7,
+      "priority_label": "P3",
+      "impact": "low",
+      "effort": "low",
+      "issue": "An internal link points to a URL without the trailing slash and triggers a redirect.",
+      "fix": "Update the homepage link to https://puredesignsolution.com/digital-marketing-consulting/ so it points to the final URL.",
+      "evidence": [
+        "check_links.redirected[0].url = https://puredesignsolution.com/digital-marketing-consulting",
+        "check_links.redirected[0].final_url = https://puredesignsolution.com/digital-marketing-consulting/"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    }
+  ],
+  "python-org-20261014-151521": [
+    {
+      "finding": 1,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "medium",
+      "issue": "Render-blocking requests delay mobile first paint, giving a lab LCP of 5.0 s and FCP of 3.2 s.",
+      "fix": "Inline the critical above-the-fold CSS and load the rest of style.6cb9f297dd80.css asynchronously, and add defer to the jQuery UI script tag.",
+      "evidence": [
+        "check_speed.top_issues[4] = Render-blocking requests: Est savings of 2,730 ms",
+        "check_speed.lab_metrics.LCP = 5.0 s"
+      ],
+      "reasoning_sound": false,
+      "priority": "too_high",
+      "note": "'Defer jQuery UI' is invented: no tool lists it as render-blocking. field_data is all FAST, so lab speed is lower priority."
+    },
+    {
+      "finding": 2,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "medium",
+      "issue": "The main stylesheet is the heaviest resource and much of it is unused or unminified.",
+      "fix": "Run the stylesheet through a CSS minifier and purge unused rules with a tool such as PurgeCSS in the build.",
+      "evidence": [
+        "check_speed.heaviest_resources[0].kb = 123",
+        "check_speed.top_issues[6] = Reduce unused CSS: Est savings of 128 KiB",
+        "check_speed.top_issues[5] = Minify CSS: Est savings of 24 KiB"
+      ],
+      "reasoning_sound": true,
+      "priority": "too_high",
+      "note": "field_data all FAST, so lab-only CSS savings are lower priority."
+    },
+    {
+      "finding": 3,
+      "priority_label": "P3",
+      "impact": "low",
+      "effort": "medium",
+      "issue": "The page loads jQuery UI from a third-party host, and the speed audit also reports unused JavaScript and short cache lifetimes.",
+      "fix": "Remove jQuery UI from the homepage, or self-host a custom build with only the components used, and serve static assets with a long Cache-Control max-age.",
+      "evidence": [
+        "check_speed.heaviest_resources[1].url = https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js",
+        "check_speed.top_issues[7] = Reduce unused JavaScript: Est savings of 59 KiB",
+        "check_speed.top_issues[0] = Use efficient cache lifetimes: Est savings of 33 KiB"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": "jQuery UI is the unused-JS resource (confirmed by the later run's urls)."
+    },
+    {
+      "finding": 4,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "The title is short and generic, so it gives search engines no keywords.",
+      "fix": "Change the title to 'Python.org – Official Python Programming Language Home' (about 55 characters).",
+      "evidence": [
+        "check_meta_tags.title = Welcome to Python.org",
+        "check_meta_tags.title_length = 21"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 5,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "The meta description is below the recommended length and says little.",
+      "fix": "Rewrite the description as: 'The official home of the Python programming language. Download Python, read the docs, and join the community.' (about 112 characters).",
+      "evidence": [
+        "check_meta_tags.description = The official home of the Python Programming Language",
+        "check_meta_tags.description_length = 52"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 6,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "No canonical link is set, which risks duplicate-URL signals.",
+      "fix": "Add <link rel=\"canonical\" href=\"https://www.python.org/\"> to the homepage head.",
+      "evidence": [
+        "check_meta_tags.canonical = null"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 7,
+      "priority_label": "P3",
+      "impact": "low",
+      "effort": "low",
+      "issue": "The page has five H1 headings, all feature-slide titles, so no single H1 states the page topic.",
+      "fix": "Make one descriptive heading, such as 'Python Programming Language', the only H1, and change the five slide headings to H2.",
+      "evidence": [
+        "check_meta_tags.h1 = [\"Functions Defined\", \"All the Flow You’d Expect\", \"Compound Data Types\", \"Intuitive Interpretation\", \"Quick & Easy to Learn\"]"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": "Low is right for multiple H1s."
+    },
+    {
+      "finding": 8,
+      "priority_label": "P3",
+      "impact": "low",
+      "effort": "low",
+      "issue": "Eight internal and external links redirect, including some that point to outdated URLs and some that only lack a trailing slash.",
+      "fix": "Change the href values to the final URLs, for example /psf-landing/, the policies.python.org code-of-conduct page, /psf/donations/, and the trailing-slash versions of /download/alternatives/, /doc/av/ and /community/awards/.",
+      "evidence": [
+        "check_links.redirected[0] = https://www.python.org/psf/ -> https://www.python.org/psf-landing/",
+        "check_links.redirected[6] = https://www.python.org/psf/conduct/ -> https://policies.python.org/python.org/code-of-conduct/",
+        "check_links.redirected[2] = https://donate.python.org/ -> https://www.python.org/psf/donations/"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    }
+  ],
+  "python-org-20261014-162621": [
+    {
+      "finding": 1,
+      "priority_label": "P1",
+      "impact": "high",
+      "effort": "medium",
+      "issue": "Render-blocking stylesheets delay first paint on mobile, giving a lab LCP of 5.1 s and FCP of 3.2 s.",
+      "fix": "Inline the critical CSS for the above-the-fold content and load the full stylesheets asynchronously (for example with media=\"print\" onload swap).",
+      "evidence": [
+        "check_speed.top_issues[4].detail = Est savings of 2,730 ms",
+        "check_speed.lab_metrics.LCP = 5.1 s"
+      ],
+      "reasoning_sound": true,
+      "priority": "too_high",
+      "note": "Sound now: it blames the CSS files listed in urls. But field_data is all FAST, so high impact is too much."
+    },
+    {
+      "finding": 2,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "medium",
+      "issue": "Large amounts of unused CSS are shipped, and the CSS is not minified.",
+      "fix": "Minify the listed stylesheets and remove unused rules, for example by splitting the CSS per page template.",
+      "evidence": [
+        "check_speed.top_issues[6].detail = Est savings of 128 KiB",
+        "check_speed.top_issues[5].detail = Est savings of 24 KiB"
+      ],
+      "reasoning_sound": true,
+      "priority": "too_high",
+      "note": "field_data all FAST."
+    },
+    {
+      "finding": 3,
+      "priority_label": "P3",
+      "impact": "low",
+      "effort": "medium",
+      "issue": "Unused JavaScript is loaded from the jQuery UI library.",
+      "fix": "Drop the jQuery UI script from pages that do not use it, or load it only where its widgets are needed.",
+      "evidence": [
+        "check_speed.top_issues[7].detail = Est savings of 59 KiB"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 4,
+      "priority_label": "P3",
+      "impact": "low",
+      "effort": "low",
+      "issue": "Static assets have inefficient cache lifetimes, and web fonts lack a font-display setting.",
+      "fix": "Set a long Cache-Control max-age on the fingerprinted static CSS and font files, and add font-display: swap to the @font-face rules.",
+      "evidence": [
+        "check_speed.top_issues[0].detail = Est savings of 33 KiB",
+        "check_speed.top_issues[1].detail = Est savings of 110 ms"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 5,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "The page has no canonical link, so duplicate URL variants could compete in search.",
+      "fix": "Add <link rel=\"canonical\" href=\"https://www.python.org/\"> to the head of the homepage.",
+      "evidence": [
+        "check_meta_tags.canonical = null"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 6,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "The homepage has five H1 tags, which weakens the primary heading signal.",
+      "fix": "Use a single H1 for the main page topic and change the other four headings to H2.",
+      "evidence": [
+        "check_meta_tags.h1[0] = Functions Defined",
+        "check_meta_tags.issues[3] = Found 5 <h1> tags (expected 1)"
+      ],
+      "reasoning_sound": true,
+      "priority": "too_high",
+      "note": "Google says multiple H1s are fine. Low, not medium."
+    },
+    {
+      "finding": 7,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "The title is short and generic, so it gives little keyword context.",
+      "fix": "Change the title to \"Python.org – Official Python Programming Language Site\" (56 characters).",
+      "evidence": [
+        "check_meta_tags.title = Welcome to Python.org",
+        "check_meta_tags.title_length = 21"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 8,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "The meta description is below the recommended length.",
+      "fix": "Change the meta description to \"The official home of the Python programming language: download Python, read the docs, find community news, events and learning resources.\" (about 140 characters).",
+      "evidence": [
+        "check_meta_tags.description_length = 52"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 9,
+      "priority_label": "P3",
+      "impact": "low",
+      "effort": "low",
+      "issue": "Several internal and external links point to URLs that redirect, which wastes crawl budget.",
+      "fix": "Update the hrefs in the templates to the final URLs from the redirect list, such as https://www.python.org/psf-landing/ and https://www.python.org/download/alternatives/.",
+      "evidence": [
+        "check_links.redirected[0].url = https://www.python.org/psf/",
+        "check_links.redirected[4].url = https://www.python.org/download/alternatives"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    }
+  ],
+  "unocal-in-20261014-152519": [
+    {
+      "finding": 1,
+      "priority_label": "P1",
+      "impact": "high",
+      "effort": "medium",
+      "issue": "Mobile LCP is very slow (8.2 s) and the LCP element is the home slider.",
+      "fix": "Preload the first slider image with fetchpriority=high and remove lazy-loading and JS-dependent rendering from that first slide.",
+      "evidence": [
+        "check_speed.lab_metrics.LCP = 8.2 s",
+        "check_speed.lcp_element = Home-Slider",
+        "check_speed.performance_score = 66"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": "Preloading the slider image is standard. 'Remove lazy-loading' is an unverified assumption but harmless."
+    },
+    {
+      "finding": 2,
+      "priority_label": "P1",
+      "impact": "high",
+      "effort": "medium",
+      "issue": "The page is very heavy (about 6.7 MB), with large unoptimised images; Lighthouse estimates 3,874 KiB of savings from better image delivery.",
+      "fix": "Convert secure-progress.jpg and the product PNGs to WebP/AVIF at display size, and serve them with srcset.",
+      "evidence": [
+        "check_speed.page_weight_kb = 6677",
+        "check_speed.top_issues[2].detail = Est savings of 3,874 KiB",
+        "check_speed.heaviest_resources[0].kb = 736"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 3,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "medium",
+      "issue": "Render-blocking requests delay first paint (estimated 2,090 ms savings) and font display adds a 300 ms delay.",
+      "fix": "Defer non-critical CSS/JS and add font-display: swap to the @font-face rules.",
+      "evidence": [
+        "check_speed.top_issues[6].detail = Est savings of 2,090 ms",
+        "check_speed.top_issues[0].detail = Est savings of 300 ms"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 4,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "The homepage has no H1 heading.",
+      "fix": "Add one H1 to the homepage, e.g. 'Automotive & Industrial Lubricants by Raaj Unocal', in the hero section.",
+      "evidence": [
+        "check_meta_tags.h1 = []"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 5,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "The title is too long (77 chars) and will be truncated in search results.",
+      "fix": "Change the title to 'Automotive & Industrial Lubricants | Raaj Unocal India' (55 chars).",
+      "evidence": [
+        "check_meta_tags.title_length = 77"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 6,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "The meta description is 247 chars, so it will be truncated.",
+      "fix": "Rewrite the description to: 'Raaj Unocal blends automotive, industrial, marine and aviation oils and greases, with in-house testing for strict quality control.' (about 135 chars).",
+      "evidence": [
+        "check_meta_tags.description_length = 247"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 7,
+      "priority_label": "P3",
+      "impact": "low",
+      "effort": "low",
+      "issue": "There is no og:image, so social shares have no preview image.",
+      "fix": "Add an og:image meta tag pointing to a 1200x630 brand or product image.",
+      "evidence": [
+        "check_meta_tags.open_graph.image = null"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 8,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "Two internal links on the homepage return 404 (the Industrial and Heavy Commercial Vehicle pages, via the non-www host), and an external link to unocalglobal.com fails to connect.",
+      "fix": "Update these hrefs to the working www URLs (https://www.unocal.in/Industries/industrial/ and https://www.unocal.in/Industries/heavy-commercial-vehicle/) and remove or replace the unocalglobal.com link.",
+      "evidence": [
+        "check_links.broken[0].url = https://unocal.in/Industries/heavy-commercial-vehicle/",
+        "check_links.broken[1].url = https://unocal.in/Industries/industrial/",
+        "check_links.broken[2].error = ConnectError"
+      ],
+      "reasoning_sound": false,
+      "priority": "too_low",
+      "note": "The 'working www URLs' ARE the 404s (check_links shows the non-www links redirect to them, then 404). Broken internal links deserve high impact."
+    },
+    {
+      "finding": 9,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "Many internal links point to the non-www host and rely on redirects; some redirect to image files instead of pages.",
+      "fix": "Change the internal hrefs to https://www.unocal.in/... URLs, and point the small-engine, passenger-car and agriculture links to real industry pages rather than image files.",
+      "evidence": [
+        "check_links.redirected[0] = https://unocal.in/Industries/small-engine/ -> https://www.unocal.in/wp-content/uploads/2020/09/small-engine.jpg",
+        "check_links.redirected[5].url = https://unocal.in/company/"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    }
+  ],
+  "unocal-in-20261014-162333": [
+    {
+      "finding": 1,
+      "priority_label": "P1",
+      "impact": "high",
+      "effort": "medium",
+      "issue": "Mobile Largest Contentful Paint is 14.0 s, with the LCP element being the home slider.",
+      "fix": "Preload the first home slider image and serve it without lazy-loading so the browser discovers it early.",
+      "evidence": [
+        "check_speed.lab_metrics.LCP = 14.0 s",
+        "check_speed.lcp_element = Home-Slider"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 2,
+      "priority_label": "P1",
+      "impact": "high",
+      "effort": "medium",
+      "issue": "Images are heavy and poorly optimised, making the page 6.7 MB, with an estimated 3,359 KiB of image savings.",
+      "fix": "Convert the listed PNG/JPG images to compressed WebP and serve them at their displayed dimensions.",
+      "evidence": [
+        "check_speed.page_weight_kb = 6677",
+        "check_speed.top_issues[2].detail = Est savings of 3,359 KiB"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 3,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "medium",
+      "issue": "Render-blocking CSS requests delay first paint (FCP 2.3 s).",
+      "fix": "Inline critical CSS and load slick.css, the contact-form-7 stylesheet and jquery.mCustomScrollbar.min.css asynchronously or only on the pages that need them.",
+      "evidence": [
+        "check_speed.top_issues[4].detail = Est savings of 2,220 ms",
+        "check_speed.lab_metrics.FCP = 2.3 s"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": "Reasoning is sound; the evidence pointer is off by one ([4] vs [5]), which the code checks catch separately."
+    },
+    {
+      "finding": 4,
+      "priority_label": "P1",
+      "impact": "high",
+      "effort": "low",
+      "issue": "Internal links use the non-www host and lead to 404 pages (heavy-commercial-vehicle and industrial).",
+      "fix": "Update these links to existing pages on https://www.unocal.in/, or restore the missing Industries pages.",
+      "evidence": [
+        "check_links.broken[0].url = https://unocal.in/Industries/heavy-commercial-vehicle/",
+        "check_links.broken[0].status = 404",
+        "check_links.broken[1].status = 404"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": "The fixed version of the 152519 error."
+    },
+    {
+      "finding": 5,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "An external link to unocalglobal.com/industries/ is unreachable (connection error).",
+      "fix": "Remove this link or replace it with a working URL.",
+      "evidence": [
+        "check_links.broken[2].url = https://unocalglobal.com/industries/",
+        "check_links.broken[2].error = ConnectError"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 6,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "Many internal links point to the non-www host and rely on redirects (12 redirected links).",
+      "fix": "Rewrite internal links to use the canonical https://www.unocal.in/ URLs directly.",
+      "evidence": [
+        "check_links.redirected[5].url = https://unocal.in/company/",
+        "check_links.redirected[5].final_url = https://www.unocal.in/company/"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 7,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "The homepage has no H1 heading.",
+      "fix": "Add one H1 to the homepage that states the main topic, e.g. 'Automotive & Industrial Lubricants'.",
+      "evidence": [
+        "check_meta_tags.h1 = []"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 8,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "The title is 77 characters and will be truncated in search results.",
+      "fix": "Change the title to 'Automotive & Industrial Lubricants | Raaj Unocal India'.",
+      "evidence": [
+        "check_meta_tags.title_length = 77"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 9,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "The meta description is 247 characters, well over the recommended length.",
+      "fix": "Change the description to 'Raaj Unocal Lubricants makes automotive, industrial, marine and aviation oils and greases, backed by in-house quality testing.'",
+      "evidence": [
+        "check_meta_tags.description_length = 247"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 10,
+      "priority_label": "P3",
+      "impact": "low",
+      "effort": "low",
+      "issue": "There is no og:image, so shared links have no preview image.",
+      "fix": "Add an og:image meta tag pointing to a 1200x630 branded image.",
+      "evidence": [
+        "check_meta_tags.open_graph.image = null"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    }
+  ],
+  "vinnayakk-com-20261014-000201": [
+    {
+      "finding": 1,
+      "priority_label": "P1",
+      "impact": "high",
+      "effort": "medium",
+      "issue": "Two animated GIF project covers weigh 5.4 MB and 1.4 MB, making the page 7.4 MB in total and delaying load.",
+      "fix": "Replace the two cover.gif files with short muted autoplay looping MP4/WebM videos (or static WebP posters) and serve those instead.",
+      "evidence": [
+        "check_speed.heaviest_resources[0].kb = 5442",
+        "check_speed.heaviest_resources[1].kb = 1440",
+        "check_speed.page_weight_kb = 7365"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 2,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "medium",
+      "issue": "Mobile LCP is 4.2 s and FCP 2.8 s; the LCP element is a text block, so rendering is being delayed by render-blocking requests.",
+      "fix": "Defer or async-load the render-blocking CSS/JS requests flagged by Lighthouse, and load the Google Tag Manager script with the Next.js 'lazyOnload' or 'afterInteractive' strategy.",
+      "evidence": [
+        "check_speed.lab_metrics.LCP = 4.2 s",
+        "check_speed.lab_metrics.FCP = 2.8 s",
+        "check_speed.top_issues[2].detail = Est savings of 300 ms"
+      ],
+      "reasoning_sound": false,
+      "priority": "ok",
+      "note": "GTM isn't render-blocking: the blocking file is the CSS chunk. The GTM part of the fix is invented."
+    },
+    {
+      "finding": 3,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "No og:title, og:description or og:image, so shared links have poor previews.",
+      "fix": "Add og:title, og:description and a 1200x630 og:image via the Next.js metadata openGraph field in the root layout.",
+      "evidence": [
+        "check_meta_tags.open_graph.image = null",
+        "check_meta_tags.open_graph.title = null"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 4,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "No canonical link is set, so URL variants could be treated as duplicates.",
+      "fix": "Add <link rel=\"canonical\" href=\"https://www.vinnayakk.com/\"> using the Next.js metadata alternates.canonical field.",
+      "evidence": [
+        "check_meta_tags.canonical = null"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 5,
+      "priority_label": "P3",
+      "impact": "low",
+      "effort": "low",
+      "issue": "Meta description is only 53 characters, which is short and gives little to attract clicks.",
+      "fix": "Rewrite the description to about 120 characters, e.g. 'Applied AI engineer building generative pipelines and AI tools that make marketing and creative teams faster.'",
+      "evidence": [
+        "check_meta_tags.description_length = 53"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 6,
+      "priority_label": "P3",
+      "impact": "low",
+      "effort": "low",
+      "issue": "The only H1 is a greeting ('hello there :)') that contains no descriptive keywords.",
+      "fix": "Change the H1 to a descriptive phrase such as 'Vinnayakk – Applied AI engineer for marketing and creative teams' and keep the greeting as a subheading.",
+      "evidence": [
+        "check_meta_tags.h1 = [\"hello there :)\"]"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 7,
+      "priority_label": "P3",
+      "impact": "low",
+      "effort": "medium",
+      "issue": "Unused and legacy JavaScript adds avoidable payload (about 99 KiB unused, 14 KiB legacy).",
+      "fix": "Dynamically import below-the-fold components with next/dynamic and drop legacy polyfills by setting a modern browserslist target.",
+      "evidence": [
+        "check_speed.top_issues[3].detail = Est savings of 99 KiB",
+        "check_speed.top_issues[0].detail = Est savings of 14 KiB"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": "next/dynamic won't shrink GTM (part of the unused JS), but the fix is right for the bundle and the legacy polyfills."
+    }
+  ],
+  "vinnayakk-com-20261014-162653": [
+    {
+      "finding": 1,
+      "priority_label": "P1",
+      "impact": "high",
+      "effort": "medium",
+      "issue": "Page weight is very large (about 7.4 MB), mostly from two animated GIF project covers, which hurts mobile load time and data use.",
+      "fix": "Replace the animated GIF project covers with compressed MP4/WebM video or animated WebP, and lazy-load them below the fold.",
+      "evidence": [
+        "check_speed.page_weight_kb = 7379",
+        "check_speed.heaviest_resources[0].kb = 5442",
+        "check_speed.heaviest_resources[1].kb = 1440",
+        "check_speed.top_issues[4].detail = Est savings of 6,652 KiB"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": "'Lazy-load them' is redundant (they already have loading=lazy) but tools can't see that. The main fix is right."
+    },
+    {
+      "finding": 2,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "No Open Graph tags (og:title, og:description, og:image), so shared links get poor previews.",
+      "fix": "Add og:title, og:description and a 1200x630 og:image to the page head.",
+      "evidence": [
+        "check_meta_tags.open_graph.image = null",
+        "check_meta_tags.open_graph.title = null"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 3,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "The meta description is only 53 characters, which is too short to use the available search snippet space.",
+      "fix": "Rewrite the meta description as: \"Applied AI engineer building generative pipelines and RAG tools that help marketing and creative teams ship work faster.\"",
+      "evidence": [
+        "check_meta_tags.description_length = 53",
+        "check_meta_tags.description = Applied AI engineer for marketing and creative teams."
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 4,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "No canonical link is set, so duplicate URL variants could compete in search.",
+      "fix": "Add <link rel=\"canonical\" href=\"https://www.vinnayakk.com\"> to the page head.",
+      "evidence": [
+        "check_meta_tags.canonical = null"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 5,
+      "priority_label": "P3",
+      "impact": "low",
+      "effort": "low",
+      "issue": "Render-blocking CSS delays first paint, and unused JavaScript is shipped (including Google Tag Manager).",
+      "fix": "Load the Google Tag Manager/gtag script with the afterInteractive or lazyOnload strategy so it doesn't compete with initial render.",
+      "evidence": [
+        "check_speed.top_issues[2].detail = Est savings of 340 ms",
+        "check_speed.top_issues[3].detail = Est savings of 99 KiB"
+      ],
+      "reasoning_sound": false,
+      "priority": "ok",
+      "note": "The issue names render-blocking CSS, but the fix only changes GTM loading. The fix doesn't address its own issue."
+    },
+    {
+      "finding": 6,
+      "priority_label": "P3",
+      "impact": "low",
+      "effort": "low",
+      "issue": "The only H1 is a generic greeting rather than a descriptive heading, so the main heading carries no topic keywords.",
+      "fix": "Change the H1 to a descriptive heading such as \"Applied AI engineer for marketing and creative teams\".",
+      "evidence": [
+        "check_meta_tags.h1[0] = hello there :)"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    }
+  ],
+  "vinnayakk-com-this-page-does-not-exist-20261014-152038": [
+    {
+      "finding": 1,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "Mobile LCP is 3.3 s, and the LCP element is the cookie-consent banner text rather than page content.",
+      "fix": "Make the cookie banner a small fixed-position overlay with short text, so it is not the largest element painted. Alternatively, make sure the main heading or content paints larger than the banner.",
+      "evidence": [
+        "check_speed.lab_metrics.LCP = 3.3 s",
+        "check_speed.lcp_element = This site uses cookies to understand how visitors use it and to measure the eff…"
+      ],
+      "reasoning_sound": true,
+      "priority": "too_high",
+      "note": "The banner fix is plausible (it's site-wide), but speed on a 404 page matters little, so medium is too high."
+    },
+    {
+      "finding": 2,
+      "priority_label": "P2",
+      "impact": "medium",
+      "effort": "low",
+      "issue": "The Google Tag Manager script (176 KB) is the heaviest resource on the page. Lighthouse also flags 99 KiB of unused JavaScript and render-blocking requests.",
+      "fix": "Load the gtag/GTM script with the Next.js Script component using strategy=\"afterInteractive\" or \"lazyOnload\", so it doesn't block rendering.",
+      "evidence": [
+        "check_speed.heaviest_resources[0].kb = 176",
+        "check_speed.top_issues[2].detail = Est savings of 99 KiB",
+        "check_speed.top_issues[1].detail = Est savings of 170 ms"
+      ],
+      "reasoning_sound": false,
+      "priority": "too_high",
+      "note": "GTM isn't shown as render-blocking. Also low value on a 404 page."
+    },
+    {
+      "finding": 3,
+      "priority_label": "P3",
+      "impact": "low",
+      "effort": "low",
+      "issue": "Legacy JavaScript is being shipped to modern browsers.",
+      "fix": "Update the browserslist config in the project to target modern browsers, so Next.js stops adding unneeded polyfills and transforms.",
+      "evidence": [
+        "check_speed.top_issues[3].detail = Est savings of 14 KiB"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": ""
+    },
+    {
+      "finding": 4,
+      "priority_label": "P3",
+      "impact": "low",
+      "effort": "low",
+      "issue": "The 404 template has no Open Graph tags and a 53-character meta description. This only matters if real pages share the same head template.",
+      "fix": "Check a real page such as the homepage. If it also lacks og:title, og:description and og:image, add them in the shared Next.js metadata config, and lengthen the description to 70–160 characters.",
+      "evidence": [
+        "check_meta_tags.open_graph.title = null",
+        "check_meta_tags.description_length = 53"
+      ],
+      "reasoning_sound": true,
+      "priority": "ok",
+      "note": "Good conditional fix: check the real page first."
+    }
+  ]
+}

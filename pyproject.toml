@@ -19,6 +19,7 @@ dependencies = [
 [project.scripts]
 seo-audit = "seo_audit_agent.agent:main"
 seo-eval = "seo_audit_agent.evals:main"
+seo-judge = "seo_audit_agent.judge:main"
 
 [build-system]
 requires = ["uv_build>=0.13.0,<0.14.0"]
